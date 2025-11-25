@@ -1,0 +1,12 @@
+CREATE TABLE IF NOT EXISTS doctors (
+  id SERIAL PRIMARY KEY,
+  first_name VARCHAR(30) NOT NULL,
+  last_name VARCHAR(30) NOT NULL,
+  specialty VARCHAR(50),
+  phone_number VARCHAR(15),
+  email VARCHAR(100) UNIQUE NOT NULL,
+  password_hash VARCHAR(255) NOT NULL,
+  crm VARCHAR(20) UNIQUE NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT NULL
+);
