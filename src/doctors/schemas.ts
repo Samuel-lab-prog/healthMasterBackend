@@ -27,11 +27,21 @@ export const lastNameField = t.String({
 
 export const emailSchema = t.String({
   format: 'email',
-  example: 'david@gmail.com',
+  example: 'admin@gmail.com',
   error() {
     throw new AppError({
       statusCode: 400,
       errorMessages: ['Invalid email format'],
+    });
+  },
+});
+
+export const roleSchema = t.UnionEnum(['doctor', 'admin'], {
+  example: 'doctor',
+  error() {
+    throw new AppError({
+      statusCode: 400,
+      errorMessages: ['Role must be either doctor or admin'],
     });
   },
 });
@@ -128,6 +138,7 @@ export const postDoctorSchema = t.Object({
   crm: crmSchema,
   password: passwordSchema,
   phoneNumber: phoneNumberSchema,
+  role: roleSchema,
 });
 
 export const insertDoctorSchema = t.Object({
@@ -138,6 +149,7 @@ export const insertDoctorSchema = t.Object({
   crm: crmSchema,
   phoneNumber: phoneNumberSchema,
   passwordHash: t.String(),
+  role: roleSchema,
 });
 
 export const doctorSchema = t.Object({
@@ -147,6 +159,7 @@ export const doctorSchema = t.Object({
   email: emailSchema,
   phoneNumber: phoneNumberSchema,
   speciality: specialitySchema,
+  role: roleSchema,
   crm: crmSchema,
   createdAt: createdAtSchema,
   updatedAt: updatedAtSchema,
@@ -159,6 +172,7 @@ export const fullDoctorSchema = t.Object({
   email: emailSchema,
   phoneNumber: phoneNumberSchema,
   speciality: specialitySchema,
+  role: roleSchema,
   crm: crmSchema,
   createdAt: createdAtSchema,
   updatedAt: updatedAtSchema,

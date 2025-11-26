@@ -26,6 +26,7 @@ const DEFAULT_DOCTOR = {
   firstName: 'Dr. Jane',
   lastName: 'Smith',
   email: 'jane@example.com',
+  role: 'doctor',
   passwordHash: 'hash456',
   phoneNumber: '88888888',
   speciality: 'Neurology',
@@ -46,7 +47,7 @@ beforeEach(async () => {
   `);
 
   DEFAULT_USER_ID = (await insertUser(DEFAULT_USER)).id;
-  DEFAULT_DOCTOR_ID = (await insertDoctor(DEFAULT_DOCTOR)).id;
+  DEFAULT_DOCTOR_ID = (await insertDoctor({ ...DEFAULT_DOCTOR, role: 'doctor' })).id;
   DEFAULT_CONSULTATION_ID = (
     await insertConsultation({
       ...DEFAULT_CONSULTATION,

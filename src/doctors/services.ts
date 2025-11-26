@@ -54,3 +54,16 @@ export async function authenticateDoctor(token: string): Promise<Doctor> {
   ensureDoctorExists(Doctor);
   return mapFullDoctorToDoctor(Doctor!);
 }
+
+export async function authenticateAdmin(token: string): Promise<Doctor> {
+  const payload = verifyToken(token) as Payload;
+  const doctor = await selectDoctorById(payload.id);
+  ensureDoctorExists(doctor);
+  if (doctor!.role !== 'admin') {
+    throw new AppError({
+      statusCode: 403,
+      errorMessages: ['Access denied: Admins only'],
+    });
+  }
+  return mapFullDoctorToDoctor(doctor!);
+}

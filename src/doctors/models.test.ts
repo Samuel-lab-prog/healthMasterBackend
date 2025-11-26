@@ -15,6 +15,7 @@ const DEFAULT_DOCTOR: InsertDoctor = {
   firstName: 'John',
   lastName: 'Doe',
   email: 'john@example.com',
+  role: 'doctor',
   passwordHash: 'hash123',
   phoneNumber: '99999999',
   speciality: 'Cardiology',
@@ -39,6 +40,7 @@ describe('Doctor Model Tests', () => {
       email: 'alice@example.com',
       passwordHash: 'hashabc',
       phoneNumber: '88888888',
+      role: 'doctor',
       speciality: 'Neurology',
       crm: '654321',
     });
@@ -54,6 +56,7 @@ describe('Doctor Model Tests', () => {
         lastName: 'Email',
         email: DEFAULT_DOCTOR.email,
         passwordHash: 'pass',
+        role: 'doctor',
         phoneNumber: '77777777',
         speciality: 'Dermatology',
         crm: '111222',
@@ -69,6 +72,7 @@ describe('Doctor Model Tests', () => {
         email: 'unique@example.com',
         passwordHash: 'pass',
         phoneNumber: DEFAULT_DOCTOR.phoneNumber,
+        role: 'doctor',
         speciality: 'Dermatology',
         crm: '111222',
       })

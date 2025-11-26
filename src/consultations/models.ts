@@ -3,7 +3,7 @@ import { pool } from '../db/connection.ts';
 import { mapConsultationRowToFullConsultation } from './types';
 import type { Consultation, FullConsultation, ConsultationRow, InsertConsultation } from './types';
 
-const isProd = false
+const isProd = false;
 
 export async function selectConsultationById(id: number): Promise<FullConsultation | null> {
   const query = `SELECT * FROM Consultations WHERE id = $1 LIMIT 2`;

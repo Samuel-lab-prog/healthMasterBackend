@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS doctors (
   email VARCHAR(100) UNIQUE NOT NULL,
   password_hash VARCHAR(255) NOT NULL,
   crm VARCHAR(20) UNIQUE NOT NULL,
+  role VARCHAR(20) DEFAULT 'doctor' CHECK (role IN ('doctor', 'admin')),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT NULL
 );

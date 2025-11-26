@@ -51,13 +51,14 @@ export async function selectDoctorByCRM(crm: string): Promise<FullDoctor | null>
 }
 
 export async function insertDoctor(DoctorData: InsertDoctor): Promise<Pick<Doctor, 'id'>> {
-  const { firstName, lastName, email, passwordHash, phoneNumber, speciality, crm } = DoctorData;
+  const { firstName, lastName, email, passwordHash, phoneNumber, speciality, crm, role } =
+    DoctorData;
   const query = `
-    INSERT INTO Doctors (first_name, last_name, email, password_hash, phone_number, speciality, crm)
-    VALUES ($1, $2, $3, $4, $5, $6, $7)
+    INSERT INTO Doctors (first_name, last_name, email, password_hash, phone_number, speciality, crm, role)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
     RETURNING id
   `;
-  const values = [firstName, lastName, email, passwordHash, phoneNumber, speciality, crm];
+  const values = [firstName, lastName, email, passwordHash, phoneNumber, speciality, crm, role];
   try {
     const { rows } = await pool.query<Pick<Doctor, 'id'>>(query, values);
 

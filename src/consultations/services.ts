@@ -12,8 +12,10 @@ function ensureConsultationExists(Consultation: FullConsultation | null): void {
   }
 }
 
-export async function registerConsultation(body: PostConsultation): Promise<Pick<Consultation, 'id'>> {
-  return await insertConsultation( body);
+export async function registerConsultation(
+  body: PostConsultation
+): Promise<Pick<Consultation, 'id'>> {
+  return await insertConsultation(body);
 }
 
 export async function getConsultationById(id: number): Promise<Consultation> {

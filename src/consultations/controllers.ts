@@ -1,11 +1,21 @@
 import { Elysia, t } from 'elysia';
 import { errorSchema } from '../utils/AppError.ts';
-import { getConsultationById, registerConsultation, } from './services.ts';
+import { getConsultationById, registerConsultation } from './services.ts';
 import { postConsultationSchema, consultationSchema } from './schemas.ts';
+import { authenticateDoctor } from '../doctors/services.ts';
+import { tokenSchema } from '../doctors/schemas.ts';
 
 export const consultationRouter = (app: Elysia) =>
   app.group('/consultations', (app) =>
     app
+      .state('doctorId', 0)
+      .guard({
+        // All routes below require doctor login authentication
+        cookie: tokenSchema,
+        beforeHandle: async ({ cookie, store }) => {
+          store.doctorId = (await authenticateDoctor(cookie.token.value)).id;
+        },
+      })
       .post(
         '/',
         async ({ body, set }) => {
@@ -20,12 +30,12 @@ export const consultationRouter = (app: Elysia) =>
             201: t.Object({ id: t.Number() }),
             400: errorSchema,
             409: errorSchema,
-            410: errorSchema,
             500: errorSchema,
           },
           detail: {
             summary: 'Register',
-            description: 'Creates a new Consultation. Returns an object with the new Consultation ID.',
+            description:
+              'Creates a new Consultation. Returns an object with the new Consultation ID.',
             tags: ['Consultation'],
           },
         }

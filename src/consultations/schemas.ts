@@ -40,9 +40,8 @@ export const consultationDateSchema = t.String({
       statusCode: 400,
       errorMessages: ['Consultation date must be a valid ISO date string'],
     });
-  }
+  },
 });
-
 
 export const createdAtSchema = t.Date({
   example: new Date(),

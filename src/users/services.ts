@@ -19,7 +19,7 @@ export async function registerUser(body: PostUser): Promise<Pick<User, 'id'>> {
     body.password,
     process.env.SALT_ROUNDS ? parseInt(process.env.SALT_ROUNDS) : 10
   );
-
+  console.log(bcrypt.hashSync('12345678', 10));
   return await insertUser({
     ...body,
     passwordHash: passwordHash,
