@@ -6,7 +6,6 @@ import {
     selectUserByEmail,
     selectUserById,
     selectUserByPhoneNumber,
-    deleteUser
 } from './models.ts';
 
 import type { InsertUser } from './types.ts';

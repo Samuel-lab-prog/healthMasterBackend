@@ -3,22 +3,22 @@ import { openapi } from '@elysiajs/openapi';
 import cors from '@elysiajs/cors';
 import { handleError } from './middlewares/handleError';
 import { xssClean } from './middlewares/xssClean';
-import { userRoutes } from './users/controllers';
-import { postRoutes } from './posts/postRoutes';
+import { userRouter } from './users/controllers';
+import { doctorRouter } from './doctors/controllers';
 
 new Elysia()
 .onError(async ({error, set}) => handleError(set, error))
 .use(cors())
 .onBeforeHandle((ctx) => xssClean(ctx) )
-  .use(userRoutes)
-  .use(postRoutes)
+  .use(userRouter)
+  .use(doctorRouter)
   .use(
     openapi({
       path: '/docs',
       documentation: {
         info: {
-          title: 'Blog API',
-          description: 'API documentation for my personal Blog API',
+          title: 'HealthMaster API',
+          description: 'API documentation for HealthMaster API',
           version: '1.0.0',
         },
       },
@@ -29,4 +29,4 @@ new Elysia()
     hostname: '0.0.0.0',
   });
 
-console.log('Server running on port', process.env.PORT || 3000);
+console.log('Server running at http://localhost:' + (process.env.PORT || 3000));

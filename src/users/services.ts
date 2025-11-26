@@ -6,7 +6,6 @@ import {
   insertUser,
   selectUserByEmail,
   selectUserById,
-  deleteUser,
 } from './models.ts';
 import type { FullUser, PostUser, User } from './types.ts';
 
@@ -57,26 +56,5 @@ export async function authenticateUser(token: string): Promise<User> {
   const payload = verifyToken(token) as Payload;
   const user = await selectUserById(payload.id);
   ensureUserExists(user);
-  return mapFullUserToUser(user!);
-}
-
-
-
-export async function removeUser(userId: number): Promise<User> {
-  const deletedUser = await deleteUser(userId);
-  ensureUserExists(deletedUser);
-  return mapFullUserToUser(deletedUser!);
-}
-
-export async function isAdmin(userId: number): Promise<User> {
-  const user = await selectUserById(userId);
-  ensureUserExists(user);
-  const isAdmin = user!.isAdmin;
-  if (!isAdmin) {
-    throw new AppError({
-      statusCode: 403,
-      errorMessages: ['User is not an admin'],
-    });
-  }
   return mapFullUserToUser(user!);
 }

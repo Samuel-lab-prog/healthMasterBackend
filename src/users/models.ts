@@ -1,5 +1,3 @@
-// Need to implement update functionality later
-
 import { DatabaseError } from 'pg';
 import { AppError } from '../utils/AppError.ts';
 import { pool } from '../db/connection.ts';
@@ -7,7 +5,6 @@ import { mapUserRowToFullUser } from './types.ts';
 import type { User, FullUser, UserRow, InsertUser } from './types.ts';
 
 const isProd = process.env.NODE_ENV === 'production';
-// Internal helper to select user by a specific field
 async function selectUserInternal(
   field: 'email' | 'id' | 'phone_number',
   value: string | number
@@ -90,27 +87,6 @@ export async function insertUser(userData: InsertUser): Promise<Pick<User, 'id'>
     throw new AppError({
       statusCode: 500,
       errorMessages: ['Database internal error while creating user'],
-      originalError: isProd ? undefined : (error as Error),
-    });
-  }
-}
-
-export async function deleteUser(userId: number): Promise<FullUser | null> {
-  const query = `
-    DELETE FROM users
-    WHERE id = $1
-    RETURNING id
-  `;
-  try {
-    const { rows } = await pool.query(query, [userId]);
-    if (rows.length === 0) {
-      return null;
-    }
-    return mapUserRowToFullUser(rows[0]);
-  } catch (error) {
-    throw new AppError({
-      statusCode: 500,
-      errorMessages: ['Database internal error while deleting user'],
       originalError: isProd ? undefined : (error as Error),
     });
   }
