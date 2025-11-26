@@ -2,11 +2,7 @@ import bcrypt from 'bcryptjs';
 import { AppError } from '../utils/AppError.ts';
 import { mapFullUserToUser } from './types.ts';
 import { generateToken, verifyToken, type Payload } from '../utils/jwt.ts';
-import {
-  insertUser,
-  selectUserByEmail,
-  selectUserById,
-} from './models.ts';
+import { insertUser, selectUserByEmail, selectUserById } from './models.ts';
 import type { FullUser, PostUser, User } from './types.ts';
 
 function ensureUserExists(user: FullUser | null): void {

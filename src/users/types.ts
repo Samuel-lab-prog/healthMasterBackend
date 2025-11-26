@@ -1,10 +1,4 @@
-import {
-  postUserSchema,
-  insertUserSchema,
-  userSchema,
-  fullUserSchema,
-}
-from './schemas'
+import { postUserSchema, insertUserSchema, userSchema, fullUserSchema } from './schemas';
 
 export type UserRow = {
   id: number;
@@ -16,12 +10,12 @@ export type UserRow = {
   created_at: Date;
   updated_at: Date | null;
   password_hash: string;
-}
+};
 
-export type User = (typeof userSchema)['static']
-export type FullUser = (typeof fullUserSchema)['static']
-export type PostUser = (typeof postUserSchema)['static']
-export type InsertUser = (typeof insertUserSchema)['static']
+export type User = (typeof userSchema)['static'];
+export type FullUser = (typeof fullUserSchema)['static'];
+export type PostUser = (typeof postUserSchema)['static'];
+export type InsertUser = (typeof insertUserSchema)['static'];
 
 export function mapUserRowToFullUser(userRow: UserRow): FullUser {
   return {

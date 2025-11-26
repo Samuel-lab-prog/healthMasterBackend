@@ -1,10 +1,4 @@
-import {
-  postDoctorSchema,
-  insertDoctorSchema,
-  doctorSchema,
-  fullDoctorSchema,
-}
-from './schemas.ts'
+import { postDoctorSchema, insertDoctorSchema, doctorSchema, fullDoctorSchema } from './schemas.ts';
 
 export type DoctorRow = {
   id: number;
@@ -18,12 +12,12 @@ export type DoctorRow = {
   password_hash: string;
   speciality: string;
   crm: string;
-}
+};
 
-export type Doctor = (typeof doctorSchema)['static']
-export type FullDoctor = (typeof fullDoctorSchema)['static']
-export type PostDoctor = (typeof postDoctorSchema)['static']
-export type InsertDoctor = (typeof insertDoctorSchema)['static']
+export type Doctor = (typeof doctorSchema)['static'];
+export type FullDoctor = (typeof fullDoctorSchema)['static'];
+export type PostDoctor = (typeof postDoctorSchema)['static'];
+export type InsertDoctor = (typeof insertDoctorSchema)['static'];
 
 export function mapDoctorRowToFullDoctor(doctorRow: DoctorRow): FullDoctor {
   return {

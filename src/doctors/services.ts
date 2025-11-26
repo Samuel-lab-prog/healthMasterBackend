@@ -2,11 +2,7 @@ import bcrypt from 'bcryptjs';
 import { AppError } from '../utils/AppError.ts';
 import { mapFullDoctorToDoctor } from './types.ts';
 import { generateToken, verifyToken, type Payload } from '../utils/jwt.ts';
-import {
-  insertDoctor,
-  selectDoctorByEmail,
-  selectDoctorById,
-} from './models.ts';
+import { insertDoctor, selectDoctorByEmail, selectDoctorById } from './models.ts';
 import type { FullDoctor, PostDoctor, Doctor } from './types.ts';
 
 function ensureDoctorExists(Doctor: FullDoctor | null): void {

@@ -5,13 +5,15 @@ import { handleError } from './middlewares/handleError';
 import { xssClean } from './middlewares/xssClean';
 import { userRouter } from './users/controllers';
 import { doctorRouter } from './doctors/controllers';
+import { consultationRouter } from './consultations/controllers';
 
 new Elysia()
-.onError(async ({error, set}) => handleError(set, error))
-.use(cors())
-.onBeforeHandle((ctx) => xssClean(ctx) )
+  .onError(async ({ error, set }) => handleError(set, error))
+  .use(cors())
+  .onBeforeHandle((ctx) => xssClean(ctx))
   .use(userRouter)
   .use(doctorRouter)
+  .use(consultationRouter)
   .use(
     openapi({
       path: '/docs',

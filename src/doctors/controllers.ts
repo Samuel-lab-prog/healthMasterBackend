@@ -1,17 +1,7 @@
 import { Elysia, t } from 'elysia';
 import { errorSchema } from '../utils/AppError.ts';
-import {
-  registerDoctor,
-  loginDoctor,
-  authenticateDoctor,
-} from './services.ts';
-import {
-  postDoctorSchema,
-  loginDoctorSchema,
-  doctorSchema,
-  tokenSchema,
-} from './schemas.ts';
-
+import { registerDoctor, loginDoctor, authenticateDoctor } from './services.ts';
+import { postDoctorSchema, loginDoctorSchema, doctorSchema, tokenSchema } from './schemas.ts';
 
 export const doctorRouter = (app: Elysia) =>
   app.group('/Doctors', (app) =>
@@ -75,7 +65,6 @@ export const doctorRouter = (app: Elysia) =>
         cookie: tokenSchema,
         beforeHandle: async ({ cookie, store }) => {
           store.DoctorId = (await authenticateDoctor(cookie.token.value)).id;
-        }
-      }
-      )
+        },
+      })
   );

@@ -81,15 +81,15 @@ export const createdAtSchema = t.Date({
   },
 });
 
-export const updatedAtSchema = t.Union([t.Date(), t.Null()],{
+export const updatedAtSchema = t.Union([t.Date(), t.Null()], {
   example: null,
   error() {
     throw new AppError({
       statusCode: 400,
       errorMessages: ['updatedAt must be a valid date or null'],
     });
-  }
-})
+  },
+});
 
 export const loginUserSchema = t.Object({
   email: emailSchema,
@@ -103,7 +103,6 @@ export const postUserSchema = t.Object({
   password: passwordSchema,
   phoneNumber: phoneNumberSchema,
 });
-
 
 export const insertUserSchema = t.Object({
   firstName: firstNameSchema,

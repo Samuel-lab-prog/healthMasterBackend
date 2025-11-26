@@ -1,17 +1,7 @@
 import { Elysia, t } from 'elysia';
 import { errorSchema } from '../utils/AppError.ts';
-import {
-  registerUser,
-  loginUser,
-  authenticateUser,
-} from './services.ts';
-import {
-  postUserSchema,
-  loginUserSchema,
-  userSchema,
-  tokenSchema,
-} from './schemas.ts';
-
+import { registerUser, loginUser, authenticateUser } from './services.ts';
+import { postUserSchema, loginUserSchema, userSchema, tokenSchema } from './schemas.ts';
 
 export const userRouter = (app: Elysia) =>
   app.group('/users', (app) =>
@@ -75,7 +65,6 @@ export const userRouter = (app: Elysia) =>
         cookie: tokenSchema,
         beforeHandle: async ({ cookie, store }) => {
           store.userId = (await authenticateUser(cookie.token.value)).id;
-        }
-      }
-      )
+        },
+      })
   );
