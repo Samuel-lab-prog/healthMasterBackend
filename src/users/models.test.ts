@@ -60,8 +60,8 @@ describe('User Model Tests', () => {
     expect(
       insertUser({
         ...TEST_USER,
-        email: DEFAULT_USER.email
-      }),
+        email: DEFAULT_USER.email,
+      })
     ).rejects.toThrow(AppError);
   });
 
@@ -69,7 +69,7 @@ describe('User Model Tests', () => {
     expect(
       insertUser({
         ...TEST_USER,
-        cpf: DEFAULT_USER.cpf!
+        cpf: DEFAULT_USER.cpf!,
       })
     ).rejects.toThrow(AppError);
   });

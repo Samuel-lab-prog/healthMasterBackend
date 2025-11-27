@@ -1,6 +1,12 @@
 import { Elysia, t } from 'elysia';
 import { errorSchema } from '../utils/AppError.ts';
-import { registerDoctor, loginDoctor, authenticateAdmin } from './services.ts';
+import {
+  registerDoctor,
+  loginDoctor,
+  authenticateAdmin,
+  authenticateDoctor,
+  getAllDoctors,
+} from './services.ts';
 import { postDoctorSchema, loginDoctorSchema, doctorSchema, tokenSchema } from './schemas.ts';
 
 export const doctorRouter = (app: Elysia) =>
@@ -25,7 +31,6 @@ export const doctorRouter = (app: Elysia) =>
             200: doctorSchema,
             400: errorSchema,
             401: errorSchema,
-            410: errorSchema,
             500: errorSchema,
           },
           detail: {
@@ -36,14 +41,42 @@ export const doctorRouter = (app: Elysia) =>
           },
         }
       )
+      .get(
+        '/',
+        async () => {
+          return await getAllDoctors();
+        },
+        {
+          response: {
+            200: t.Array(doctorSchema),
+            404: errorSchema,
+            500: errorSchema,
+          },
+          detail: {
+            summary: 'Get All Doctors',
+            description:
+              'Retrieves a list of all Doctors. Requires login and admin authentication.',
+            tags: ['Doctor'],
+          },
+        }
+      )
       .state('doctorId', 0)
       .guard({
-        // All routes below require admin authentication
+        // All routes below require doctor login authentication
         cookie: tokenSchema,
+        response: {
+          401: errorSchema,
+          403: errorSchema,
+        },
         beforeHandle: async ({ cookie, store }) => {
-          const doctor = await authenticateAdmin(cookie.token.value);
-          console.log(doctor);
+          const doctor = await authenticateDoctor(cookie.token.value);
           store.doctorId = doctor.id;
+        },
+      })
+      .guard({
+        // All routes below require admin authentication
+        beforeHandle: async ({ store }) => {
+          await authenticateAdmin(store.doctorId);
         },
       })
       .post(
@@ -63,7 +96,8 @@ export const doctorRouter = (app: Elysia) =>
           },
           detail: {
             summary: 'Register',
-            description: 'Creates a new Doctor. Returns an object with the new Doctor ID.',
+            description:
+              'Creates a new Doctor. Returns an object with the new Doctor ID. Requires login and admin authentication.',
             tags: ['Doctor'],
           },
         }

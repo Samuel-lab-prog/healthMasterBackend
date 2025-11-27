@@ -5,8 +5,10 @@ export type DoctorRow = {
   first_name: string;
   last_name: string;
   email: string;
+  cpf: string;
   phone_number: string;
   is_admin: boolean;
+  birth_date: string;
   created_at: Date;
   updated_at: Date | null;
   role: 'doctor' | 'admin';
@@ -27,9 +29,11 @@ export function mapDoctorRowToFullDoctor(doctorRow: DoctorRow): FullDoctor {
     role: doctorRow.role as 'doctor' | 'admin',
     lastName: doctorRow.last_name,
     email: doctorRow.email,
+    cpf: doctorRow.cpf,
     phoneNumber: doctorRow.phone_number,
     speciality: doctorRow.speciality,
     crm: doctorRow.crm,
+    birthDate: doctorRow.birth_date,
     createdAt: doctorRow.created_at,
     updatedAt: doctorRow.updated_at ? doctorRow.updated_at : null,
     passwordHash: doctorRow.password_hash,
@@ -41,8 +45,10 @@ export function mapFullDoctorToDoctor(fullDoctor: FullDoctor): Doctor {
     id: fullDoctor.id,
     firstName: fullDoctor.firstName,
     lastName: fullDoctor.lastName,
+    cpf: fullDoctor.cpf,
     email: fullDoctor.email,
     phoneNumber: fullDoctor.phoneNumber,
+    birthDate: fullDoctor.birthDate,
     role: fullDoctor.role,
     speciality: fullDoctor.speciality,
     crm: fullDoctor.crm,

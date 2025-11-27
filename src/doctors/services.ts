@@ -2,7 +2,13 @@ import bcrypt from 'bcryptjs';
 import { AppError } from '../utils/AppError.ts';
 import { mapFullDoctorToDoctor } from './types.ts';
 import { generateDoctorToken, verifyDoctorToken, type DoctorPayload } from '../utils/jwt.ts';
-import { insertDoctor, selectDoctorByCRM, selectDoctorByEmail } from './models.ts';
+import {
+  insertDoctor,
+  selectDoctorByCRM,
+  selectDoctorByEmail,
+  selectDoctorById,
+  selectAllDoctors,
+} from './models.ts';
 import type { FullDoctor, PostDoctor, Doctor } from './types.ts';
 
 function ensureDoctorExists(Doctor: FullDoctor | null): void {
@@ -62,15 +68,8 @@ export async function authenticateDoctor(token: string): Promise<Doctor> {
   return mapFullDoctorToDoctor(doctor!);
 }
 
-export async function authenticateAdmin(token: string): Promise<Doctor> {
-  const payload = verifyDoctorToken(token) as DoctorPayload;
-  if (!payload.crm) {
-    throw new AppError({
-      statusCode: 401,
-      errorMessages: ['Invalid token payload: CRM is required'],
-    });
-  }
-  const doctor = await selectDoctorByCRM(payload.crm);
+export async function authenticateAdmin(id: number): Promise<Doctor> {
+  const doctor = await selectDoctorById(id);
   ensureDoctorExists(doctor);
   if (doctor!.role !== 'admin') {
     throw new AppError({
@@ -79,4 +78,17 @@ export async function authenticateAdmin(token: string): Promise<Doctor> {
     });
   }
   return mapFullDoctorToDoctor(doctor!);
+}
+
+export async function getAllDoctors(): Promise<Doctor[]> {
+  const doctors = await selectAllDoctors();
+
+  if (doctors.length === 0) {
+    throw new AppError({
+      statusCode: 404,
+      errorMessages: ['No doctors found'],
+    });
+  }
+
+  return doctors.map(mapFullDoctorToDoctor);
 }

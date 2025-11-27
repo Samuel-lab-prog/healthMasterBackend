@@ -4,10 +4,12 @@ CREATE TABLE IF NOT EXISTS doctors (
   last_name VARCHAR(30) NOT NULL,
   speciality VARCHAR(50),
   phone_number VARCHAR(15) UNIQUE NOT NULL,
+  birth_date TEXT,
   email VARCHAR(100) UNIQUE NOT NULL,
   password_hash VARCHAR(255) NOT NULL,
   crm VARCHAR(20) UNIQUE NOT NULL,
-  role VARCHAR(20) DEFAULT 'doctor' CHECK (role IN ('doctor', 'admin')),
+  cpf VARCHAR(14) UNIQUE,
+  role VARCHAR(20) DEFAULT 'doctor',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT NULL
 );

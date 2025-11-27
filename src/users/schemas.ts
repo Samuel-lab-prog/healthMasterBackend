@@ -148,7 +148,7 @@ export const userSchema = t.Object({
   email: emailSchema,
   phoneNumber: phoneNumberSchema,
   createdAt: createdAtSchema,
-  updatedAt: updatedAtSchema
+  updatedAt: updatedAtSchema,
 });
 
 export const fullUserSchema = t.Object({

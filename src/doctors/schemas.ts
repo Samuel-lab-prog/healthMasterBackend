@@ -105,6 +105,18 @@ export const doctorIdSchema = t.Number({
   },
 });
 
+export const cpfSchema = t.String({
+  minLength: 11,
+  maxLength: 14,
+  example: '123.456.789-00',
+  error() {
+    throw new AppError({
+      statusCode: 400,
+      errorMessages: ['CPF must be between 11 and 14 characters long'],
+    });
+  },
+});
+
 export const createdAtSchema = t.Date({
   example: new Date(),
   error() {
@@ -125,6 +137,17 @@ export const updatedAtSchema = t.Union([t.Date(), t.Null()], {
   },
 });
 
+export const birthDateSchema = t.String({
+  format: 'date',
+  example: '1990-01-01',
+  error() {
+    throw new AppError({
+      statusCode: 400,
+      errorMessages: ['Birth date must be a valid date in the format YYYY-MM-DD'],
+    });
+  },
+});
+
 export const loginDoctorSchema = t.Object({
   email: emailSchema,
   password: passwordSchema,
@@ -133,6 +156,8 @@ export const loginDoctorSchema = t.Object({
 export const postDoctorSchema = t.Object({
   firstName: firstNameSchema,
   lastName: lastNameField,
+  cpf: cpfSchema,
+  birthDate: birthDateSchema,
   email: emailSchema,
   speciality: specialitySchema,
   crm: crmSchema,
@@ -144,7 +169,9 @@ export const postDoctorSchema = t.Object({
 export const insertDoctorSchema = t.Object({
   firstName: firstNameSchema,
   lastName: lastNameField,
+  birthDate: birthDateSchema,
   email: emailSchema,
+  cpf: cpfSchema,
   speciality: specialitySchema,
   crm: crmSchema,
   phoneNumber: phoneNumberSchema,
@@ -157,6 +184,8 @@ export const doctorSchema = t.Object({
   firstName: firstNameSchema,
   lastName: lastNameField,
   email: emailSchema,
+  birthDate: birthDateSchema,
+  cpf: cpfSchema,
   phoneNumber: phoneNumberSchema,
   speciality: specialitySchema,
   role: roleSchema,
@@ -169,7 +198,9 @@ export const fullDoctorSchema = t.Object({
   id: doctorIdSchema,
   firstName: firstNameSchema,
   lastName: lastNameField,
+  birthDate: birthDateSchema,
   email: emailSchema,
+  cpf: cpfSchema,
   phoneNumber: phoneNumberSchema,
   speciality: specialitySchema,
   role: roleSchema,
