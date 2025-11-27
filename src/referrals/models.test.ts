@@ -5,6 +5,27 @@ import { insertReferral, selectReferralById } from './models';
 
 import type { InsertReferral } from './types';
 import { insertConsultation } from '../consultations/models.ts';
+import { insertUser } from '../users/models.ts';
+import { insertDoctor } from '../doctors/models.ts';
+import { AppError } from '../utils/AppError.ts';
+const DEFAULT_USER = {
+  firstName: 'Test',
+  lastName: 'User',
+  email: 'testuser@example.com',
+  passwordHash: 'password123',
+  phoneNumber: '+1234567890',
+};
+
+const DEFAULT_DOCTOR = {
+  firstName: 'Test',
+  lastName: 'Doctor',
+  email: 'testdoctor@example.com',
+  passwordHash: 'password123',
+  phoneNumber: '+1234567890',
+  role: 'doctor' as 'doctor' | 'admin',
+  speciality: 'General',
+  crm: 'CRM123456',
+};
 
 const DEFAULT_CONSULTATION = {
   userId: 1,
@@ -29,7 +50,8 @@ beforeEach(async () => {
       doctors
     RESTART IDENTITY CASCADE
   `);
-
+  await insertUser(DEFAULT_USER);
+  await insertDoctor(DEFAULT_DOCTOR);
   DEFAULT_CONSULTATION_ID = (await insertConsultation(DEFAULT_CONSULTATION)).id;
   DEFAULT_REFERRAL_ID = (await insertReferral(DEFAULT_REFERRAL)).id;
 });
@@ -50,7 +72,7 @@ describe('Referral Model Tests', () => {
         consultationId: 9999,
         notes: 'Referral with invalid consultationId',
       })
-    ).rejects.toThrow();
+    ).rejects.toThrow(AppError);
   });
 
   it('selectReferralById → Should return a Referral', async () => {

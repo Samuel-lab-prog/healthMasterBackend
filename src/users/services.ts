@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import { AppError } from '../utils/AppError.ts';
 import { mapFullUserToUser } from './types.ts';
-import { generateToken, verifyToken, type Payload } from '../utils/jwt.ts';
+import { generateUserToken, verifyUserToken, type UserPayload } from '../utils/jwt.ts';
 import { insertUser, selectUserByEmail, selectUserById } from './models.ts';
 import type { FullUser, PostUser, User } from './types.ts';
 
@@ -40,16 +40,16 @@ export async function loginUser(body: {
     });
   }
 
-  const token = generateToken({
+  const token = generateUserToken({
     id: user!.id,
     email: user!.email,
-  } as Payload);
+  } as UserPayload);
   ensureUserExists(user);
   return { token, user: mapFullUserToUser(user!) };
 }
 
 export async function authenticateUser(token: string): Promise<User> {
-  const payload = verifyToken(token) as Payload;
+  const payload = verifyUserToken(token) as UserPayload;
   const user = await selectUserById(payload.id);
   ensureUserExists(user);
   return mapFullUserToUser(user!);

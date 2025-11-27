@@ -1,8 +1,8 @@
 import bcrypt from 'bcryptjs';
 import { AppError } from '../utils/AppError.ts';
 import { mapFullDoctorToDoctor } from './types.ts';
-import { generateToken, verifyToken, type Payload } from '../utils/jwt.ts';
-import { insertDoctor, selectDoctorByEmail, selectDoctorById } from './models.ts';
+import { generateDoctorToken, verifyDoctorToken, type DoctorPayload } from '../utils/jwt.ts';
+import { insertDoctor, selectDoctorByCRM, selectDoctorByEmail } from './models.ts';
 import type { FullDoctor, PostDoctor, Doctor } from './types.ts';
 
 function ensureDoctorExists(Doctor: FullDoctor | null): void {
@@ -29,35 +29,48 @@ export async function registerDoctor(body: PostDoctor): Promise<Pick<Doctor, 'id
 export async function loginDoctor(body: {
   email: string;
   password: string;
-}): Promise<{ token: string; Doctor: Doctor }> {
-  const Doctor = await selectDoctorByEmail(body.email);
-  ensureDoctorExists(Doctor);
+}): Promise<{ token: string; doctor: Doctor }> {
+  const doctor = await selectDoctorByEmail(body.email);
+  ensureDoctorExists(doctor);
 
-  if (!(await bcrypt.compare(body.password, Doctor!.passwordHash))) {
+  if (!(await bcrypt.compare(body.password, doctor!.passwordHash))) {
     throw new AppError({
       statusCode: 401,
       errorMessages: ['Invalid credentials'],
     });
   }
 
-  const token = generateToken({
-    id: Doctor!.id,
-    email: Doctor!.email,
-  } as Payload);
-  ensureDoctorExists(Doctor);
-  return { token, Doctor: mapFullDoctorToDoctor(Doctor!) };
+  const token = generateDoctorToken({
+    id: doctor!.id,
+    email: doctor!.email,
+    crm: doctor!.crm,
+  } as DoctorPayload);
+  ensureDoctorExists(doctor);
+  return { token, doctor: mapFullDoctorToDoctor(doctor!) };
 }
 
 export async function authenticateDoctor(token: string): Promise<Doctor> {
-  const payload = verifyToken(token) as Payload;
-  const Doctor = await selectDoctorById(payload.id);
-  ensureDoctorExists(Doctor);
-  return mapFullDoctorToDoctor(Doctor!);
+  const payload = verifyDoctorToken(token) as DoctorPayload;
+  if(!payload.crm) {
+    throw new AppError({
+      statusCode: 401,
+      errorMessages: ['Invalid token payload: CRM is required'],
+    });
+  }
+  const doctor = await selectDoctorByCRM(payload.crm);
+  ensureDoctorExists(doctor);
+  return mapFullDoctorToDoctor(doctor!);
 }
 
 export async function authenticateAdmin(token: string): Promise<Doctor> {
-  const payload = verifyToken(token) as Payload;
-  const doctor = await selectDoctorById(payload.id);
+  const payload = verifyDoctorToken(token) as DoctorPayload;
+  if(!payload.crm) {
+    throw new AppError({
+      statusCode: 401,
+      errorMessages: ['Invalid token payload: CRM is required'],
+    });
+  }
+  const doctor = await selectDoctorByCRM(payload.crm);
   ensureDoctorExists(doctor);
   if (doctor!.role !== 'admin') {
     throw new AppError({

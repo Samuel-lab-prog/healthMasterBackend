@@ -1,0 +1,79 @@
+import { Elysia, t } from 'elysia';
+import { errorSchema } from '../utils/AppError.ts';
+import { getReferralById, registerReferral, getAllReferrals } from './services';
+import { postReferralSchema, referralSchema } from './schemas.ts';
+import { authenticateDoctor } from '../doctors/services.ts';
+import { tokenSchema } from '../doctors/schemas.ts';
+
+export const referralRouter = (app: Elysia) =>
+  app.group('/Referrals', (app) =>
+    app
+      .state('doctorId', 0)
+      .guard({
+        // All routes below require doctor login authentication
+        cookie: tokenSchema,
+        beforeHandle: async ({ cookie, store }) => {
+          store.doctorId = (await authenticateDoctor(cookie.token.value)).id;
+        },
+      })
+      .post(
+        '/',
+        async ({ body, set }) => {
+          console.log(body);
+          const Referral = await registerReferral(body);
+          set.status = 201;
+          return Referral;
+        },
+        {
+          body: postReferralSchema,
+          response: {
+            201: t.Object({ id: t.Number() }),
+            400: errorSchema,
+            409: errorSchema,
+            500: errorSchema,
+          },
+          detail: {
+            summary: 'Register',
+            description:
+              'Creates a new Referral. Returns an object with the new Referral ID.',
+            tags: ['Referral'],
+          },
+        }
+      )
+      .get(
+        '/',
+        async () => {
+          return await getAllReferrals();
+        },{
+          response: {
+            200: t.Array(referralSchema),
+            500: errorSchema,
+          },
+          detail: {
+            summary: 'Get All Referrals',
+            description: 'Retrieves all Referrals.',
+            tags: ['Referral'],
+          },
+        }
+      )
+      .get(
+        '/:id',
+        async ({ params }) => {
+          return await getReferralById(Number(params.id));
+        },
+        {
+          params: t.Object({ id: t.Number() }),
+          response: {
+            200: referralSchema,
+            400: errorSchema,
+            404: errorSchema,
+            500: errorSchema,
+          },
+          detail: {
+            summary: 'Get Referral by ID',
+            description: 'Retrieves a Referral by its ID.',
+            tags: ['Referral'],
+          },
+        }
+      )
+  );

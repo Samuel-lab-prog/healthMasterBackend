@@ -1,24 +1,15 @@
 import { Elysia, t } from 'elysia';
 import { errorSchema } from '../utils/AppError.ts';
-import { registerDoctor, loginDoctor, authenticateDoctor, authenticateAdmin } from './services.ts';
+import { registerDoctor, loginDoctor, authenticateAdmin } from './services.ts';
 import { postDoctorSchema, loginDoctorSchema, doctorSchema, tokenSchema } from './schemas.ts';
 
 export const doctorRouter = (app: Elysia) =>
-  app.group('/Doctors', (app) =>
+  app.group('/doctors', (app) =>
     app
-      .state('DoctorId', 0)
-      .guard({
-        // All routes below require login authentication
-        cookie: tokenSchema,
-        beforeHandle: async ({ cookie, store }) => {
-          store.DoctorId = (await authenticateDoctor(cookie.token.value)).id;
-        },
-      })
-
       .post(
         '/login',
         async ({ body, set, cookie }) => {
-          const { token, Doctor } = await loginDoctor(body);
+          const { token, doctor } = await loginDoctor(body);
 
           cookie.token!.path = '/';
           cookie.token!.httpOnly = true;
@@ -26,7 +17,7 @@ export const doctorRouter = (app: Elysia) =>
           cookie.token!.value = token;
 
           set.status = 200;
-          return Doctor;
+          return doctor;
         },
         {
           body: loginDoctorSchema,
@@ -45,20 +36,22 @@ export const doctorRouter = (app: Elysia) =>
           },
         }
       )
-      .state('DoctorId', 0)
+      .state('doctorId', 0)
       .guard({
         // All routes below require admin authentication
         cookie: tokenSchema,
         beforeHandle: async ({ cookie, store }) => {
-          store.DoctorId = (await authenticateAdmin(cookie.token.value)).id;
+          const doctor = (await authenticateAdmin(cookie.token.value));
+          console.log(doctor);
+          store.doctorId = doctor.id;
         },
       })
       .post(
         '/register',
         async ({ body, set }) => {
-          const Doctor = await registerDoctor(body);
+          const doctor = await registerDoctor(body);
           set.status = 201;
-          return Doctor;
+          return doctor;
         },
         {
           body: postDoctorSchema,

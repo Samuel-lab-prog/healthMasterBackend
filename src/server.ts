@@ -6,6 +6,7 @@ import { xssClean } from './middlewares/xssClean';
 import { userRouter } from './users/controllers';
 import { doctorRouter } from './doctors/controllers';
 import { consultationRouter } from './consultations/controllers';
+import { referralRouter } from './referrals/controllers';
 
 new Elysia()
   .onError(async ({ error, set }) => handleError(set, error))
@@ -13,6 +14,7 @@ new Elysia()
   .onBeforeHandle((ctx) => xssClean(ctx))
   .use(userRouter)
   .use(doctorRouter)
+  .use(referralRouter)
   .use(consultationRouter)
   .use(
     openapi({

@@ -180,5 +180,13 @@ export const fullDoctorSchema = t.Object({
 });
 
 export const tokenSchema = t.Object({
-  token: t.String(),
+  token: t.String({
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+    error() {
+      throw new AppError({
+        statusCode: 400,
+        errorMessages: ['Token must be a valid string'],
+      });
+    }
+  }),
 });
