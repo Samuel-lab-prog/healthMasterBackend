@@ -27,7 +27,7 @@ export function mapConsultationRowToFullConsultation(
     id: ConsultationRow.id,
     userId: ConsultationRow.user_id,
     doctorId: ConsultationRow.doctor_id,
-    consultationDate: ConsultationRow.consultation_date.toISOString(),
+    consultationDate: ConsultationRow.consultation_date,
     notes: ConsultationRow.notes,
     createdAt: ConsultationRow.created_at,
     updatedAt: ConsultationRow.updated_at ? ConsultationRow.updated_at : null,

@@ -11,6 +11,7 @@ export const userIdSchema = t.Number({
     });
   },
 });
+
 export const doctorIdSchema = t.Number({
   minimum: 1,
   example: 1,
@@ -33,12 +34,12 @@ export const consultationIdSchema = t.Number({
   },
 });
 
-export const consultationDateSchema = t.String({
-  example: new Date().toISOString(),
+export const consultationDateSchema = t.Date({
+  example: new Date(),
   error() {
     throw new AppError({
       statusCode: 400,
-      errorMessages: ['Consultation date must be a valid ISO date string'],
+      errorMessages: ['Consultation date must be a valid date'],
     });
   },
 });
@@ -91,5 +92,9 @@ export const postConsultationSchema = t.Object({
   notes: notesSchema,
 });
 
+export const userConsulationSchema = t.Object({
+  
+}); 
 export const fullConsultationSchema = consultationSchema;
 export const insertConsultationSchema = postConsultationSchema;
+

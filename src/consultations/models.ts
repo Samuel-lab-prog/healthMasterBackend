@@ -1,3 +1,4 @@
+import { DatabaseError } from 'pg';
 import { AppError } from '../utils/AppError.ts';
 import { pool } from '../db/connection.ts';
 import { mapConsultationRowToFullConsultation } from './types';
@@ -31,7 +32,9 @@ export async function selectConsultationById(id: number): Promise<FullConsultati
 export async function insertConsultation(
   ConsultationData: InsertConsultation
 ): Promise<Pick<Consultation, 'id'>> {
+
   const { userId, doctorId, consultationDate, notes } = ConsultationData;
+
   const query = `
     INSERT INTO Consultations (user_id, doctor_id, consultation_date, notes)
     VALUES ($1, $2, $3, $4)
@@ -49,9 +52,17 @@ export async function insertConsultation(
     }
 
     return { id: rows[0].id };
-  } catch (error: unknown) {
-    console.error(error);
+  } catch (error) {
     if (error instanceof AppError) throw error;
+    if (error instanceof DatabaseError) {
+      if (error?.code === '23503') {
+        throw new AppError({
+          statusCode: 400,
+          errorMessages: ['Invalid userId or doctorId: foreign key does not exist'],
+          origin: 'database'
+        });
+      }
+    }
     throw new AppError({
       statusCode: 500,
       errorMessages: ['Database internal error while creating Consultation'],

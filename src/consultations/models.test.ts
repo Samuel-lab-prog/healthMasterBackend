@@ -6,13 +6,22 @@ import { insertConsultation, selectConsultationById } from './models';
 import type { InsertConsultation } from './types';
 import { insertDoctor } from '../doctors/models.ts';
 import { insertUser } from '../users/models.ts';
+import { AppError } from '../utils/AppError.ts';
 
-const DEFAULT_CONSULTATION: InsertConsultation = {
+const DEFAULT_consultation: InsertConsultation = {
   userId: 1,
   doctorId: 1,
-  consultationDate: new Date().toISOString(),
+  consultationDate: new Date(),
   notes: 'Initial consultation notes',
 };
+
+const TEST_consultation: InsertConsultation = {
+  userId: 1,
+  doctorId: 1,
+  consultationDate: new Date(),
+  notes: 'Follow-up consultation notes',
+};
+
 const DEFAULT_USER = {
   firstName: 'John',
   lastName: 'Doe',
@@ -28,13 +37,15 @@ const DEFAULT_DOCTOR = {
   firstName: 'Dr. Jane',
   lastName: 'Smith',
   email: 'jane@example.com',
-  role: 'doctor',
+  role: 'doctor' as 'doctor' | 'admin',
   passwordHash: 'hash456',
   phoneNumber: '88888888',
   speciality: 'Neurology',
+  cpf: '09876543210',
+  birthDate: '1985-05-05',
   crm: '654321',
 };
-let DEFAULT_CONSULTATION_ID: number;
+let DEFAULT_consultation_ID: number;
 let DEFAULT_USER_ID: number;
 let DEFAULT_DOCTOR_ID: number;
 
@@ -49,37 +60,57 @@ beforeEach(async () => {
   `);
 
   DEFAULT_USER_ID = (await insertUser(DEFAULT_USER)).id;
-  DEFAULT_DOCTOR_ID = (await insertDoctor({ ...DEFAULT_DOCTOR, role: 'doctor' })).id;
-  DEFAULT_CONSULTATION_ID = (
+  DEFAULT_DOCTOR_ID = (await insertDoctor(DEFAULT_DOCTOR)).id;
+  DEFAULT_consultation_ID = (
     await insertConsultation({
-      ...DEFAULT_CONSULTATION,
+      ...DEFAULT_consultation,
       userId: DEFAULT_USER_ID,
       doctorId: DEFAULT_DOCTOR_ID,
     })
   ).id;
 });
 
-describe('Consultation Model Tests', () => {
-  it('insertConsultation → Should insert and return an id', async () => {
+describe('consultation Model Tests', () => {
+  it('insertconsultation → Should insert and return an id', async () => {
     const result = await insertConsultation({
+      ...TEST_consultation,
       userId: DEFAULT_USER_ID,
       doctorId: DEFAULT_DOCTOR_ID,
-      consultationDate: new Date().toISOString(),
-      notes: 'Follow-up consultation notes',
     });
     expect(result).toHaveProperty('id');
     expect(typeof result.id).toBe('number');
   });
 
-  it('selectConsultationById → Should return a Consultation', async () => {
-    const Consultation = await selectConsultationById(DEFAULT_CONSULTATION_ID);
-
-    expect(Consultation).not.toBeNull();
-    expect(Consultation?.id).toBe(DEFAULT_CONSULTATION_ID);
+  it('insertconsultation → Should throw AppError for non-existing userId', async () => {
+     expect(
+      insertConsultation({
+        ...TEST_consultation,
+        userId: 9999,
+        doctorId: DEFAULT_DOCTOR_ID,
+      })
+    ).rejects.toThrow(AppError);
   });
 
-  it('selectConsultationById → Should return null for non-existing id', async () => {
-    const Consultation = await selectConsultationById(9999);
-    expect(Consultation).toBeNull();
+  it('insertconsultation → Should throw AppError for non-existing doctorId', async () => {
+     expect(
+      insertConsultation({
+        ...TEST_consultation,
+        userId: DEFAULT_USER_ID,
+        doctorId: 9999,
+      })
+    ).rejects.toThrow(AppError);
+  });
+
+  it('selectconsultationById → Should return a consultation', async () => {
+    const consultation = await selectConsultationById(DEFAULT_consultation_ID);
+
+    expect(consultation).not.toBeNull();
+    expect(consultation?.id).toBe(DEFAULT_consultation_ID);
+  });
+
+  it('selectconsultationById → Should return null for non-existing id', async () => {
+    const consultation = await selectConsultationById(9999);
+
+    expect(consultation).toBeNull();
   });
 });
