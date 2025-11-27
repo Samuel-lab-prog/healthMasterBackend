@@ -65,7 +65,6 @@ export const updatedAtSchema = t.Union([t.Date(), t.Null()], {
 });
 
 export const notesSchema = t.String({
-  maxLength: 1000,
   example: 'Patient is recovering well.',
   error() {
     throw new AppError({
@@ -92,9 +91,23 @@ export const postConsultationSchema = t.Object({
   notes: notesSchema,
 });
 
-export const userConsulationSchema = t.Object({
-  
+export const userConsultationSchema = t.Object({
+  consultationId: consultationIdSchema,
+  consultationDate: consultationDateSchema,
+  consultationNotes: notesSchema,
+  doctorId: doctorIdSchema,
+  doctorName: t.String(),
+  doctorSpeciality: t.String(),
 }); 
+
+export const doctorConsultationSchema = t.Object({
+  consultationId: consultationIdSchema,
+  userId: userIdSchema,
+  consultationDate: consultationDateSchema,
+  consultationNotes: notesSchema,
+  userName: t.String(),
+});
+
 export const fullConsultationSchema = consultationSchema;
 export const insertConsultationSchema = postConsultationSchema;
 

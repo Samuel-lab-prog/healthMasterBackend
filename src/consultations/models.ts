@@ -2,7 +2,14 @@ import { DatabaseError } from 'pg';
 import { AppError } from '../utils/AppError.ts';
 import { pool } from '../db/connection.ts';
 import { mapConsultationRowToFullConsultation } from './types';
-import type { Consultation, FullConsultation, ConsultationRow, InsertConsultation } from './types';
+import type {
+  Consultation,
+  FullConsultation,
+  ConsultationRow,
+  InsertConsultation,
+  UserConsultation,
+  DoctorConsultation
+} from './types';
 
 const isProd = false;
 
@@ -66,6 +73,64 @@ export async function insertConsultation(
     throw new AppError({
       statusCode: 500,
       errorMessages: ['Database internal error while creating Consultation'],
+      originalError: isProd ? undefined : (error as Error),
+    });
+  }
+}
+
+export async function selectUserConsultationsByUserId(userId: number): Promise<UserConsultation[] | null> {
+  const query =
+    `SELECT
+      d.id AS "doctorId",
+      c.id AS "consultationId",
+      d.speciality AS "doctorSpeciality",
+      c.consultation_date AS "consultationDate",
+      c.notes AS "consultationNotes",
+      (d.first_name || ' ' || d.last_name) AS "doctorName"
+    FROM consultations c
+    JOIN doctors d ON c.doctor_id = d.id
+    WHERE c.user_id = $1
+    ORDER BY c.consultation_date DESC`;
+  try {
+    const { rows } = await pool.query<UserConsultation>(query, [userId]);
+    if (rows.length === 0) {
+      return null;
+    }
+    return rows;
+  } catch (error) {
+    console.error(error);
+    throw new AppError({
+      statusCode: 500,
+      errorMessages: ['Database internal error while fetching User Consultations'],
+      originalError: isProd ? undefined : (error as Error),
+    });
+  }
+}
+
+export async function selectDoctorConsultationsByDoctorId(doctorId: number): Promise<DoctorConsultation[] | null> {
+  const query =
+    `SELECT
+      u.id AS "userId",
+      c.id AS "consultationId",
+      c.consultation_date AS "consultationDate",
+      (u.first_name || ' ' || u.last_name) AS "userName",
+      c.notes AS "consultationNotes"
+    FROM consultations c
+    JOIN users u ON c.user_id = u.id
+    WHERE c.doctor_id = $1
+    ORDER BY c.consultation_date DESC`;
+  try {
+    const { rows } = await pool.query<DoctorConsultation>(query, [doctorId]);
+    if (rows.length === 0) {
+      return null;
+    }
+    console.log(rows);
+    return rows;
+  } catch (error) {
+    console.error(error);
+    throw new AppError({
+      statusCode: 500,
+      errorMessages: ['Database internal error while fetching Doctor Consultations'],
       originalError: isProd ? undefined : (error as Error),
     });
   }

@@ -3,6 +3,8 @@ import {
   consultationSchema,
   insertConsultationSchema,
   fullConsultationSchema,
+  userConsultationSchema,
+  doctorConsultationSchema
 } from './schemas';
 
 export type ConsultationRow = {
@@ -19,6 +21,8 @@ export type Consultation = (typeof consultationSchema)['static'];
 export type FullConsultation = (typeof fullConsultationSchema)['static'];
 export type PostConsultation = (typeof postConsultationSchema)['static'];
 export type InsertConsultation = (typeof insertConsultationSchema)['static'];
+export type UserConsultation = (typeof userConsultationSchema)['static'];
+export type DoctorConsultation = (typeof doctorConsultationSchema)['static'];
 
 export function mapConsultationRowToFullConsultation(
   ConsultationRow: ConsultationRow

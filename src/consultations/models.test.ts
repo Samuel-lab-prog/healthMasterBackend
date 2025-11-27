@@ -1,7 +1,11 @@
 import { describe, it, beforeEach, expect } from 'bun:test';
 import { pool } from '../db/connection.ts';
 
-import { insertConsultation, selectConsultationById } from './models';
+import { insertConsultation,
+   selectConsultationById,
+   selectUserConsultationsByUserId,
+   selectDoctorConsultationsByDoctorId,
+   } from './models';
 
 import type { InsertConsultation } from './types';
 import { insertDoctor } from '../doctors/models.ts';
@@ -112,5 +116,27 @@ describe('consultation Model Tests', () => {
     const consultation = await selectConsultationById(9999);
 
     expect(consultation).toBeNull();
+  });
+
+  it('selectUserConsultationsByUserId → Should return consultations for a user', async () => {
+    const consultations = await selectUserConsultationsByUserId(DEFAULT_USER_ID);
+    expect(Array.isArray(consultations)).toBe(true);
+    expect(consultations!.length).toBeGreaterThan(0);
+  });
+
+  it('selectUserConsultationsByUserId → Should return null for non-existing userId', async () => {
+    const consultations = await selectUserConsultationsByUserId(9999);
+    expect(consultations).toBeNull();
+  });
+
+  it('selectDoctorConsultationsByDoctorId → Should return consultations for a doctor', async () => {
+    const consultations = await selectDoctorConsultationsByDoctorId(DEFAULT_DOCTOR_ID);
+    expect(Array.isArray(consultations)).toBe(true);
+    expect(consultations!.length).toBeGreaterThan(0);
+  });
+
+  it('selectDoctorConsultationsByDoctorId → Should return null for non-existing doctorId', async () => {
+    const consultations = await selectDoctorConsultationsByDoctorId(9999);
+    expect(consultations).toBeNull();
   });
 });
