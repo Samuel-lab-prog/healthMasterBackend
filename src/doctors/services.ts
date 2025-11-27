@@ -51,7 +51,7 @@ export async function loginDoctor(body: {
 
 export async function authenticateDoctor(token: string): Promise<Doctor> {
   const payload = verifyDoctorToken(token) as DoctorPayload;
-  if(!payload.crm) {
+  if (!payload.crm) {
     throw new AppError({
       statusCode: 401,
       errorMessages: ['Invalid token payload: CRM is required'],
@@ -64,7 +64,7 @@ export async function authenticateDoctor(token: string): Promise<Doctor> {
 
 export async function authenticateAdmin(token: string): Promise<Doctor> {
   const payload = verifyDoctorToken(token) as DoctorPayload;
-  if(!payload.crm) {
+  if (!payload.crm) {
     throw new AppError({
       statusCode: 401,
       errorMessages: ['Invalid token payload: CRM is required'],

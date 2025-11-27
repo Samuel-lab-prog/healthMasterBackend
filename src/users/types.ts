@@ -7,6 +7,8 @@ export type UserRow = {
   email: string;
   phone_number: string;
   is_admin: boolean;
+  cpf: string;
+  birth_date: string;
   created_at: Date;
   updated_at: Date | null;
   password_hash: string;
@@ -27,6 +29,8 @@ export function mapUserRowToFullUser(userRow: UserRow): FullUser {
     createdAt: userRow.created_at,
     updatedAt: userRow.updated_at ? userRow.updated_at : null,
     passwordHash: userRow.password_hash,
+    cpf: userRow.cpf,
+    birthDate: userRow.birth_date,
   };
 }
 
@@ -35,6 +39,8 @@ export function mapFullUserToUser(fullUser: FullUser): User {
     id: fullUser.id,
     firstName: fullUser.firstName,
     lastName: fullUser.lastName,
+    cpf: fullUser.cpf,
+    birthDate: fullUser.birthDate,
     email: fullUser.email,
     phoneNumber: fullUser.phoneNumber,
     createdAt: fullUser.createdAt,

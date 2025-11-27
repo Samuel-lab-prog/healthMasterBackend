@@ -187,6 +187,6 @@ export const tokenSchema = t.Object({
         statusCode: 400,
         errorMessages: ['Token must be a valid string'],
       });
-    }
+    },
   }),
 });

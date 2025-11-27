@@ -34,8 +34,7 @@ export const referralRouter = (app: Elysia) =>
           },
           detail: {
             summary: 'Register',
-            description:
-              'Creates a new Referral. Returns an object with the new Referral ID.',
+            description: 'Creates a new Referral. Returns an object with the new Referral ID.',
             tags: ['Referral'],
           },
         }
@@ -44,7 +43,8 @@ export const referralRouter = (app: Elysia) =>
         '/',
         async () => {
           return await getAllReferrals();
-        },{
+        },
+        {
           response: {
             200: t.Array(referralSchema),
             500: errorSchema,

@@ -2,12 +2,7 @@ import { DatabaseError } from 'pg';
 import { AppError } from '../utils/AppError.ts';
 import { pool } from '../db/connection.ts';
 import { mapReferralRowToFullReferral } from './types';
-import type {
-  Referral,
-  FullReferral,
-  ReferralRow,
-  InsertReferral
-} from './types';
+import type { Referral, FullReferral, ReferralRow, InsertReferral } from './types';
 
 const isProd = false;
 
@@ -18,15 +13,13 @@ export async function selectReferralById(id: number): Promise<FullReferral | nul
     const { rows } = await pool.query<ReferralRow>(query, [id]);
 
     if (!rows[0]) return null;
-
     if (rows.length > 1) {
       throw new AppError({
         statusCode: 500,
         errorMessages: [`Data integrity violation: duplicated referrals for id = ${id}`],
-        origin: 'database'
+        origin: 'database',
       });
     }
-
     return mapReferralRowToFullReferral(rows[0]);
   } catch (error) {
     if (error instanceof AppError) throw error;
@@ -35,14 +28,11 @@ export async function selectReferralById(id: number): Promise<FullReferral | nul
       statusCode: 500,
       errorMessages: ['Unknown database error: failed to fetch referral by id'],
       origin: 'database',
-      originalError: isProd ? undefined : (error as Error)
+      originalError: isProd ? undefined : (error as Error),
     });
   }
 }
 
-// -----------------------------
-// Insert referral
-// -----------------------------
 export async function insertReferral(
   referralData: InsertReferral
 ): Promise<Pick<Referral, 'id'> | null> {
@@ -62,45 +52,43 @@ export async function insertReferral(
     if (!rows[0]) {
       throw new AppError({
         statusCode: 500,
-        errorMessages: ['Unknown database error: no referral_id returned from database']
+        errorMessages: ['Unknown database error: no referral_id returned from database'],
+        origin: 'database',
       });
     }
 
     return { id: rows[0].id };
   } catch (error: unknown) {
-    console.error(error);
-
     if (error instanceof AppError) throw error;
 
     if (error instanceof DatabaseError && error.code === '23503') {
-      // Violação de FK → retorna null para indicar "consulta não encontrada"
-      return null;
+      return null; // We do not throw an error here; the service layer will handle the null case
     }
 
     throw new AppError({
       statusCode: 500,
-      errorMessages: ['Database internal error while creating referral'],
-      originalError: isProd ? undefined : (error as Error)
+      errorMessages: ['Unknown database error: failed to insert referral'],
+      origin: 'database',
+      originalError: isProd ? undefined : (error as Error),
     });
   }
 }
 
-// -----------------------------
-// Select all referrals
-// -----------------------------
 export async function selectAllReferrals(): Promise<FullReferral[]> {
   const query = `SELECT * FROM referrals`;
 
   try {
     const { rows } = await pool.query<ReferralRow>(query);
+
     return rows.map(mapReferralRowToFullReferral);
   } catch (error) {
     if (error instanceof AppError) throw error;
 
     throw new AppError({
       statusCode: 500,
-      errorMessages: ['Database internal error while fetching referrals'],
-      originalError: isProd ? undefined : (error as Error)
+      errorMessages: ['Unknown database error: failed to fetch all referrals'],
+      origin: 'database',
+      originalError: isProd ? undefined : (error as Error),
     });
   }
 }

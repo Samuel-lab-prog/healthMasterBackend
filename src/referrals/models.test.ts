@@ -1,19 +1,19 @@
 import { describe, it, beforeEach, expect } from 'bun:test';
 import { pool } from '../db/connection.ts';
-
 import { insertReferral, selectReferralById } from './models';
-
-import type { InsertReferral } from './types';
 import { insertConsultation } from '../consultations/models.ts';
 import { insertUser } from '../users/models.ts';
 import { insertDoctor } from '../doctors/models.ts';
-import { AppError } from '../utils/AppError.ts';
+import type { InsertReferral } from './types';
+
 const DEFAULT_USER = {
   firstName: 'Test',
   lastName: 'User',
   email: 'testuser@example.com',
   passwordHash: 'password123',
   phoneNumber: '+1234567890',
+  cpf: '12345678900',
+  birthDate: '1990-01-01',
 };
 
 const DEFAULT_DOCTOR = {
@@ -53,26 +53,26 @@ beforeEach(async () => {
   await insertUser(DEFAULT_USER);
   await insertDoctor(DEFAULT_DOCTOR);
   DEFAULT_CONSULTATION_ID = (await insertConsultation(DEFAULT_CONSULTATION)).id;
-  DEFAULT_REFERRAL_ID = (await insertReferral(DEFAULT_REFERRAL)).id;
+  DEFAULT_REFERRAL_ID = (await insertReferral(DEFAULT_REFERRAL))!.id;
 });
 
 describe('Referral Model Tests', () => {
-  it('insertReferral → Should insert and return an id', async () => {
+  it('insertReferral → Should insert and return an id correctly', async () => {
     const result = await insertReferral({
       consultationId: DEFAULT_CONSULTATION_ID,
       notes: 'Referral for further tests',
     });
     expect(result).toHaveProperty('id');
-    expect(typeof result.id).toBe('number');
+    expect(typeof result!.id).toBe('number');
   });
 
-  it('insertReferral → Should throw AppError for invalid consultationId', async () => {
+  it('insertReferral → Should return null for invalid consultationId', async () => {
     expect(
       insertReferral({
         consultationId: 9999,
         notes: 'Referral with invalid consultationId',
       })
-    ).rejects.toThrow(AppError);
+    ).resolves.toBeNull();
   });
 
   it('selectReferralById → Should return a Referral', async () => {

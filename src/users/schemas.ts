@@ -60,9 +60,21 @@ export const phoneNumberSchema = t.String({
   },
 });
 
+export const cpfSchema = t.String({
+  minLength: 11,
+  maxLength: 14,
+  example: '123.456.789-00',
+  error() {
+    throw new AppError({
+      statusCode: 400,
+      errorMessages: ['CPF must be between 11 and 14 characters long'],
+    });
+  },
+});
+
 export const userIdSchema = t.Number({
   minimum: 1,
-  example: 7,
+  example: 1,
   error() {
     throw new AppError({
       statusCode: 400,
@@ -91,6 +103,17 @@ export const updatedAtSchema = t.Union([t.Date(), t.Null()], {
   },
 });
 
+export const birthDateSchema = t.String({
+  format: 'date',
+  example: '1990-01-01',
+  error() {
+    throw new AppError({
+      statusCode: 400,
+      errorMessages: ['birthDate must be a valid date'],
+    });
+  },
+});
+
 export const loginUserSchema = t.Object({
   email: emailSchema,
   password: passwordSchema,
@@ -102,6 +125,8 @@ export const postUserSchema = t.Object({
   email: emailSchema,
   password: passwordSchema,
   phoneNumber: phoneNumberSchema,
+  cpf: cpfSchema,
+  birthDate: birthDateSchema,
 });
 
 export const insertUserSchema = t.Object({
@@ -110,16 +135,20 @@ export const insertUserSchema = t.Object({
   email: emailSchema,
   phoneNumber: phoneNumberSchema,
   passwordHash: t.String(),
+  cpf: cpfSchema,
+  birthDate: birthDateSchema,
 });
 
 export const userSchema = t.Object({
   id: userIdSchema,
+  cpf: cpfSchema,
+  birthDate: birthDateSchema,
   firstName: firstNameSchema,
   lastName: lastNameField,
   email: emailSchema,
   phoneNumber: phoneNumberSchema,
   createdAt: createdAtSchema,
-  updatedAt: updatedAtSchema,
+  updatedAt: updatedAtSchema
 });
 
 export const fullUserSchema = t.Object({
@@ -130,6 +159,8 @@ export const fullUserSchema = t.Object({
   phoneNumber: phoneNumberSchema,
   createdAt: createdAtSchema,
   updatedAt: updatedAtSchema,
+  cpf: cpfSchema,
+  birthDate: birthDateSchema,
   passwordHash: t.String(),
 });
 
@@ -141,6 +172,6 @@ export const tokenSchema = t.Object({
         statusCode: 400,
         errorMessages: ['Token must be a valid string'],
       });
-    }
+    },
   }),
 });

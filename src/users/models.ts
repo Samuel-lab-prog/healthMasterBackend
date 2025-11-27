@@ -5,8 +5,9 @@ import { mapUserRowToFullUser } from './types.ts';
 import type { User, FullUser, UserRow, InsertUser } from './types.ts';
 
 const isProd = process.env.NODE_ENV === 'production';
+
 async function selectUserInternal(
-  field: 'email' | 'id' | 'phone_number',
+  field: 'email' | 'id' | 'phone_number' | 'cpf',
   value: string | number
 ): Promise<FullUser | null> {
   const query = `SELECT * FROM users WHERE ${field} = $1 LIMIT 2`;
@@ -20,17 +21,18 @@ async function selectUserInternal(
       throw new AppError({
         statusCode: 500,
         errorMessages: [`Duplicate users detected for ${field}: ${value}`],
+        origin: 'database',
       });
     }
 
     return mapUserRowToFullUser(rows[0]);
   } catch (error) {
     if (error instanceof AppError) throw error;
-
     throw new AppError({
       statusCode: 500,
       errorMessages: ['Database internal error while fetching user'],
       originalError: isProd ? undefined : (error as Error),
+      origin: 'database',
     });
   }
 }
@@ -46,17 +48,21 @@ export async function selectUserByPhoneNumber(phoneNumber: string): Promise<Full
   return await selectUserInternal('phone_number', phoneNumber);
 }
 
+export async function selectUserByCPF(cpf: string): Promise<FullUser | null> {
+  return await selectUserInternal('cpf', cpf);
+}
+
 export async function insertUser(userData: InsertUser): Promise<Pick<User, 'id'>> {
-  const { firstName, lastName, email, passwordHash, phoneNumber } = userData;
+  const { firstName, lastName, email, passwordHash, phoneNumber, cpf, birthDate } = userData;
   const query = `
-    INSERT INTO users (first_name, last_name, email, password_hash, phone_number)
-    VALUES ($1, $2, $3, $4, $5)
+    INSERT INTO users (first_name, last_name, email, password_hash, phone_number, cpf, birth_date)
+    VALUES ($1, $2, $3, $4, $5, $6, $7)
     RETURNING id
   `;
-  const values = [firstName, lastName, email, passwordHash, phoneNumber];
+  const values = [firstName, lastName, email, passwordHash, phoneNumber, cpf, birthDate];
 
   try {
-    const { rows } = await pool.query<Pick<User, 'id'>>(query, values);
+    const { rows } = await pool.query<Pick<UserRow, 'id'>>(query, values);
 
     if (!rows[0]) {
       throw new AppError({
@@ -64,9 +70,9 @@ export async function insertUser(userData: InsertUser): Promise<Pick<User, 'id'>
         errorMessages: ['Failed to create user: no userId returned from database'],
       });
     }
-
     return { id: rows[0].id };
   } catch (error: unknown) {
+    if (error instanceof AppError) throw error;
     if (error instanceof DatabaseError && error.code === '23505') {
       if (error.detail?.includes('email')) {
         throw new AppError({
@@ -80,13 +86,17 @@ export async function insertUser(userData: InsertUser): Promise<Pick<User, 'id'>
           errorMessages: ['Phone number already in use'],
         });
       }
+      if (error.detail?.includes('cpf')) {
+        throw new AppError({
+          statusCode: 409,
+          errorMessages: ['CPF already in use'],
+        });
+      }
     }
-
-    if (error instanceof AppError) throw error;
-
     throw new AppError({
       statusCode: 500,
       errorMessages: ['Database internal error while creating user'],
+      origin: 'database',
       originalError: isProd ? undefined : (error as Error),
     });
   }

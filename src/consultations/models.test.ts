@@ -21,6 +21,8 @@ const DEFAULT_USER = {
   phoneNumber: '99999999',
   speciality: 'Cardiology',
   crm: '123456',
+  cpf: '12345678900',
+  birthDate: '1990-01-01',
 };
 const DEFAULT_DOCTOR = {
   firstName: 'Dr. Jane',

@@ -41,7 +41,7 @@ export const doctorRouter = (app: Elysia) =>
         // All routes below require admin authentication
         cookie: tokenSchema,
         beforeHandle: async ({ cookie, store }) => {
-          const doctor = (await authenticateAdmin(cookie.token.value));
+          const doctor = await authenticateAdmin(cookie.token.value);
           console.log(doctor);
           store.doctorId = doctor.id;
         },

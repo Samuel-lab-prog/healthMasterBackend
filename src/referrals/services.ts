@@ -12,10 +12,15 @@ function ensureReferralExists(Referral: FullReferral | null): void {
   }
 }
 
-export async function registerReferral(
-  body: PostReferral
-): Promise<Pick<Referral, 'id'>> {
-  return await insertReferral(body);
+export async function registerReferral(body: PostReferral): Promise<Pick<Referral, 'id'>> {
+  const result = await insertReferral(body);
+  if (!result) {
+    throw new AppError({
+      statusCode: 500,
+      errorMessages: ['Failed to create referral'],
+    });
+  }
+  return result;
 }
 
 export async function getReferralById(id: number): Promise<Referral> {
