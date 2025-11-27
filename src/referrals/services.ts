@@ -1,12 +1,13 @@
 import { AppError } from '../utils/AppError.ts';
 import { mapFullReferralToReferral } from './types.ts';
-import { insertReferral,
-   selectReferralById,
-    selectAllReferrals,
-    selectReferralsByConsultationId,
-    selectUserReferralsByUserId,
-    selectDoctorReferralsByDoctorId
-  } from './models.ts';
+import {
+  insertReferral,
+  selectReferralById,
+  selectAllReferrals,
+  selectReferralsByConsultationId,
+  selectUserReferralsByUserId,
+  selectDoctorReferralsByDoctorId,
+} from './models.ts';
 import type { FullReferral, PostReferral, Referral } from './types.ts';
 
 function ensureReferralExists(Referral: FullReferral | null): void {

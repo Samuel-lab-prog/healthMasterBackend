@@ -4,7 +4,7 @@ import {
   insertConsultationSchema,
   fullConsultationSchema,
   userConsultationSchema,
-  doctorConsultationSchema
+  doctorConsultationSchema,
 } from './schemas';
 
 export type ConsultationRow = {

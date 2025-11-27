@@ -116,9 +116,7 @@ export async function selectReferralsByConsultationId(
   }
 }
 
-export async function selectUserReferralsByUserId(
-  userId: number
-): Promise<FullReferral[] | null> {
+export async function selectUserReferralsByUserId(userId: number): Promise<FullReferral[] | null> {
   const query = `SELECT
     r.*
   FROM referrals r

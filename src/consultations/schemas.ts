@@ -98,7 +98,7 @@ export const userConsultationSchema = t.Object({
   doctorId: doctorIdSchema,
   doctorName: t.String(),
   doctorSpeciality: t.String(),
-}); 
+});
 
 export const doctorConsultationSchema = t.Object({
   consultationId: consultationIdSchema,
@@ -110,4 +110,3 @@ export const doctorConsultationSchema = t.Object({
 
 export const fullConsultationSchema = consultationSchema;
 export const insertConsultationSchema = postConsultationSchema;
-

@@ -4,7 +4,7 @@ import {
   getConsultationById,
   registerConsultation,
   getUserConsultationsById,
-  getDoctorConsultationsById
+  getDoctorConsultationsById,
 } from './services.ts';
 import {
   postConsultationSchema,
@@ -13,7 +13,7 @@ import {
   doctorConsultationSchema,
   doctorIdSchema,
   consultationIdSchema,
-  userIdSchema
+  userIdSchema,
 } from './schemas.ts';
 import { authenticateDoctor } from '../doctors/services.ts';
 import { tokenSchema } from '../doctors/schemas.ts';
@@ -74,7 +74,8 @@ export const consultationRouter = (app: Elysia) =>
           },
         }
       )
-      .get('/users/:userId',
+      .get(
+        '/users/:userId',
         async ({ params }) => {
           return await getUserConsultationsById(params.userId);
         },
@@ -93,9 +94,10 @@ export const consultationRouter = (app: Elysia) =>
           },
         }
       )
-      .get('/doctors/:doctorId',
+      .get(
+        '/doctors/:doctorId',
         async ({ params }) => {
-          const result =  await getDoctorConsultationsById(params.doctorId);
+          const result = await getDoctorConsultationsById(params.doctorId);
           return result;
         },
         {

@@ -1,11 +1,12 @@
 import { describe, it, beforeEach, expect } from 'bun:test';
 import { pool } from '../db/connection.ts';
 
-import { insertConsultation,
-   selectConsultationById,
-   selectUserConsultationsByUserId,
-   selectDoctorConsultationsByDoctorId,
-   } from './models';
+import {
+  insertConsultation,
+  selectConsultationById,
+  selectUserConsultationsByUserId,
+  selectDoctorConsultationsByDoctorId,
+} from './models';
 
 import type { InsertConsultation } from './types';
 import { insertDoctor } from '../doctors/models.ts';
@@ -86,7 +87,7 @@ describe('consultation Model Tests', () => {
   });
 
   it('insertconsultation → Should throw AppError for non-existing userId', async () => {
-     expect(
+    expect(
       insertConsultation({
         ...TEST_consultation,
         userId: 9999,
@@ -96,7 +97,7 @@ describe('consultation Model Tests', () => {
   });
 
   it('insertconsultation → Should throw AppError for non-existing doctorId', async () => {
-     expect(
+    expect(
       insertConsultation({
         ...TEST_consultation,
         userId: DEFAULT_USER_ID,

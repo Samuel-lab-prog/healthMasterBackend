@@ -8,7 +8,7 @@ import type {
   ConsultationRow,
   InsertConsultation,
   UserConsultation,
-  DoctorConsultation
+  DoctorConsultation,
 } from './types';
 
 const isProd = false;
@@ -39,7 +39,6 @@ export async function selectConsultationById(id: number): Promise<FullConsultati
 export async function insertConsultation(
   ConsultationData: InsertConsultation
 ): Promise<Pick<Consultation, 'id'>> {
-
   const { userId, doctorId, consultationDate, notes } = ConsultationData;
 
   const query = `
@@ -66,7 +65,7 @@ export async function insertConsultation(
         throw new AppError({
           statusCode: 400,
           errorMessages: ['Invalid userId or doctorId: foreign key does not exist'],
-          origin: 'database'
+          origin: 'database',
         });
       }
     }
@@ -78,9 +77,10 @@ export async function insertConsultation(
   }
 }
 
-export async function selectUserConsultationsByUserId(userId: number): Promise<UserConsultation[] | null> {
-  const query =
-    `SELECT
+export async function selectUserConsultationsByUserId(
+  userId: number
+): Promise<UserConsultation[] | null> {
+  const query = `SELECT
       d.id AS "doctorId",
       c.id AS "consultationId",
       d.speciality AS "doctorSpeciality",
@@ -106,9 +106,10 @@ export async function selectUserConsultationsByUserId(userId: number): Promise<U
   }
 }
 
-export async function selectDoctorConsultationsByDoctorId(doctorId: number): Promise<DoctorConsultation[] | null> {
-  const query =
-    `SELECT
+export async function selectDoctorConsultationsByDoctorId(
+  doctorId: number
+): Promise<DoctorConsultation[] | null> {
+  const query = `SELECT
       u.id AS "userId",
       c.id AS "consultationId",
       c.consultation_date AS "consultationDate",

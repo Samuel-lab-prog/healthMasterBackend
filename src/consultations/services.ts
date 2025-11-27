@@ -11,7 +11,7 @@ import type {
   PostConsultation,
   Consultation,
   UserConsultation,
-  DoctorConsultation
+  DoctorConsultation,
 } from './types.ts';
 
 function ensureConsultationExists(Consultation: FullConsultation | null): void {
@@ -35,11 +35,9 @@ export async function getConsultationById(id: number): Promise<Consultation> {
   return mapFullConsultationToConsultation(Consultation!);
 }
 
-export async function getUserConsultationsById(
-  userId: number
-): Promise<UserConsultation[]> {
+export async function getUserConsultationsById(userId: number): Promise<UserConsultation[]> {
   const consultations = await selectUserConsultationsByUserId(userId);
-if (!consultations || consultations.length === 0) {
+  if (!consultations || consultations.length === 0) {
     throw new AppError({
       statusCode: 404,
       errorMessages: ['Consultations not found for user'],
@@ -48,11 +46,9 @@ if (!consultations || consultations.length === 0) {
   return consultations;
 }
 
-export async function getDoctorConsultationsById(
-  doctorId: number
-): Promise<DoctorConsultation[]> {
+export async function getDoctorConsultationsById(doctorId: number): Promise<DoctorConsultation[]> {
   const consultations = await selectDoctorConsultationsByDoctorId(doctorId);
-if (!consultations || consultations.length === 0) {
+  if (!consultations || consultations.length === 0) {
     throw new AppError({
       statusCode: 404,
       errorMessages: ['Consultations not found for doctor'],
