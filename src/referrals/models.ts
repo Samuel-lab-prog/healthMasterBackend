@@ -74,12 +74,15 @@ export async function insertReferral(
   }
 }
 
-export async function selectAllReferrals(): Promise<FullReferral[]> {
+export async function selectAllReferrals(): Promise<FullReferral[] | null> {
   const query = `SELECT * FROM referrals`;
 
   try {
     const { rows } = await pool.query<ReferralRow>(query);
 
+    if (!rows || rows.length === 0) {
+      return null;
+    }
     return rows.map(mapReferralRowToFullReferral);
   } catch (error) {
     if (error instanceof AppError) throw error;
@@ -87,6 +90,74 @@ export async function selectAllReferrals(): Promise<FullReferral[]> {
     throw new AppError({
       statusCode: 500,
       errorMessages: ['Unknown database error: failed to fetch all referrals'],
+      origin: 'database',
+      originalError: isProd ? undefined : (error as Error),
+    });
+  }
+}
+
+export async function selectReferralsByConsultationId(
+  consultationId: number
+): Promise<FullReferral[] | null> {
+  const query = `SELECT * FROM referrals WHERE consultation_id = $1`;
+  try {
+    const { rows } = await pool.query<ReferralRow>(query, [consultationId]);
+    if (!rows || rows.length === 0) {
+      return null;
+    }
+    return rows.map(mapReferralRowToFullReferral);
+  } catch (error) {
+    throw new AppError({
+      statusCode: 500,
+      errorMessages: ['Unknown database error: failed to fetch referrals by consultationId'],
+      origin: 'database',
+      originalError: isProd ? undefined : (error as Error),
+    });
+  }
+}
+
+export async function selectUserReferralsByUserId(
+  userId: number
+): Promise<FullReferral[] | null> {
+  const query = `SELECT
+    r.*
+  FROM referrals r
+  JOIN consultations c ON r.consultation_id = c.id
+  WHERE c.user_id = $1`;
+  try {
+    const { rows } = await pool.query<ReferralRow>(query, [userId]);
+    if (!rows || rows.length === 0) {
+      return null;
+    }
+    return rows.map(mapReferralRowToFullReferral);
+  } catch (error) {
+    throw new AppError({
+      statusCode: 500,
+      errorMessages: ['Unknown database error: failed to fetch referrals by userId'],
+      origin: 'database',
+      originalError: isProd ? undefined : (error as Error),
+    });
+  }
+}
+
+export async function selectDoctorReferralsByDoctorId(
+  doctorId: number
+): Promise<FullReferral[] | null> {
+  const query = `SELECT
+    r.*
+  FROM referrals r
+  JOIN consultations c ON r.consultation_id = c.id
+  WHERE c.doctor_id = $1`;
+  try {
+    const { rows } = await pool.query<ReferralRow>(query, [doctorId]);
+    if (!rows || rows.length === 0) {
+      return null;
+    }
+    return rows.map(mapReferralRowToFullReferral);
+  } catch (error) {
+    throw new AppError({
+      statusCode: 500,
+      errorMessages: ['Unknown database error: failed to fetch referrals by doctorId'],
       origin: 'database',
       originalError: isProd ? undefined : (error as Error),
     });

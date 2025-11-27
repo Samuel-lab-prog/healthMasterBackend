@@ -1,6 +1,13 @@
 import { describe, it, beforeEach, expect } from 'bun:test';
 import { pool } from '../db/connection.ts';
-import { insertReferral, selectReferralById } from './models';
+import {
+  insertReferral,
+  selectReferralById,
+  selectDoctorReferralsByDoctorId,
+  selectReferralsByConsultationId,
+  selectAllReferrals,
+  selectUserReferralsByUserId,
+} from './models';
 import { insertConsultation } from '../consultations/models.ts';
 import { insertUser } from '../users/models.ts';
 import { insertDoctor } from '../doctors/models.ts';
@@ -22,6 +29,8 @@ const DEFAULT_DOCTOR = {
   email: 'testdoctor@example.com',
   passwordHash: 'password123',
   phoneNumber: '+1234567890',
+  cpf: '09876543210',
+  birthDate: '1980-01-01',
   role: 'doctor' as 'doctor' | 'admin',
   speciality: 'General',
   crm: 'CRM123456',
@@ -30,7 +39,7 @@ const DEFAULT_DOCTOR = {
 const DEFAULT_CONSULTATION = {
   userId: 1,
   doctorId: 1,
-  consultationDate: new Date().toISOString(),
+  consultationDate: new Date(),
   notes: 'Initial consultation notes',
 };
 const DEFAULT_REFERRAL: InsertReferral = {
@@ -85,5 +94,60 @@ describe('Referral Model Tests', () => {
   it('selectReferralById → Should return null for non-existing id', async () => {
     const Referral = await selectReferralById(9999);
     expect(Referral).toBeNull();
+  });
+
+  it('selectReferralsByUserId → Should return Referrals for a User', async () => {
+    const Referrals = await selectUserReferralsByUserId(1);
+    expect(Referrals).not.toBeNull();
+    expect(Referrals!.length).toBeGreaterThan(0);
+  });
+
+  it('selectReferralsByUserId → Should return null for non-existing User ID or empty referrals', async () => {
+    const Referrals = await selectUserReferralsByUserId(9999);
+    expect(Referrals).toBeNull();
+  });
+
+  it('selectAllReferrals → Should return all Referrals', async () => {
+    const Referrals = await selectAllReferrals();
+    expect(Referrals!.length).toBeGreaterThan(0);
+  });
+
+  it('selectAllReferrals → Should return null if no referrals exist', async () => {
+    await pool.query('TRUNCATE TABLE referrals RESTART IDENTITY CASCADE');
+    const Referrals = await selectAllReferrals();
+    expect(Referrals).toBeNull();
+  });
+
+  it('selectDoctorReferralsByDoctorId → Should return Referrals for a Doctor', async () => {
+    const Referrals = await selectDoctorReferralsByDoctorId(1);
+    expect(Referrals).not.toBeNull();
+    expect(Referrals!.length).toBeGreaterThan(0);
+  });
+
+  it('selectDoctorReferralsByDoctorId → Should return null for non-existing Doctor ID or empty referrals', async () => {
+    const Referrals = await selectDoctorReferralsByDoctorId(9999);
+    expect(Referrals).toBeNull();
+  });
+
+  it('selectReferralsByConsultationId → Should return Referrals for a Consultation', async () => {
+    const Referrals = await selectReferralsByConsultationId(DEFAULT_CONSULTATION_ID);
+    expect(Referrals).not.toBeNull();
+    expect(Referrals!.length).toBeGreaterThan(0);
+  });
+
+  it('selectReferralsByConsultationId → Should return null for non-existing Consultation ID or empty referrals', async () => {
+    const Referrals = await selectReferralsByConsultationId(9999);
+    expect(Referrals).toBeNull();
+  });
+
+  it('selectUserReferralsByUserId → Should return Referrals for a User', async () => {
+    const Referrals = await selectUserReferralsByUserId(1);
+    expect(Referrals).not.toBeNull();
+    expect(Referrals!.length).toBeGreaterThan(0);
+  });
+
+  it('selectUserReferralsByUserId → Should return null for non-existing User ID or empty referrals', async () => {
+    const Referrals = await selectUserReferralsByUserId(9999);
+    expect(Referrals).toBeNull();
   });
 });

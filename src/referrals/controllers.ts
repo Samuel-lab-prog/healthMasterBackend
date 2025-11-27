@@ -1,6 +1,14 @@
 import { Elysia, t } from 'elysia';
 import { errorSchema } from '../utils/AppError.ts';
-import { getReferralById, registerReferral, getAllReferrals } from './services';
+import {
+  getReferralById,
+  registerReferral,
+  getAllReferrals,
+  getReferralsByConsultationId,
+  getUserReferralsByUserId,
+  getDoctorReferralsByDoctorId
+
+} from './services';
 import { postReferralSchema, referralSchema } from './schemas.ts';
 import { authenticateDoctor } from '../doctors/services.ts';
 import { tokenSchema } from '../doctors/schemas.ts';
@@ -76,4 +84,64 @@ export const referralRouter = (app: Elysia) =>
           },
         }
       )
-  );
+      .get(
+        '/consultation/:consultationId',
+        async ({ params }) => {
+          return await getReferralsByConsultationId(Number(params.consultationId));
+        },
+        {
+          params: t.Object({ consultationId: t.Number() }),
+          response: {
+            200: t.Array(referralSchema),
+            400: errorSchema,
+            404: errorSchema,
+            500: errorSchema,
+          },
+          detail: {
+            summary: 'Get Referrals by Consultation ID',
+            description: 'Retrieves Referrals by the given consultation ID.',
+            tags: ['Referral'],
+          },
+        }
+      )
+      .get(
+        '/user/:userId',
+        async ({ params }) => {
+          return await getUserReferralsByUserId(Number(params.userId));
+        },
+        {
+          params: t.Object({ userId: t.Number() }),
+          response: {
+            200: t.Array(referralSchema),
+            400: errorSchema,
+            404: errorSchema,
+            500: errorSchema,
+          },
+          detail: {
+            summary: 'Get Referrals by User ID',
+            description: 'Retrieves Referrals by the given user ID.',
+            tags: ['Referral'],
+          },
+        }
+      )
+      .get(
+        '/doctor/:doctorId',
+        async ({ params }) => {
+          return await getDoctorReferralsByDoctorId(Number(params.doctorId));
+        },
+        {
+          params: t.Object({ doctorId: t.Number() }),
+          response: {
+            200: t.Array(referralSchema),
+            400: errorSchema,
+            404: errorSchema,
+            500: errorSchema,
+          },
+          detail: {
+            summary: 'Get Referrals by Doctor ID',
+            description: 'Retrieves Referrals by the given doctor ID.',
+            tags: ['Referral'],
+          },
+        }
+      )
+    );

@@ -98,7 +98,6 @@ export async function selectUserConsultationsByUserId(userId: number): Promise<U
     }
     return rows;
   } catch (error) {
-    console.error(error);
     throw new AppError({
       statusCode: 500,
       errorMessages: ['Database internal error while fetching User Consultations'],
@@ -124,10 +123,8 @@ export async function selectDoctorConsultationsByDoctorId(doctorId: number): Pro
     if (rows.length === 0) {
       return null;
     }
-    console.log(rows);
     return rows;
   } catch (error) {
-    console.error(error);
     throw new AppError({
       statusCode: 500,
       errorMessages: ['Database internal error while fetching Doctor Consultations'],
