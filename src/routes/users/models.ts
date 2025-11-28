@@ -1,6 +1,6 @@
-import { AppError } from '../utils/AppError.ts';
+import { AppError } from '../../utils/AppError.ts';
 import { mapUserRowToFullUser } from './types.ts';
-import { runQuery, createParams } from '../db/utils.ts';
+import { runQuery, createParams } from '../../db/utils.ts';
 import type { User, FullUser, UserRow, InsertUser } from './types.ts';
 
 async function selectUserInternal(

@@ -1,5 +1,5 @@
 import { Elysia, t } from 'elysia';
-import { errorSchema } from '../utils/AppError.ts';
+import { errorSchema } from '../../utils/AppError.ts';
 import {
   registerDoctor,
   loginDoctor,
@@ -8,7 +8,7 @@ import {
   getAllDoctors,
 } from './services.ts';
 import { postDoctorSchema, loginDoctorSchema, doctorSchema } from './schemas.ts';
-import { idSchema, tokenSchema } from '../utils/schemas.ts';
+import { idSchema, tokenSchema } from '../../utils/schemas.ts';
 
 export const doctorRouter = (app: Elysia) =>
   app.group('/doctors', (app) =>

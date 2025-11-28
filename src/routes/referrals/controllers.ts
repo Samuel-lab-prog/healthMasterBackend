@@ -1,5 +1,5 @@
 import { Elysia, t } from 'elysia';
-import { errorSchema } from '../utils/AppError.ts';
+import { errorSchema } from '../../utils/AppError.ts';
 import {
   getReferralById,
   registerReferral,
@@ -9,7 +9,7 @@ import {
   getDoctorReferralsByDoctorId,
 } from './services';
 import { postReferralSchema, referralSchema } from './schemas.ts';
-import { tokenSchema, idSchema } from '../utils/schemas.ts';
+import { tokenSchema, idSchema } from '../../utils/schemas.ts';
 import { authenticateDoctor } from '../doctors/services.ts';
 
 export const referralRouter = (app: Elysia) =>

@@ -1,5 +1,5 @@
 import { mapDoctorRowToFullDoctor } from './types';
-import { runQuery, createParams } from '../db/utils.ts';
+import { runQuery, createParams } from '../../db/utils.ts';
 import type { Doctor, FullDoctor, DoctorRow, InsertDoctor } from './types';
 
 async function selectDoctorInternal(

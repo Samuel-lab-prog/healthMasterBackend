@@ -1,5 +1,5 @@
 import { t } from 'elysia';
-import { AppError } from '../utils/AppError';
+import { AppError } from '../../utils/AppError';
 
 export const consultationIdSchema = t.Number({
   minimum: 1,

@@ -1,5 +1,5 @@
-import { AppError } from '../utils/AppError.ts';
-import { runQuery } from '../db/utils.ts';
+import { AppError } from '../../utils/AppError.ts';
+import { runQuery } from '../../db/utils.ts';
 import { mapConsultationRowToFullConsultation } from './types';
 import type {
   Consultation,

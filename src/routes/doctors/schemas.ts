@@ -11,7 +11,7 @@ import {
   cpfSchema,
   firstNameSchema,
   lastNameSchema,
-} from '../utils/schemas.ts';
+} from '../../utils/schemas.ts';
 
 export const roleSchema = t.UnionEnum(['doctor', 'admin'], {
   example: 'doctor',

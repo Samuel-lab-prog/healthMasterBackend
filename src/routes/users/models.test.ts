@@ -1,6 +1,6 @@
 import { describe, it, beforeEach, expect } from 'bun:test';
-import { pool } from '../db/connection.ts';
-import { AppError } from '../utils/AppError.ts';
+import { pool } from '../../db/connection.ts';
+import { AppError } from '../../utils/AppError.ts';
 import {
   insertUser,
   selectUserById,

@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs';
-import { AppError } from '../utils/AppError.ts';
-import { generateUserToken, verifyUserToken, type UserPayload } from '../utils/jwt.ts';
+import { AppError } from '../../utils/AppError.ts';
+import { generateUserToken, verifyUserToken, type UserPayload } from '../../utils/jwt.ts';
 import { insertUser, selectUserByEmail, selectUserById } from './models.ts';
 import { mapFullUserToUser } from './types.ts';
 import type { FullUser, PostUser, User } from './types.ts';

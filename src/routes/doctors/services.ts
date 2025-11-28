@@ -4,7 +4,7 @@ import {
   throwNotFoundError,
   throwServerError,
   throwUnauthorizedError,
-} from '../utils/AppError.ts';
+} from '../../utils/AppError.ts';
 import {
   insertDoctor,
   selectDoctorByCRM,
@@ -13,7 +13,7 @@ import {
   selectAllDoctors,
 } from './models.ts';
 import { mapFullDoctorToDoctor } from './types.ts';
-import { generateDoctorToken, verifyDoctorToken, type DoctorPayload } from '../utils/jwt.ts';
+import { generateDoctorToken, verifyDoctorToken, type DoctorPayload } from '../../utils/jwt.ts';
 import type { PostDoctor, Doctor } from './types.ts';
 
 export async function registerDoctor(body: PostDoctor): Promise<Pick<Doctor, 'id'>> {

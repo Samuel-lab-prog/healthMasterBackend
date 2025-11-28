@@ -1,5 +1,5 @@
 import { describe, it, beforeEach, expect } from 'bun:test';
-import { pool } from '../db/connection.ts';
+import { pool } from '../../db/connection.ts';
 import {
   insertReferral,
   selectReferralById,
@@ -12,7 +12,7 @@ import { insertConsultation } from '../consultations/models.ts';
 import { insertUser } from '../users/models.ts';
 import { insertDoctor } from '../doctors/models.ts';
 import type { InsertReferral } from './types';
-import { AppError } from '../utils/AppError.ts';
+import { AppError } from '../../utils/AppError.ts';
 
 const DEFAULT_USER = {
   firstName: 'Test',

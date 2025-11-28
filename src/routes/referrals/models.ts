@@ -1,5 +1,5 @@
-import { AppError } from '../utils/AppError.ts';
-import { runQuery } from '../db/utils.ts';
+import { AppError } from '../../utils/AppError.ts';
+import { runQuery } from '../../db/utils.ts';
 import { mapReferralRowToFullReferral } from './types';
 import type { Referral, FullReferral, ReferralRow, InsertReferral } from './types';
 

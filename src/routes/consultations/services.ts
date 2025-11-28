@@ -1,4 +1,4 @@
-import { AppError } from '../utils/AppError.ts';
+import { AppError } from '../../utils/AppError.ts';
 import { mapFullConsultationToConsultation } from './types.ts';
 import {
   insertConsultation,
@@ -26,7 +26,15 @@ function ensureConsultationExists(Consultation: FullConsultation | null): void {
 export async function registerConsultation(
   body: PostConsultation
 ): Promise<Pick<Consultation, 'id'>> {
-  return await insertConsultation(body);
+  const result = await insertConsultation(body);
+  if (!result) {
+    throw new AppError({
+      statusCode: 500,
+      errorMessages: ['Failed to register consultation'],
+      origin: 'database',
+    });
+  }
+  return result;
 }
 
 export async function getConsultationById(id: number): Promise<Consultation> {

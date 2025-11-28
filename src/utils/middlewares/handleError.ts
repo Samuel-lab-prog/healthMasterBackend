@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { AppError } from '../utils/AppError.js';
+import { AppError } from '../../utils/AppError.ts';
 
 function jsonResponse(status: number, body: object) {
   return new Response(JSON.stringify(body), {

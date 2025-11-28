@@ -1,5 +1,5 @@
 import { describe, it, beforeEach, expect } from 'bun:test';
-import { pool } from '../db/connection.ts';
+import { pool } from '../../db/connection.ts';
 
 import {
   insertConsultation,
@@ -11,7 +11,7 @@ import {
 import type { InsertConsultation } from './types.ts';
 import { insertDoctor } from '../doctors/models.ts';
 import { insertUser } from '../users/models.ts';
-import { AppError } from '../utils/AppError.ts';
+import { AppError } from '../../utils/AppError.ts';
 
 const DEFAULT_consultation: InsertConsultation = {
   userId: 1,

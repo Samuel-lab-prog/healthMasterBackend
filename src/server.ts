@@ -1,12 +1,12 @@
 import Elysia from 'elysia';
 import { openapi } from '@elysiajs/openapi';
 import cors from '@elysiajs/cors';
-import { handleError } from './middlewares/handleError';
-import { xssClean } from './middlewares/xssClean';
-import { userRouter } from './users/controllers';
-import { doctorRouter } from './doctors/controllers';
-import { consultationRouter } from './consultations/controllers';
-import { referralRouter } from './referrals/controllers';
+import { handleError } from './utils/middlewares/handleError';
+import { xssClean } from './utils/middlewares/xssClean';
+import { userRouter } from './routes/users/controllers';
+import { doctorRouter } from './routes/doctors/controllers';
+import { consultationRouter } from './routes/consultations/controllers';
+import { referralRouter } from './routes/referrals/controllers';
 
 new Elysia()
   .onError(async ({ error, set }) => handleError(set, error))

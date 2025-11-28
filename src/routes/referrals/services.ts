@@ -1,4 +1,4 @@
-import { AppError } from '../utils/AppError.ts';
+import { AppError } from '../../utils/AppError.ts';
 import { mapFullReferralToReferral } from './types.ts';
 import {
   insertReferral,
