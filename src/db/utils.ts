@@ -44,6 +44,18 @@ export async function runQuery<T extends QueryResultRow>(
           origin: 'database'
         });
       }
+
+      if (error.code === '23502') {
+        throw new AppError({
+          statusCode: 400,
+          errorMessages: [
+            `Missing value for ${camelField ?? 'field'}: not null constraint violated`
+          ],
+          originalError: error,
+          origin: 'database'
+        });
+      }
+      
       throw new AppError({
         statusCode: 500,
         errorMessages: ['A database error occurred'],
