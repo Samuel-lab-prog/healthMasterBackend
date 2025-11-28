@@ -12,6 +12,7 @@ import { insertConsultation } from '../consultations/models.ts';
 import { insertUser } from '../users/models.ts';
 import { insertDoctor } from '../doctors/models.ts';
 import type { InsertReferral } from './types';
+import { AppError } from '../utils/AppError.ts';
 
 const DEFAULT_USER = {
   firstName: 'Test',
@@ -81,7 +82,7 @@ describe('Referral Model Tests', () => {
         consultationId: 9999,
         notes: 'Referral with invalid consultationId',
       })
-    ).resolves.toBeNull();
+    ).rejects.toThrow(AppError);
   });
 
   it('selectReferralById → Should return a Referral', async () => {
