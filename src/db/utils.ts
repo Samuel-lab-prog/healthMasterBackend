@@ -1,7 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { pool } from './connection.ts';
 import { DatabaseError, type QueryResultRow } from 'pg';
-import { AppError } from '../utils/AppError.ts';
+import {
+  AppError,
+  throwConflictError,
+  throwBadRequestError,
+  throwServerError,
+  throwDatabaseError
+} from '../utils/AppError.ts';
 
 function toCamelCase(str: string): string {
   return str.replace(/_([a-z])/g, (_, c) => c.toUpperCase());
@@ -23,51 +29,21 @@ export async function runQuery<T extends QueryResultRow>(
       const camelField = fieldFromDetail ? toCamelCase(fieldFromDetail) : undefined;
 
       if (error.code === '23505') {
-        throw new AppError({
-          statusCode: 409,
-          errorMessages: [`Conflict: ${camelField ?? 'field'} already exists`],
-          originalError: error,
-          origin: 'database',
-        });
+        throwConflictError(`${camelField ?? 'field'} already exists`);
       }
-
       if (error.code === '23503') {
-        throw new AppError({
-          statusCode: 400,
-          errorMessages: [`Invalid value for ${camelField ?? 'field'}: foreign key does not exist`],
-          originalError: error,
-          origin: 'database',
-        });
+        throwBadRequestError(`${camelField ?? 'field'} foreign key does not exist`);
       }
-
       if (error.code === '23502') {
-        throw new AppError({
-          statusCode: 400,
-          errorMessages: [
-            `Missing value for ${camelField ?? 'field'}: not null constraint violated`,
-          ],
-          originalError: error,
-          origin: 'database',
-        });
+        throwBadRequestError(`${camelField ?? 'field'} cannot be null`);
       }
-
-      throw new AppError({
-        statusCode: 500,
-        errorMessages: ['A database error occurred'],
-        originalError: error,
-        origin: 'database',
-      });
+      throwDatabaseError();
     }
-    throw new AppError({
-      statusCode: 500,
-      errorMessages: ['An unexpected error occurred'],
-      originalError: error as Error,
-      origin: 'unknown',
-    });
+    throw throwServerError();
   }
 }
 
-export function createParams(values: unknown[]) {
+export function createParams(values: unknown[]): string {
   const placeholders = values.map((_, i) => `$${i + 1}`).join(', ');
   return placeholders;
 }

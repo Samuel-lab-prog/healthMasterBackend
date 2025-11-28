@@ -1,26 +1,23 @@
-import { AppError } from '../utils/AppError.ts';
-import { runQuery, createParams } from '../db/utils.ts';
 import { mapDoctorRowToFullDoctor } from './types';
-import type { Doctor, FullDoctor, DoctorRow, InsertDoctor } from './types';
+import {
+  runQuery,
+  createParams
+} from '../db/utils.ts';
+import type {
+  Doctor,
+  FullDoctor,
+  DoctorRow,
+  InsertDoctor
+} from './types';
 
 async function selectDoctorInternal(
   field: 'email' | 'id' | 'phone_number' | 'crm' | 'cpf',
   value: string | number
 ): Promise<FullDoctor | null> {
-  const query = `SELECT * FROM Doctors WHERE ${field} = $1 LIMIT 2`;
+  const query = `SELECT * FROM Doctors WHERE ${field} = $1`;
   const rows = await runQuery<DoctorRow>(query, [value]);
 
-  if (!rows[0]) {
-    return null;
-  }
-  if (rows.length > 1) {
-    throw new AppError({
-      statusCode: 500,
-      errorMessages: [`Duplicate Doctors detected for ${field}: ${value}`],
-    });
-  }
-
-  return mapDoctorRowToFullDoctor(rows[0]);
+  return rows[0] ? mapDoctorRowToFullDoctor(rows[0]) : null;
 }
 export async function selectDoctorByEmail(email: string): Promise<FullDoctor | null> {
   return await selectDoctorInternal('email', email);
@@ -55,6 +52,7 @@ export async function insertDoctor(data: InsertDoctor): Promise<Pick<Doctor, 'id
     data.birthDate,
     data.cpf,
   ];
+
   const placeholders = createParams(values);
   const query = `
     INSERT INTO doctors (
@@ -65,6 +63,7 @@ export async function insertDoctor(data: InsertDoctor): Promise<Pick<Doctor, 'id
     VALUES (${placeholders})
     RETURNING id
   `;
+
   const rows = await runQuery<Pick<Doctor, 'id'>>(query, values);
   return rows[0] ?? null;
 }
@@ -72,8 +71,10 @@ export async function insertDoctor(data: InsertDoctor): Promise<Pick<Doctor, 'id
 export async function selectAllDoctors(): Promise<FullDoctor[] | null> {
   const query = `SELECT * FROM doctors ORDER BY id ASC`;
   const rows = await runQuery<DoctorRow>(query);
+
   if (!rows || rows.length === 0) {
     return null;
   }
+
   return rows.map(mapDoctorRowToFullDoctor);
 }

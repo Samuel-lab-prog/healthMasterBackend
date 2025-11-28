@@ -6,9 +6,9 @@ import {
   selectConsultationById,
   selectUserConsultationsByUserId,
   selectDoctorConsultationsByDoctorId,
-} from './models';
+} from './models.ts';
 
-import type { InsertConsultation } from './types';
+import type { InsertConsultation } from './types.ts';
 import { insertDoctor } from '../doctors/models.ts';
 import { insertUser } from '../users/models.ts';
 import { AppError } from '../utils/AppError.ts';

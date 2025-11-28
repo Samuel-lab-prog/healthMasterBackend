@@ -19,10 +19,17 @@ export async function registerUser(body: PostUser): Promise<Pick<User, 'id'>> {
     body.password,
     process.env.SALT_ROUNDS ? parseInt(process.env.SALT_ROUNDS) : 10
   );
-  return await insertUser({
+  const result = await insertUser({
     ...body,
     passwordHash: passwordHash,
   });
+  if (!result) {
+    throw new AppError({
+      statusCode: 500,
+      errorMessages: ['Failed to register user'],
+    });
+  }
+  return { id: result.id };
 }
 
 export async function loginUser(body: {

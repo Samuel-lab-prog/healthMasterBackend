@@ -1,4 +1,9 @@
-import { postDoctorSchema, insertDoctorSchema, doctorSchema, fullDoctorSchema } from './schemas.ts';
+import {
+  postDoctorSchema,
+  insertDoctorSchema,
+  doctorSchema,
+  fullDoctorSchema
+} from './schemas.ts';
 
 export type DoctorRow = {
   id: number;
@@ -10,7 +15,7 @@ export type DoctorRow = {
   is_admin: boolean;
   birth_date: string;
   created_at: Date;
-  updated_at: Date | null;
+  updated_at: string | null;
   role: 'doctor' | 'admin';
   password_hash: string;
   speciality: string;
@@ -35,7 +40,7 @@ export function mapDoctorRowToFullDoctor(doctorRow: DoctorRow): FullDoctor {
     crm: doctorRow.crm,
     birthDate: doctorRow.birth_date,
     createdAt: doctorRow.created_at,
-    updatedAt: doctorRow.updated_at ? doctorRow.updated_at : null,
+    updatedAt: doctorRow.updated_at,
     passwordHash: doctorRow.password_hash,
   };
 }

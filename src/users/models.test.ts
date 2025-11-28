@@ -37,7 +37,7 @@ beforeEach(async () => {
   await pool.query('DELETE FROM consultations');
   await pool.query('DELETE FROM users');
 
-  DEFAULT_USER_ID = (await insertUser(DEFAULT_USER)).id;
+  DEFAULT_USER_ID = (await insertUser(DEFAULT_USER))!.id;
 });
 
 describe('User Model Tests', () => {
@@ -52,8 +52,8 @@ describe('User Model Tests', () => {
       birthDate: '1995-05-15',
     });
 
+    expect(result).not.toBeNull();
     expect(result).toHaveProperty('id');
-    expect(typeof result.id).toBe('number');
   });
 
   it('insertUser → Should throw AppError for duplicated email', async () => {

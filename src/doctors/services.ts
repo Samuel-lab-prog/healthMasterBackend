@@ -1,7 +1,10 @@
 import bcrypt from 'bcryptjs';
-import { AppError } from '../utils/AppError.ts';
-import { mapFullDoctorToDoctor } from './types.ts';
-import { generateDoctorToken, verifyDoctorToken, type DoctorPayload } from '../utils/jwt.ts';
+import {
+  throwForbiddenError,
+  throwNotFoundError,
+  throwServerError,
+  throwUnauthorizedError
+} from '../utils/AppError.ts';
 import {
   insertDoctor,
   selectDoctorByCRM,
@@ -9,16 +12,16 @@ import {
   selectDoctorById,
   selectAllDoctors,
 } from './models.ts';
-import type { FullDoctor, PostDoctor, Doctor } from './types.ts';
-
-function ensureDoctorExists(Doctor: FullDoctor | null): void {
-  if (!Doctor) {
-    throw new AppError({
-      statusCode: 404,
-      errorMessages: ['Doctor not found'],
-    });
-  }
-}
+import { mapFullDoctorToDoctor } from './types.ts';
+import {
+  generateDoctorToken,
+  verifyDoctorToken,
+  type DoctorPayload
+} from '../utils/jwt.ts';
+import type {
+  PostDoctor,
+  Doctor
+} from './types.ts';
 
 export async function registerDoctor(body: PostDoctor): Promise<Pick<Doctor, 'id'>> {
   const passwordHash = await bcrypt.hash(
@@ -26,10 +29,37 @@ export async function registerDoctor(body: PostDoctor): Promise<Pick<Doctor, 'id
     process.env.SALT_ROUNDS ? parseInt(process.env.SALT_ROUNDS) : 10
   );
 
-  return await insertDoctor({
+  const result = await insertDoctor({
     ...body,
     passwordHash: passwordHash,
   });
+
+  if (!result) {
+    throwServerError();
+  }
+  return result;
+}
+
+export async function getAllDoctors(): Promise<Doctor[]> {
+  const doctors = await selectAllDoctors();
+  if (!doctors) {
+    throwNotFoundError(null, 'No doctors found');
+  }
+  return doctors.map(mapFullDoctorToDoctor);
+}
+
+export async function authenticateDoctor(token: string): Promise<Doctor> {
+  const payload = verifyDoctorToken(token) as DoctorPayload;
+
+  if (!payload.crm) {
+    throwUnauthorizedError('Invalid token: CRM missing');
+  }
+  const doctor = await selectDoctorByCRM(payload.crm);
+  if (!doctor) {
+    throwNotFoundError('Doctor not found with provided CRM');
+  }
+
+  return mapFullDoctorToDoctor(doctor!);
 }
 
 export async function loginDoctor(body: {
@@ -37,58 +67,32 @@ export async function loginDoctor(body: {
   password: string;
 }): Promise<{ token: string; doctor: Doctor }> {
   const doctor = await selectDoctorByEmail(body.email);
-  ensureDoctorExists(doctor);
 
-  if (!(await bcrypt.compare(body.password, doctor!.passwordHash))) {
-    throw new AppError({
-      statusCode: 401,
-      errorMessages: ['Invalid credentials'],
-    });
+  if (!doctor) {
+    throwNotFoundError('Doctor not found with provided email');
+  }
+  if (!(await bcrypt.compare(body.password, doctor.passwordHash))) {
+    throwUnauthorizedError('Invalid credentials');
   }
 
   const token = generateDoctorToken({
-    id: doctor!.id,
-    email: doctor!.email,
-    crm: doctor!.crm,
+    id: doctor.id,
+    email: doctor.email,
+    crm: doctor.crm,
   } as DoctorPayload);
-  ensureDoctorExists(doctor);
-  return { token, doctor: mapFullDoctorToDoctor(doctor!) };
-}
 
-export async function authenticateDoctor(token: string): Promise<Doctor> {
-  const payload = verifyDoctorToken(token) as DoctorPayload;
-  if (!payload.crm) {
-    throw new AppError({
-      statusCode: 401,
-      errorMessages: ['Invalid token payload: CRM is required'],
-    });
-  }
-  const doctor = await selectDoctorByCRM(payload.crm);
-  ensureDoctorExists(doctor);
-  return mapFullDoctorToDoctor(doctor!);
+  return { token, doctor: mapFullDoctorToDoctor(doctor) };
 }
 
 export async function authenticateAdmin(id: number): Promise<Doctor> {
   const doctor = await selectDoctorById(id);
-  ensureDoctorExists(doctor);
-  if (doctor!.role !== 'admin') {
-    throw new AppError({
-      statusCode: 403,
-      errorMessages: ['Access denied: Admins only'],
-    });
+  
+  if (!doctor) {
+    throwNotFoundError('Doctor not found with provided ID');
   }
-  return mapFullDoctorToDoctor(doctor!);
-}
-
-export async function getAllDoctors(): Promise<Doctor[]> {
-  const doctors = await selectAllDoctors();
-
-  if (doctors.length === 0) {
-    throw new AppError({
-      statusCode: 404,
-      errorMessages: ['No doctors found'],
-    });
+  if (doctor.role !== 'admin') {
+    throwForbiddenError('Doctor is not an admin');
   }
-
-  return doctors.map(mapFullDoctorToDoctor);
+  
+  return mapFullDoctorToDoctor(doctor);
 }

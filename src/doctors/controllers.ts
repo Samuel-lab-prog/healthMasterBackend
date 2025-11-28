@@ -7,7 +7,12 @@ import {
   authenticateDoctor,
   getAllDoctors,
 } from './services.ts';
-import { postDoctorSchema, loginDoctorSchema, doctorSchema, tokenSchema } from './schemas.ts';
+import {
+  postDoctorSchema,
+  loginDoctorSchema,
+  doctorSchema,
+} from './schemas.ts';
+import { idSchema, tokenSchema } from '../utils/schemas.ts';
 
 export const doctorRouter = (app: Elysia) =>
   app.group('/doctors', (app) =>
@@ -29,8 +34,8 @@ export const doctorRouter = (app: Elysia) =>
           body: loginDoctorSchema,
           response: {
             200: doctorSchema,
-            400: errorSchema,
             401: errorSchema,
+            422: errorSchema,
             500: errorSchema,
           },
           detail: {
@@ -64,8 +69,9 @@ export const doctorRouter = (app: Elysia) =>
         // All routes below require doctor login authentication
         cookie: tokenSchema,
         response: {
+          400: errorSchema,
           401: errorSchema,
-          403: errorSchema,
+          500: errorSchema,
         },
         beforeHandle: async ({ cookie, store }) => {
           const doctor = await authenticateDoctor(cookie.token.value);
@@ -74,6 +80,9 @@ export const doctorRouter = (app: Elysia) =>
       })
       .guard({
         // All routes below require admin authentication
+        response: {
+          403: errorSchema,
+        },
         beforeHandle: async ({ store }) => {
           await authenticateAdmin(store.doctorId);
         },
@@ -81,17 +90,14 @@ export const doctorRouter = (app: Elysia) =>
       .post(
         '/register',
         async ({ body, set }) => {
-          const doctor = await registerDoctor(body);
           set.status = 201;
-          return doctor;
+          return await registerDoctor(body);
         },
         {
           body: postDoctorSchema,
           response: {
-            201: t.Object({ id: t.Number() }),
-            400: errorSchema,
+            201: t.Object({ id: idSchema }),
             409: errorSchema,
-            500: errorSchema,
           },
           detail: {
             summary: 'Register',

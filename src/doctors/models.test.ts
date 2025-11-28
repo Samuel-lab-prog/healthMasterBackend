@@ -61,6 +61,14 @@ describe('Doctor Model Tests', () => {
     expect(insertDoctor({ ...TEST_DOCTOR, email: DEFAULT_DOCTOR.email })).rejects.toThrow(AppError);
   });
 
+  it('insertDoctor → Should throw AppError for duplicated CPF', async () => {
+    expect(insertDoctor({ ...TEST_DOCTOR, cpf: DEFAULT_DOCTOR.cpf })).rejects.toThrow(AppError);
+  });
+
+  it('insertDoctor → Should throw AppError for duplicated CRM', async () => {
+    expect(insertDoctor({ ...TEST_DOCTOR, crm: DEFAULT_DOCTOR.crm })).rejects.toThrow(AppError);
+  });
+
   it('insertDoctor → Should throw AppError for duplicated phone number', async () => {
     expect(
       insertDoctor({ ...TEST_DOCTOR, phoneNumber: DEFAULT_DOCTOR.phoneNumber! })
