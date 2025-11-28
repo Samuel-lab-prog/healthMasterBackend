@@ -58,7 +58,7 @@ export async function selectUserConsultationsByUserId(
     JOIN doctors d ON c.doctor_id = d.id
     WHERE c.user_id = $1
     ORDER BY c.consultation_date DESC`;
- const rows = await runQuery<UserConsultation>(query, [userId]);
+  const rows = await runQuery<UserConsultation>(query, [userId]);
   if (rows.length === 0) {
     return null;
   }

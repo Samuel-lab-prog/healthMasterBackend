@@ -7,9 +7,9 @@ export async function selectReferralById(id: number): Promise<FullReferral | nul
   const query = `SELECT * FROM referrals WHERE id = $1 LIMIT 2`;
   const rows = await runQuery<ReferralRow>(query, [id]);
 
-  if (!rows[0]){
+  if (!rows[0]) {
     return null;
-  }    
+  }
   if (rows.length > 1) {
     throw new AppError({
       statusCode: 500,

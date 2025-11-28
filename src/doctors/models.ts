@@ -3,7 +3,6 @@ import { runQuery } from '../db/utils.ts';
 import { mapDoctorRowToFullDoctor } from './types';
 import type { Doctor, FullDoctor, DoctorRow, InsertDoctor } from './types';
 
-
 async function selectDoctorInternal(
   field: 'email' | 'id' | 'phone_number' | 'crm' | 'cpf',
   value: string | number

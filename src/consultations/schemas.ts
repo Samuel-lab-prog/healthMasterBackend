@@ -45,7 +45,7 @@ export const createdAtSchema = t.Date({
       statusCode: 400,
       errorMessages: ['Created at must be a valid date'],
     });
-  },  
+  },
 });
 
 export const updatedAtSchema = t.Union([t.Date(), t.Null()], {

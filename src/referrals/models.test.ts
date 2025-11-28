@@ -40,7 +40,7 @@ const DEFAULT_DOCTOR = {
 const DEFAULT_CONSULTATION = {
   userId: 1,
   doctorId: 1,
-  consultationDate: "2024-07-01T10:00:00Z",
+  consultationDate: '2024-07-01T10:00:00Z',
   notes: 'Initial consultation notes',
 };
 const DEFAULT_REFERRAL: InsertReferral = {

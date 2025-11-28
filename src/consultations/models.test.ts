@@ -16,14 +16,14 @@ import { AppError } from '../utils/AppError.ts';
 const DEFAULT_consultation: InsertConsultation = {
   userId: 1,
   doctorId: 1,
-  consultationDate: new Date(),
+  consultationDate: '2024-07-01T10:00:00Z',
   notes: 'Initial consultation notes',
 };
 
 const TEST_consultation: InsertConsultation = {
   userId: 1,
   doctorId: 1,
-  consultationDate: new Date(),
+  consultationDate: '2024-07-02T10:00:00Z',
   notes: 'Follow-up consultation notes',
 };
 
@@ -64,15 +64,13 @@ beforeEach(async () => {
     RESTART IDENTITY CASCADE
   `);
 
-  DEFAULT_USER_ID = (await insertUser(DEFAULT_USER)).id;
-  DEFAULT_DOCTOR_ID = (await insertDoctor(DEFAULT_DOCTOR)).id;
-  DEFAULT_consultation_ID = (
-    await insertConsultation({
-      ...DEFAULT_consultation,
-      userId: DEFAULT_USER_ID,
-      doctorId: DEFAULT_DOCTOR_ID,
-    })
-  ).id;
+  DEFAULT_USER_ID = (await insertUser(DEFAULT_USER))!.id;
+  DEFAULT_DOCTOR_ID = (await insertDoctor(DEFAULT_DOCTOR))!.id;
+  DEFAULT_consultation_ID = (await insertConsultation({
+    ...DEFAULT_consultation,
+    userId: DEFAULT_USER_ID,
+    doctorId: DEFAULT_DOCTOR_ID,
+  }))!.id;
 });
 
 describe('consultation Model Tests', () => {
@@ -83,7 +81,7 @@ describe('consultation Model Tests', () => {
       doctorId: DEFAULT_DOCTOR_ID,
     });
     expect(result).toHaveProperty('id');
-    expect(typeof result.id).toBe('number');
+    expect(typeof result!.id).toBe('number');
   });
 
   it('insertconsultation → Should throw AppError for non-existing userId', async () => {

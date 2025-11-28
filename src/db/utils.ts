@@ -19,29 +19,24 @@ export async function runQuery<T extends QueryResultRow>(
 
     if (error instanceof DatabaseError) {
       const fieldFromDetail =
-        error.detail?.match(/Key \(([^)=]+)\)/)?.[1] ??
-        error.detail?.match(/\(([^)=]+)\)=\(/)?.[1];
+        error.detail?.match(/Key \(([^)=]+)\)/)?.[1] ?? error.detail?.match(/\(([^)=]+)\)=\(/)?.[1];
       const camelField = fieldFromDetail ? toCamelCase(fieldFromDetail) : undefined;
 
       if (error.code === '23505') {
         throw new AppError({
           statusCode: 409,
-          errorMessages: [
-            `Conflict: ${camelField ?? 'field'} already exists`
-          ],
+          errorMessages: [`Conflict: ${camelField ?? 'field'} already exists`],
           originalError: error,
-          origin: 'database'
+          origin: 'database',
         });
       }
 
       if (error.code === '23503') {
         throw new AppError({
           statusCode: 400,
-          errorMessages: [
-            `Invalid value for ${camelField ?? 'field'}: foreign key does not exist`
-          ],
+          errorMessages: [`Invalid value for ${camelField ?? 'field'}: foreign key does not exist`],
           originalError: error,
-          origin: 'database'
+          origin: 'database',
         });
       }
 
@@ -49,25 +44,25 @@ export async function runQuery<T extends QueryResultRow>(
         throw new AppError({
           statusCode: 400,
           errorMessages: [
-            `Missing value for ${camelField ?? 'field'}: not null constraint violated`
+            `Missing value for ${camelField ?? 'field'}: not null constraint violated`,
           ],
           originalError: error,
-          origin: 'database'
+          origin: 'database',
         });
       }
-      
+
       throw new AppError({
         statusCode: 500,
         errorMessages: ['A database error occurred'],
         originalError: error,
-        origin: 'database'
+        origin: 'database',
       });
     }
     throw new AppError({
       statusCode: 500,
       errorMessages: ['An unexpected error occurred'],
       originalError: error as Error,
-      origin: 'unknown'
+      origin: 'unknown',
     });
   }
 }
