@@ -1,5 +1,5 @@
 import { AppError } from '../utils/AppError.ts';
-import { runQuery } from '../db/utils.ts';
+import { runQuery, createParams } from '../db/utils.ts';
 import { mapDoctorRowToFullDoctor } from './types';
 import type { Doctor, FullDoctor, DoctorRow, InsertDoctor } from './types';
 
@@ -43,15 +43,6 @@ export async function selectDoctorByCPF(cpf: string): Promise<FullDoctor | null>
 }
 
 export async function insertDoctor(data: InsertDoctor): Promise<Pick<Doctor, 'id'> | null> {
-  const query = `
-    INSERT INTO doctors (
-      first_name, last_name, email,
-      password_hash, phone_number, speciality,
-      crm, role, birth_date, cpf
-    )
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-    RETURNING id
-  `;
   const values = [
     data.firstName,
     data.lastName,
@@ -64,6 +55,16 @@ export async function insertDoctor(data: InsertDoctor): Promise<Pick<Doctor, 'id
     data.birthDate,
     data.cpf,
   ];
+  const placeholders = createParams(values);
+  const query = `
+    INSERT INTO doctors (
+      first_name, last_name, email,
+      password_hash, phone_number, speciality,
+      crm, role, birth_date, cpf
+    )
+    VALUES (${placeholders})
+    RETURNING id
+  `;
   const rows = await runQuery<Pick<Doctor, 'id'>>(query, values);
   return rows[0] ?? null;
 }

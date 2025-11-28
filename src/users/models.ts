@@ -1,6 +1,6 @@
 import { AppError } from '../utils/AppError.ts';
 import { mapUserRowToFullUser } from './types.ts';
-import { runQuery } from '../db/utils.ts';
+import { runQuery, createParams } from '../db/utils.ts';
 import type { User, FullUser, UserRow, InsertUser } from './types.ts';
 
 async function selectUserInternal(
@@ -40,13 +40,21 @@ export async function selectUserByCPF(cpf: string): Promise<FullUser | null> {
 }
 
 export async function insertUser(userData: InsertUser): Promise<Pick<User, 'id'> | null> {
-  const { firstName, lastName, email, passwordHash, phoneNumber, cpf, birthDate } = userData;
+  const values = [
+    userData.firstName,
+    userData.lastName,
+    userData.email,
+    userData.passwordHash,
+    userData.phoneNumber,
+    userData.cpf,
+    userData.birthDate,
+  ];
+  const placeholders = createParams(values);
   const query = `
     INSERT INTO users (first_name, last_name, email, password_hash, phone_number, cpf, birth_date)
-    VALUES ($1, $2, $3, $4, $5, $6, $7)
+    VALUES (${placeholders})
     RETURNING id
   `;
-  const values = [firstName, lastName, email, passwordHash, phoneNumber, cpf, birthDate];
   const rows = await runQuery<Pick<User, 'id'>>(query, values);
   return rows[0] ?? null;
 }

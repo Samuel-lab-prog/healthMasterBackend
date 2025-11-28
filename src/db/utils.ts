@@ -66,3 +66,8 @@ export async function runQuery<T extends QueryResultRow>(
     });
   }
 }
+
+export function createParams(values: unknown[]) {
+  const placeholders = values.map((_, i) => `$${i + 1}`).join(', ');
+  return placeholders;
+}
