@@ -55,7 +55,7 @@ export const doctorRouter = (app: Elysia) =>
           detail: {
             summary: 'Get All Doctors',
             description:
-              'Retrieves a list of all Doctors. Requires login and admin authentication.',
+              'Retrieves a list of all Doctors.',
             tags: ['Doctor'],
           },
         }

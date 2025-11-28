@@ -46,7 +46,7 @@ beforeEach(async () => {
   await pool.query('DELETE FROM referrals');
   await pool.query('DELETE FROM consultations');
   await pool.query('DELETE FROM doctors');
-  DEFAULT_DOCTOR_ID = (await insertDoctor(DEFAULT_DOCTOR)).id;
+  DEFAULT_DOCTOR_ID = (await insertDoctor(DEFAULT_DOCTOR))!.id;
 });
 
 describe('Doctor Model Tests', () => {
@@ -54,7 +54,7 @@ describe('Doctor Model Tests', () => {
     const result = await insertDoctor(TEST_DOCTOR);
 
     expect(result).toHaveProperty('id');
-    expect(typeof result.id).toBe('number');
+    expect(typeof result!.id).toBe('number');
   });
 
   it('insertDoctor → Should throw AppError for duplicated email', async () => {
@@ -127,12 +127,12 @@ describe('Doctor Model Tests', () => {
   it('selectAllDoctors → Should return all Doctors', async () => {
     await insertDoctor(TEST_DOCTOR);
     const doctors = await selectAllDoctors();
-    expect(doctors.length).toBe(2);
+    expect(doctors!.length).toBe(2);
   });
 
-  it('selectAllDoctors → Should return empty array when no Doctors', async () => {
+  it('selectAllDoctors → Should return null when no Doctors', async () => {
     await pool.query('DELETE FROM doctors');
     const doctors = await selectAllDoctors();
-    expect(doctors.length).toBe(0);
+    expect(doctors).toBeNull();
   });
 });

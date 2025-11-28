@@ -127,7 +127,7 @@ export const createdAtSchema = t.Date({
   },
 });
 
-export const updatedAtSchema = t.Union([t.Date(), t.Null()], {
+export const updatedAtSchema = t.Union([t.String(), t.Null()], {
   example: null,
   error() {
     throw new AppError({
@@ -138,7 +138,6 @@ export const updatedAtSchema = t.Union([t.Date(), t.Null()], {
 });
 
 export const birthDateSchema = t.String({
-  format: 'date',
   example: '1990-01-01',
   error() {
     throw new AppError({
