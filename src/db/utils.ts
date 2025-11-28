@@ -44,13 +44,18 @@ export async function runQuery<T extends QueryResultRow>(
           origin: 'database'
         });
       }
+      throw new AppError({
+        statusCode: 500,
+        errorMessages: ['A database error occurred'],
+        originalError: error,
+        origin: 'database'
+      });
     }
-
     throw new AppError({
       statusCode: 500,
       errorMessages: ['An unexpected error occurred'],
       originalError: error as Error,
-      origin: 'database'
+      origin: 'unknown'
     });
   }
 }

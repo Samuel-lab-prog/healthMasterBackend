@@ -34,15 +34,9 @@ export const consultationIdSchema = t.Number({
   },
 });
 
-export const consultationDateSchema = t.Date({
-  example: new Date(),
-  error() {
-    throw new AppError({
-      statusCode: 400,
-      errorMessages: ['Consultation date must be a valid date'],
-    });
-  },
-});
+export const consultationDateSchema = t.String({
+  examples: ['2024-06-15T14:30:00Z', '2024-12-01T09:00:00+02:00'],
+}); // I'm not using t.Date() because of Elysia's date serialization issues
 
 export const createdAtSchema = t.Date({
   example: new Date(),
@@ -51,7 +45,7 @@ export const createdAtSchema = t.Date({
       statusCode: 400,
       errorMessages: ['Created at must be a valid date'],
     });
-  },
+  },  
 });
 
 export const updatedAtSchema = t.Union([t.Date(), t.Null()], {

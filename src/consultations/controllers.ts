@@ -33,7 +33,7 @@ export const consultationRouter = (app: Elysia) =>
       .post(
         '/',
         async ({ body, set }) => {
-          console.log(body);
+          console.log('Registering consultation with body:', body);
           const consultation = await registerConsultation(body);
           set.status = 201;
           return consultation;

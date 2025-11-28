@@ -40,7 +40,7 @@ const DEFAULT_DOCTOR = {
 const DEFAULT_CONSULTATION = {
   userId: 1,
   doctorId: 1,
-  consultationDate: new Date(),
+  consultationDate: "2024-07-01T10:00:00Z",
   notes: 'Initial consultation notes',
 };
 const DEFAULT_REFERRAL: InsertReferral = {
@@ -62,7 +62,7 @@ beforeEach(async () => {
   `);
   await insertUser(DEFAULT_USER);
   await insertDoctor(DEFAULT_DOCTOR);
-  DEFAULT_CONSULTATION_ID = (await insertConsultation(DEFAULT_CONSULTATION)).id;
+  DEFAULT_CONSULTATION_ID = (await insertConsultation(DEFAULT_CONSULTATION))!.id;
   DEFAULT_REFERRAL_ID = (await insertReferral(DEFAULT_REFERRAL))!.id;
 });
 
