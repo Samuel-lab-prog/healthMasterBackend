@@ -1,5 +1,5 @@
 import { t } from 'elysia';
-import { 
+import {
   makeValidationError,
   idSchema,
   createdAtSchema,
@@ -11,8 +11,8 @@ import {
   cpfSchema,
   firstNameSchema,
   lastNameSchema,
- } from '../utils/schemas.ts';
- 
+} from '../utils/schemas.ts';
+
 export const roleSchema = t.UnionEnum(['doctor', 'admin'], {
   example: 'doctor',
   ...makeValidationError('Role must be either doctor or admin'),
@@ -35,7 +35,7 @@ export const crmSchema = t.String({
 export const loginDoctorSchema = t.Object({
   email: emailSchema,
   password: passwordSchema,
-},);
+});
 
 export const postDoctorSchema = t.Object({
   firstName: firstNameSchema,
@@ -93,4 +93,3 @@ export const fullDoctorSchema = t.Object({
   updatedAt: updatedAtSchema,
   passwordHash: t.String(),
 });
-

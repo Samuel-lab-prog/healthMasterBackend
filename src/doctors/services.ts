@@ -3,7 +3,7 @@ import {
   throwForbiddenError,
   throwNotFoundError,
   throwServerError,
-  throwUnauthorizedError
+  throwUnauthorizedError,
 } from '../utils/AppError.ts';
 import {
   insertDoctor,
@@ -13,15 +13,8 @@ import {
   selectAllDoctors,
 } from './models.ts';
 import { mapFullDoctorToDoctor } from './types.ts';
-import {
-  generateDoctorToken,
-  verifyDoctorToken,
-  type DoctorPayload
-} from '../utils/jwt.ts';
-import type {
-  PostDoctor,
-  Doctor
-} from './types.ts';
+import { generateDoctorToken, verifyDoctorToken, type DoctorPayload } from '../utils/jwt.ts';
+import type { PostDoctor, Doctor } from './types.ts';
 
 export async function registerDoctor(body: PostDoctor): Promise<Pick<Doctor, 'id'>> {
   const passwordHash = await bcrypt.hash(
@@ -86,13 +79,13 @@ export async function loginDoctor(body: {
 
 export async function authenticateAdmin(id: number): Promise<Doctor> {
   const doctor = await selectDoctorById(id);
-  
+
   if (!doctor) {
     throwNotFoundError('Doctor not found with provided ID');
   }
   if (doctor.role !== 'admin') {
     throwForbiddenError('Doctor is not an admin');
   }
-  
+
   return mapFullDoctorToDoctor(doctor);
 }

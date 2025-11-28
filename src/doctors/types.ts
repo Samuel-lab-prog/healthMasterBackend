@@ -1,9 +1,4 @@
-import {
-  postDoctorSchema,
-  insertDoctorSchema,
-  doctorSchema,
-  fullDoctorSchema
-} from './schemas.ts';
+import { postDoctorSchema, insertDoctorSchema, doctorSchema, fullDoctorSchema } from './schemas.ts';
 
 export type DoctorRow = {
   id: number;

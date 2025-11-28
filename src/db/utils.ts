@@ -6,7 +6,7 @@ import {
   throwConflictError,
   throwBadRequestError,
   throwServerError,
-  throwDatabaseError
+  throwDatabaseError,
 } from '../utils/AppError.ts';
 
 function toCamelCase(str: string): string {

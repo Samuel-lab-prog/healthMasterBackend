@@ -55,7 +55,10 @@ export function throwForbiddenError(message: string = 'Access is forbidden'): ne
   });
 }
 
-export function throwNotFoundError(data: unknown | null, message: string = 'The resource was not found'): never {
+export function throwNotFoundError(
+  data: unknown | null,
+  message: string = 'The resource was not found'
+): never {
   throw new AppError({
     statusCode: 404,
     errorMessages: ['Not found: ' + message],
@@ -69,7 +72,10 @@ export function throwConflictError(message: string = 'The resource already exist
   });
 }
 
-export function throwGoneError(data: { deletedAt: Date | null }, message: string = 'The resource has been deleted'): never {
+export function throwGoneError(
+  data: { deletedAt: Date | null },
+  message: string = 'The resource has been deleted'
+): never {
   throw new AppError({
     statusCode: 410,
     errorMessages: ['Resource deleted: ' + message],

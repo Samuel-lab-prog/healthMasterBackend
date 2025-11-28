@@ -7,11 +7,7 @@ import {
   authenticateDoctor,
   getAllDoctors,
 } from './services.ts';
-import {
-  postDoctorSchema,
-  loginDoctorSchema,
-  doctorSchema,
-} from './schemas.ts';
+import { postDoctorSchema, loginDoctorSchema, doctorSchema } from './schemas.ts';
 import { idSchema, tokenSchema } from '../utils/schemas.ts';
 
 export const doctorRouter = (app: Elysia) =>

@@ -1,14 +1,11 @@
 import { t } from 'elysia';
-import {
-  throwBadRequestError,
-  throwUnprocessableEntityError
-} from './AppError';
+import { throwBadRequestError, throwUnprocessableEntityError } from './AppError';
 
 export function makeValidationError(message: string) {
   return {
     error() {
       throwUnprocessableEntityError(message);
-    }
+    },
   };
 }
 
@@ -16,7 +13,7 @@ export function makeBadRequestError(message: string) {
   return {
     error() {
       throwBadRequestError(message);
-    }
+    },
   };
 }
 
