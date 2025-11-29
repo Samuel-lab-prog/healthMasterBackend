@@ -56,7 +56,9 @@ export async function insertDoctor(data: InsertDoctor): Promise<Pick<Doctor, 'id
     RETURNING id
   `;
 
-  const rows = await runQuery<{id: number}, { id: number }>(query, values, (row) => ({ id: row.id }));
+  const rows = await runQuery<{ id: number }, { id: number }>(query, values, (row) => ({
+    id: row.id,
+  }));
   return rows[0] ?? null;
 }
 

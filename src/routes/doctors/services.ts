@@ -42,7 +42,7 @@ export async function authenticateDoctor(token: string): Promise<Doctor> {
   const payload = verifyDoctorToken(token) as DoctorPayload;
 
   if (!payload.crm) {
-    throwUnauthorizedError('Invalid token: CRM missing');
+    throwForbiddenError('Doctors only');
   }
   const doctor = await selectDoctorByCRM(payload.crm);
   if (!doctor) {

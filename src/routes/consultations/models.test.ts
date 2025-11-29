@@ -123,9 +123,9 @@ describe('consultation Model Tests', () => {
     expect(consultations!.length).toBeGreaterThan(0);
   });
 
-  it('selectUserConsultationsByUserId → Should return null for non-existing userId', async () => {
+  it('selectUserConsultationsByUserId → Should return [] for non-existing userId', async () => {
     const consultations = await selectUserConsultationsByUserId(9999);
-    expect(consultations).toBeNull();
+    expect(consultations).toEqual([]);
   });
 
   it('selectDoctorConsultationsByDoctorId → Should return consultations for a doctor', async () => {
@@ -134,8 +134,8 @@ describe('consultation Model Tests', () => {
     expect(consultations!.length).toBeGreaterThan(0);
   });
 
-  it('selectDoctorConsultationsByDoctorId → Should return null for non-existing doctorId', async () => {
+  it('selectDoctorConsultationsByDoctorId → Should return [] for non-existing doctorId', async () => {
     const consultations = await selectDoctorConsultationsByDoctorId(9999);
-    expect(consultations).toBeNull();
+    expect(consultations).toEqual([]);
   });
 });

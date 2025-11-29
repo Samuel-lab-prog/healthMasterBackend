@@ -1,22 +1,5 @@
 import { t } from 'elysia';
-import { throwBadRequestError, throwUnprocessableEntityError } from './AppError';
-
-export function makeValidationError(message: string) {
-  return {
-    error() {
-      throwUnprocessableEntityError(message);
-    },
-  };
-}
-
-export function makeBadRequestError(message: string) {
-  return {
-    error() {
-      throwBadRequestError(message);
-    },
-  };
-}
-
+import { makeBadRequestError, makeValidationError } from './AppError';
 
 export const tokenSchema = t.Object({
   token: t.String({
@@ -31,7 +14,6 @@ export const idSchema = t.Number({
 });
 
 export const stringDateSchema = t.String({
-  format: 'date-time',
   example: '2024-01-01T12:00:00Z',
   ...makeValidationError('Date must be in ISO 8601 format'),
 });
@@ -93,4 +75,3 @@ export const notesSchema = t.String({
   example: 'Patient shows symptoms of ...',
   ...makeValidationError('Notes must be between 10 and 1000 characters long'),
 });
-

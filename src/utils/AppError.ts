@@ -1,9 +1,25 @@
-import { t } from "elysia";
+import { t } from 'elysia';
 
 export const appErrorSchema = t.Object({
   errorMessages: t.Array(t.String()),
   statusCode: t.Number(),
 });
+
+export function makeValidationError(message: string) {
+  return {
+    error() {
+      throwUnprocessableEntityError(message);
+    },
+  };
+}
+
+export function makeBadRequestError(message: string) {
+  return {
+    error() {
+      throwBadRequestError(message);
+    },
+  };
+}
 
 export type AppErrorType = {
   statusCode?: number;

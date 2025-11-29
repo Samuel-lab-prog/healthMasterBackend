@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { pool } from './connection.ts';
-import { DatabaseError, } from 'pg';
+import { DatabaseError } from 'pg';
 import {
   AppError,
   throwConflictError,
@@ -20,19 +20,16 @@ export async function runQuery<Row, T>(
   try {
     const { rows } = await pool.query(query, params);
 
-    if (rows.length === 0 )  {
-      return [];  // Always return an empty list because no results is not an error
+    if (rows.length === 0) {
+      return []; // Always return an empty list because no results is not an error
     }
-
     return rows.map(mapper);
-
   } catch (error) {
     if (error instanceof AppError) throw error;
 
     if (error instanceof DatabaseError) {
       const fieldFromDetail =
-        error.detail?.match(/Key \(([^)=]+)\)/)?.[1] ??
-        error.detail?.match(/\(([^)=]+)\)=\(/)?.[1];
+        error.detail?.match(/Key \(([^)=]+)\)/)?.[1] ?? error.detail?.match(/\(([^)=]+)\)=\(/)?.[1];
 
       const camelField = fieldFromDetail ? toCamelCase(fieldFromDetail) : undefined;
 
@@ -47,14 +44,13 @@ export async function runQuery<Row, T>(
       if (error.code === '23502') {
         throwBadRequestError(`${camelField ?? 'field'} cannot be null`);
       }
-
+      console.error('Database Error:', error);
       throwDatabaseError();
     }
-
-    throwServerError(); 
+    console.error('Unexpected Error:', error);
+    throwServerError();
   }
 }
-
 
 export function createParams(values: unknown[]): string {
   const placeholders = values.map((_, i) => `$${i + 1}`).join(', ');

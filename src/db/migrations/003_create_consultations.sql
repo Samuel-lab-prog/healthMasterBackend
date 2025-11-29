@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS consultations (
   id SERIAL PRIMARY KEY,
   user_id INT NOT NULL,
   doctor_id INT NOT NULL,
-  consultation_date TEXT NOT NULL,
+  date TEXT NOT NULL,
   notes TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT NULL,

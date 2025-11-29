@@ -18,22 +18,22 @@ export type FullReferral = (typeof fullReferralSchema)['static'];
 export type PostReferral = (typeof postReferralSchema)['static'];
 export type InsertReferral = (typeof insertReferralSchema)['static'];
 
-export function mapReferralRowToFullReferral(ReferralRow: ReferralRow): FullReferral {
+export function mapReferralRowToFullReferral(row: ReferralRow): FullReferral {
   return {
-    id: ReferralRow.id,
-    notes: ReferralRow.notes,
-    consultationId: ReferralRow.consultation_id,
-    createdAt: ReferralRow.created_at,
-    updatedAt: ReferralRow.updated_at ? ReferralRow.updated_at : null,
+    id: row.id,
+    notes: row.notes,
+    consultationId: row.consultation_id,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at ? row.updated_at : null,
   };
 }
 
-export function mapFullReferralToReferral(fullReferral: FullReferral): Referral {
+export function mapFullReferralToReferral(row: FullReferral): Referral {
   return {
-    id: fullReferral.id,
-    notes: fullReferral.notes,
-    consultationId: fullReferral.consultationId,
-    createdAt: fullReferral.createdAt,
-    updatedAt: fullReferral.updatedAt,
+    id: row.id,
+    notes: row.notes,
+    consultationId: row.consultationId,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
   };
 }

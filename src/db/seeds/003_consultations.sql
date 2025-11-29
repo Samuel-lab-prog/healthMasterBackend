@@ -2,7 +2,7 @@ INSERT INTO
     consultations (
         user_id,
         doctor_id,
-        consultation_date,
+        date,
         notes
     )
 VALUES (
@@ -16,7 +16,7 @@ INSERT INTO
     consultations (
         user_id,
         doctor_id,
-        consultation_date,
+        date,
         notes
     )
 VALUES (
@@ -30,7 +30,7 @@ INSERT INTO
     consultations (
         user_id,
         doctor_id,
-        consultation_date,
+        date,
         notes
     )
 VALUES (

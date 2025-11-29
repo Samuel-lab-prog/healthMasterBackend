@@ -7,12 +7,9 @@ async function selectUserInternal(
   value: string | number
 ): Promise<FullUser | null> {
   const query = `SELECT * FROM users WHERE ${field} = $1`;
-  const rows = await runQuery<UserRow>(query, [value]);
 
-  if (rows.length === 0 || !rows[0]) {
-    return null;
-  }
-  return mapUserRowToFullUser(rows[0]);
+  const rows = await runQuery<UserRow, FullUser>(query, [value], mapUserRowToFullUser);
+  return rows[0] ?? null;
 }
 
 export async function selectUserByEmail(email: string): Promise<FullUser | null> {
@@ -49,6 +46,8 @@ export async function insertUser(userData: InsertUser): Promise<Pick<User, 'id'>
     RETURNING id
   `;
 
-  const rows = await runQuery<Pick<User, 'id'>>(query, values);
+  const rows = await runQuery<{ id: number }, { id: number }>(query, values, (row) => ({
+    id: row.id,
+  }));
   return rows[0] ?? null;
 }

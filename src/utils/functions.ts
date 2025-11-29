@@ -1,4 +1,4 @@
-import { throwNotFoundError } from "./AppError";
+import { throwNotFoundError } from './AppError';
 
 export async function handleSingleResult<Full, Mapped>(
   promise: Promise<Full | null>,

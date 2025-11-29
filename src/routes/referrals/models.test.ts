@@ -103,9 +103,9 @@ describe('Referral Model Tests', () => {
     expect(Referrals!.length).toBeGreaterThan(0);
   });
 
-  it('selectReferralsByUserId → Should return null for non-existing User ID or empty referrals', async () => {
+  it('selectReferralsByUserId → Should return [] for non-existing User ID or empty referrals', async () => {
     const Referrals = await selectUserReferralsByUserId(9999);
-    expect(Referrals).toBeNull();
+    expect(Referrals).toEqual([]);
   });
 
   it('selectAllReferrals → Should return all Referrals', async () => {
@@ -113,10 +113,10 @@ describe('Referral Model Tests', () => {
     expect(Referrals!.length).toBeGreaterThan(0);
   });
 
-  it('selectAllReferrals → Should return null if no referrals exist', async () => {
+  it('selectAllReferrals → Should return [] if no referrals exist', async () => {
     await pool.query('TRUNCATE TABLE referrals RESTART IDENTITY CASCADE');
     const Referrals = await selectAllReferrals();
-    expect(Referrals).toBeNull();
+    expect(Referrals).toEqual([]);
   });
 
   it('selectDoctorReferralsByDoctorId → Should return Referrals for a Doctor', async () => {
@@ -125,9 +125,9 @@ describe('Referral Model Tests', () => {
     expect(Referrals!.length).toBeGreaterThan(0);
   });
 
-  it('selectDoctorReferralsByDoctorId → Should return null for non-existing Doctor ID or empty referrals', async () => {
+  it('selectDoctorReferralsByDoctorId → Should return [] for non-existing Doctor ID or empty referrals', async () => {
     const Referrals = await selectDoctorReferralsByDoctorId(9999);
-    expect(Referrals).toBeNull();
+    expect(Referrals).toEqual([]);
   });
 
   it('selectReferralsByConsultationId → Should return Referrals for a Consultation', async () => {
@@ -136,9 +136,9 @@ describe('Referral Model Tests', () => {
     expect(Referrals!.length).toBeGreaterThan(0);
   });
 
-  it('selectReferralsByConsultationId → Should return null for non-existing Consultation ID or empty referrals', async () => {
+  it('selectReferralsByConsultationId → Should return [] for non-existing Consultation ID or empty referrals', async () => {
     const Referrals = await selectReferralsByConsultationId(9999);
-    expect(Referrals).toBeNull();
+    expect(Referrals).toEqual([]);
   });
 
   it('selectUserReferralsByUserId → Should return Referrals for a User', async () => {
@@ -147,8 +147,8 @@ describe('Referral Model Tests', () => {
     expect(Referrals!.length).toBeGreaterThan(0);
   });
 
-  it('selectUserReferralsByUserId → Should return null for non-existing User ID or empty referrals', async () => {
+  it('selectUserReferralsByUserId → Should return [] for non-existing User ID or empty referrals', async () => {
     const Referrals = await selectUserReferralsByUserId(9999);
-    expect(Referrals).toBeNull();
+    expect(Referrals).toEqual([]);
   });
 });

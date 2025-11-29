@@ -1,6 +1,5 @@
 import { t } from 'elysia';
 import {
-  makeValidationError,
   idSchema,
   createdAtSchema,
   stringDateSchema,
@@ -12,6 +11,7 @@ import {
   firstNameSchema,
   lastNameSchema,
 } from '../../utils/schemas.ts';
+import { makeValidationError } from '../../utils/AppError.ts';
 
 export const roleSchema = t.UnionEnum(['doctor', 'admin'], {
   example: 'doctor',

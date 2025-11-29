@@ -3,20 +3,17 @@ import { appErrorSchema } from '../../utils/AppError.ts';
 import {
   getConsultationById,
   registerConsultation,
-  getUserConsultationsById,
-  getDoctorConsultationsById,
+  getUserConsultationsByUserId,
+  getDoctorConsultationsByDoctorId,
 } from './services.ts';
 import {
   postConsultationSchema,
   consultationSchema,
   userConsultationSchema,
   doctorConsultationSchema,
-  doctorIdSchema,
-  consultationIdSchema,
-  userIdSchema,
 } from './schemas.ts';
+import { idSchema, tokenSchema } from '../../utils/schemas.ts';
 import { authenticateDoctor } from '../doctors/services.ts';
-import { tokenSchema } from '../../utils/schemas.ts';
 
 export const consultationRouter = (app: Elysia) =>
   app.group('/consultations', (app) =>
@@ -26,9 +23,14 @@ export const consultationRouter = (app: Elysia) =>
         // All routes below require doctor login authentication
         cookie: tokenSchema,
         beforeHandle: async ({ cookie, store }) => {
-          store.doctorId = (await authenticateDoctor(cookie.token.value)).id;
+          const doctor = await authenticateDoctor(cookie.token.value);
+          store.doctorId = doctor.id;
         },
-        response: { 401: appErrorSchema },
+        response: {
+          400: appErrorSchema,
+          401: appErrorSchema,
+          403: appErrorSchema,
+        },
       })
       .post(
         '/',
@@ -41,8 +43,7 @@ export const consultationRouter = (app: Elysia) =>
         {
           body: postConsultationSchema,
           response: {
-            201: t.Object({ id: t.Number() }),
-            400: appErrorSchema,
+            201: t.Object({ id: idSchema }),
             409: appErrorSchema,
             500: appErrorSchema,
           },
@@ -60,10 +61,9 @@ export const consultationRouter = (app: Elysia) =>
           return await getConsultationById(params.id);
         },
         {
-          params: t.Object({ id: consultationIdSchema }),
+          params: t.Object({ id: idSchema }),
           response: {
             200: consultationSchema,
-            400: appErrorSchema,
             404: appErrorSchema,
             500: appErrorSchema,
           },
@@ -77,13 +77,12 @@ export const consultationRouter = (app: Elysia) =>
       .get(
         '/users/:userId',
         async ({ params }) => {
-          return await getUserConsultationsById(params.userId);
+          return await getUserConsultationsByUserId(params.userId);
         },
         {
-          params: t.Object({ userId: userIdSchema }),
+          params: t.Object({ userId: idSchema }),
           response: {
             200: t.Array(userConsultationSchema),
-            400: appErrorSchema,
             404: appErrorSchema,
             500: appErrorSchema,
           },
@@ -97,14 +96,13 @@ export const consultationRouter = (app: Elysia) =>
       .get(
         '/doctors/:doctorId',
         async ({ params }) => {
-          const result = await getDoctorConsultationsById(params.doctorId);
+          const result = await getDoctorConsultationsByDoctorId(params.doctorId);
           return result;
         },
         {
-          params: t.Object({ doctorId: doctorIdSchema }),
+          params: t.Object({ doctorId: idSchema }),
           response: {
             200: t.Array(doctorConsultationSchema),
-            400: appErrorSchema,
             404: appErrorSchema,
             500: appErrorSchema,
           },
