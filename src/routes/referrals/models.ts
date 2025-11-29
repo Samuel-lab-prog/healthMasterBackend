@@ -1,23 +1,12 @@
-import { AppError } from '../../utils/AppError.ts';
 import { runQuery } from '../../db/utils.ts';
 import { mapReferralRowToFullReferral } from './types';
 import type { Referral, FullReferral, ReferralRow, InsertReferral } from './types';
 
 export async function selectReferralById(id: number): Promise<FullReferral | null> {
-  const query = `SELECT * FROM referrals WHERE id = $1 LIMIT 2`;
-  const rows = await runQuery<ReferralRow>(query, [id]);
 
-  if (!rows[0]) {
-    return null;
-  }
-  if (rows.length > 1) {
-    throw new AppError({
-      statusCode: 500,
-      errorMessages: [`Data integrity violation: duplicated referrals for id = ${id}`],
-      origin: 'database',
-    });
-  }
-  return mapReferralRowToFullReferral(rows[0]);
+  const query = `SELECT * FROM referrals WHERE id = $1`;
+  const rows = await runQuery<ReferralRow, FullReferral>(query, [id], mapReferralRowToFullReferral);
+  return rows[0] ?? null;
 }
 
 export async function insertReferral(
@@ -25,37 +14,31 @@ export async function insertReferral(
 ): Promise<Pick<Referral, 'id'> | null> {
   const { notes, consultationId } = referralData;
   const values = [consultationId, notes];
+
   const query = `
     INSERT INTO referrals (consultation_id, notes)
     VALUES ($1, $2)
     RETURNING id
   `;
-  const rows = await runQuery<Pick<Referral, 'id'>>(query, values);
 
-  if (!rows[0] || !rows[0].id) {
-    return null;
-  }
-  return { id: rows[0].id };
+  const rows = await runQuery<ReferralRow, {id: number}>(query, values, (row) => ({ id: row.id }));
+  return rows[0] ?? null;
 }
 
 export async function selectAllReferrals(): Promise<FullReferral[] | null> {
+
   const query = `SELECT * FROM referrals`;
-  const rows = await runQuery<ReferralRow>(query);
-  if (!rows || rows.length === 0) {
-    return null;
-  }
-  return rows.map(mapReferralRowToFullReferral);
+  const rows = await runQuery(query, [], mapReferralRowToFullReferral);
+  return rows ?? null;
 }
 
 export async function selectReferralsByConsultationId(
   consultationId: number
 ): Promise<FullReferral[] | null> {
+
   const query = `SELECT * FROM referrals WHERE consultation_id = $1`;
-  const rows = await runQuery<ReferralRow>(query, [consultationId]);
-  if (!rows || rows.length === 0) {
-    return null;
-  }
-  return rows.map(mapReferralRowToFullReferral);
+  const rows = await runQuery(query, [consultationId], mapReferralRowToFullReferral);
+  return rows ?? null;
 }
 
 export async function selectUserReferralsByUserId(userId: number): Promise<FullReferral[] | null> {
@@ -64,11 +47,9 @@ export async function selectUserReferralsByUserId(userId: number): Promise<FullR
   FROM referrals r
   JOIN consultations c ON r.consultation_id = c.id
   WHERE c.user_id = $1`;
-  const rows = await runQuery<ReferralRow>(query, [userId]);
-  if (!rows || rows.length === 0) {
-    return null;
-  }
-  return rows.map(mapReferralRowToFullReferral);
+
+  const rows = await runQuery(query, [userId], mapReferralRowToFullReferral);
+  return rows ?? null;
 }
 
 export async function selectDoctorReferralsByDoctorId(
@@ -79,9 +60,7 @@ export async function selectDoctorReferralsByDoctorId(
   FROM referrals r
   JOIN consultations c ON r.consultation_id = c.id
   WHERE c.doctor_id = $1`;
-  const rows = await runQuery<ReferralRow>(query, [doctorId]);
-  if (!rows || rows.length === 0) {
-    return null;
-  }
-  return rows.map(mapReferralRowToFullReferral);
+
+  const rows = await runQuery(query, [doctorId], mapReferralRowToFullReferral);
+  return rows ?? null;
 }

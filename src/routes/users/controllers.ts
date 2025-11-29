@@ -1,5 +1,5 @@
 import { Elysia, t } from 'elysia';
-import { appErrorSchema } from '../../utils/schemas.ts';
+import { appErrorSchema } from '../../utils/AppError.ts';
 import { registerUser, loginUser } from './services.ts';
 import { postUserSchema, loginUserSchema, userSchema } from './schemas.ts';
 import { idSchema } from '../../utils/schemas.ts';

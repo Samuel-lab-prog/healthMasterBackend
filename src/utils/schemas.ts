@@ -16,10 +16,7 @@ export function makeBadRequestError(message: string) {
     },
   };
 }
-export const appErrorSchema = t.Object({
-  errorMessages: t.Array(t.String()),
-  statusCode: t.Number(),
-});
+
 
 export const tokenSchema = t.Object({
   token: t.String({
@@ -89,3 +86,11 @@ export const lastNameSchema = t.String({
   example: 'Smith',
   ...makeValidationError('Last name must be between 3 and 30 characters long'),
 });
+
+export const notesSchema = t.String({
+  minLength: 10,
+  maxLength: 1000,
+  example: 'Patient shows symptoms of ...',
+  ...makeValidationError('Notes must be between 10 and 1000 characters long'),
+});
+

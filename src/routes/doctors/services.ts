@@ -28,16 +28,13 @@ export async function registerDoctor(body: PostDoctor): Promise<Pick<Doctor, 'id
   });
 
   if (!result) {
-    throwServerError();
+    throwServerError(); // This should not happen under normal circumstances
   }
   return result;
 }
 
 export async function getAllDoctors(): Promise<Doctor[]> {
   const doctors = await selectAllDoctors();
-  if (!doctors) {
-    throwNotFoundError('No doctors found');
-  }
   return doctors.map(mapFullDoctorToDoctor);
 }
 

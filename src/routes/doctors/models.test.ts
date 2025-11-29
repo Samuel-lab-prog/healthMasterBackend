@@ -138,9 +138,9 @@ describe('Doctor Model Tests', () => {
     expect(doctors!.length).toBe(2);
   });
 
-  it('selectAllDoctors → Should return null when no Doctors', async () => {
+  it('selectAllDoctors → Should return [] when no Doctors', async () => {
     await pool.query('DELETE FROM doctors');
     const doctors = await selectAllDoctors();
-    expect(doctors).toBeNull();
+    expect(doctors).toEqual([]);
   });
 });

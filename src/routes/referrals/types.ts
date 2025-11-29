@@ -10,7 +10,7 @@ export type ReferralRow = {
   notes: string;
   consultation_id: number;
   created_at: Date;
-  updated_at: Date | null;
+  updated_at: string | null;
 };
 
 export type Referral = (typeof referralSchema)['static'];

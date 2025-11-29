@@ -1,15 +1,15 @@
 import { mapDoctorRowToFullDoctor } from './types';
 import { runQuery, createParams } from '../../db/utils.ts';
-import type { Doctor, FullDoctor, DoctorRow, InsertDoctor } from './types';
+import type { Doctor, DoctorRow, FullDoctor, InsertDoctor } from './types';
 
 async function selectDoctorInternal(
   field: 'email' | 'id' | 'phone_number' | 'crm' | 'cpf',
   value: string | number
 ): Promise<FullDoctor | null> {
   const query = `SELECT * FROM Doctors WHERE ${field} = $1`;
-  const rows = await runQuery<DoctorRow>(query, [value]);
+  const rows = await runQuery<DoctorRow, FullDoctor>(query, [value], mapDoctorRowToFullDoctor);
 
-  return rows[0] ? mapDoctorRowToFullDoctor(rows[0]) : null;
+  return rows[0] ?? null;
 }
 export async function selectDoctorByEmail(email: string): Promise<FullDoctor | null> {
   return await selectDoctorInternal('email', email);
@@ -56,17 +56,13 @@ export async function insertDoctor(data: InsertDoctor): Promise<Pick<Doctor, 'id
     RETURNING id
   `;
 
-  const rows = await runQuery<Pick<Doctor, 'id'>>(query, values);
+  const rows = await runQuery<{id: number}, { id: number }>(query, values, (row) => ({ id: row.id }));
   return rows[0] ?? null;
 }
 
-export async function selectAllDoctors(): Promise<FullDoctor[] | null> {
+export async function selectAllDoctors(): Promise<FullDoctor[]> {
   const query = `SELECT * FROM doctors ORDER BY id ASC`;
-  const rows = await runQuery<DoctorRow>(query);
+  const rows = await runQuery<DoctorRow, FullDoctor>(query, [], mapDoctorRowToFullDoctor);
 
-  if (!rows || rows.length === 0) {
-    return null;
-  }
-
-  return rows.map(mapDoctorRowToFullDoctor);
+  return rows ?? [];
 }

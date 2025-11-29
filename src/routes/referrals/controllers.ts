@@ -1,5 +1,5 @@
 import { Elysia, t } from 'elysia';
-import { appErrorSchema } from '../../utils/schemas.ts';
+import { appErrorSchema } from '../../utils/AppError.ts';
 import {
   getReferralById,
   registerReferral,
@@ -105,7 +105,7 @@ export const referralRouter = (app: Elysia) =>
       .get(
         '/user/:userId',
         async ({ params }) => {
-          return await getUserReferralsByUserId(Number(params.userId));
+          return await getUserReferralsByUserId(params.userId);
         },
         {
           params: t.Object({ userId: idSchema }),

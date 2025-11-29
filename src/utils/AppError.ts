@@ -1,3 +1,10 @@
+import { t } from "elysia";
+
+export const appErrorSchema = t.Object({
+  errorMessages: t.Array(t.String()),
+  statusCode: t.Number(),
+});
+
 export type AppErrorType = {
   statusCode?: number;
   errorMessages?: string[];
