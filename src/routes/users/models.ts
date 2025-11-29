@@ -1,4 +1,3 @@
-import { AppError } from '../../utils/AppError.ts';
 import { mapUserRowToFullUser } from './types.ts';
 import { runQuery, createParams } from '../../db/utils.ts';
 import type { User, FullUser, UserRow, InsertUser } from './types.ts';
@@ -7,22 +6,15 @@ async function selectUserInternal(
   field: 'email' | 'id' | 'phone_number' | 'cpf',
   value: string | number
 ): Promise<FullUser | null> {
-  const query = `SELECT * FROM users WHERE ${field} = $1 LIMIT 2`;
+  const query = `SELECT * FROM users WHERE ${field} = $1`;
   const rows = await runQuery<UserRow>(query, [value]);
 
-  if (!rows[0]) {
+  if (rows.length === 0 || !rows[0]) {
     return null;
   }
-  if (rows.length > 1) {
-    throw new AppError({
-      statusCode: 500,
-      errorMessages: [`Duplicate users detected for ${field}: ${value}`],
-      origin: 'database',
-    });
-  }
-
   return mapUserRowToFullUser(rows[0]);
 }
+
 export async function selectUserByEmail(email: string): Promise<FullUser | null> {
   return await selectUserInternal('email', email);
 }
@@ -49,12 +41,14 @@ export async function insertUser(userData: InsertUser): Promise<Pick<User, 'id'>
     userData.cpf,
     userData.birthDate,
   ];
+
   const placeholders = createParams(values);
   const query = `
     INSERT INTO users (first_name, last_name, email, password_hash, phone_number, cpf, birth_date)
     VALUES (${placeholders})
     RETURNING id
   `;
+
   const rows = await runQuery<Pick<User, 'id'>>(query, values);
   return rows[0] ?? null;
 }

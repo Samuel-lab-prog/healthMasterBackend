@@ -1,7 +1,8 @@
 import { Elysia, t } from 'elysia';
-import { errorSchema } from '../../utils/AppError.ts';
+import { appErrorSchema } from '../../utils/schemas.ts';
 import { registerUser, loginUser } from './services.ts';
 import { postUserSchema, loginUserSchema, userSchema } from './schemas.ts';
+import { idSchema } from '../../utils/schemas.ts';
 
 export const userRouter = (app: Elysia) =>
   app.group('/users', (app) =>
@@ -9,17 +10,16 @@ export const userRouter = (app: Elysia) =>
       .post(
         '/register',
         async ({ body, set }) => {
-          const user = await registerUser(body);
           set.status = 201;
-          return user;
+          return await registerUser(body);
         },
         {
           body: postUserSchema,
           response: {
-            201: t.Object({ id: t.Number() }),
-            400: errorSchema,
-            409: errorSchema,
-            500: errorSchema,
+            201: t.Object({ id: idSchema }),
+            422: appErrorSchema,
+            409: appErrorSchema,
+            500: appErrorSchema,
           },
           detail: {
             summary: 'Register',
@@ -30,24 +30,22 @@ export const userRouter = (app: Elysia) =>
       )
       .post(
         '/login',
-        async ({ body, set, cookie }) => {
+        async ({ body, cookie }) => {
           const { token, user } = await loginUser(body);
           cookie.token!.path = '/';
           cookie.token!.httpOnly = true;
           cookie.token!.sameSite = 'lax';
           cookie.token!.value = token;
 
-          set.status = 200;
-          console.log(user.birthDate);
           return user;
         },
         {
           body: loginUserSchema,
           response: {
             200: userSchema,
-            400: errorSchema,
-            401: errorSchema,
-            500: errorSchema,
+            422: appErrorSchema,
+            401: appErrorSchema,
+            500: appErrorSchema,
           },
           detail: {
             summary: 'Login',

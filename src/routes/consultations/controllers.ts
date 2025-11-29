@@ -1,5 +1,5 @@
 import { Elysia, t } from 'elysia';
-import { errorSchema } from '../../utils/AppError.ts';
+import { appErrorSchema } from '../../utils/schemas.ts';
 import {
   getConsultationById,
   registerConsultation,
@@ -28,7 +28,7 @@ export const consultationRouter = (app: Elysia) =>
         beforeHandle: async ({ cookie, store }) => {
           store.doctorId = (await authenticateDoctor(cookie.token.value)).id;
         },
-        response: { 401: errorSchema },
+        response: { 401: appErrorSchema },
       })
       .post(
         '/',
@@ -42,9 +42,9 @@ export const consultationRouter = (app: Elysia) =>
           body: postConsultationSchema,
           response: {
             201: t.Object({ id: t.Number() }),
-            400: errorSchema,
-            409: errorSchema,
-            500: errorSchema,
+            400: appErrorSchema,
+            409: appErrorSchema,
+            500: appErrorSchema,
           },
           detail: {
             summary: 'Register',
@@ -63,9 +63,9 @@ export const consultationRouter = (app: Elysia) =>
           params: t.Object({ id: consultationIdSchema }),
           response: {
             200: consultationSchema,
-            400: errorSchema,
-            404: errorSchema,
-            500: errorSchema,
+            400: appErrorSchema,
+            404: appErrorSchema,
+            500: appErrorSchema,
           },
           detail: {
             summary: 'Get Consultation by ID',
@@ -83,9 +83,9 @@ export const consultationRouter = (app: Elysia) =>
           params: t.Object({ userId: userIdSchema }),
           response: {
             200: t.Array(userConsultationSchema),
-            400: errorSchema,
-            404: errorSchema,
-            500: errorSchema,
+            400: appErrorSchema,
+            404: appErrorSchema,
+            500: appErrorSchema,
           },
           detail: {
             summary: 'Get Consultations from User',
@@ -104,9 +104,9 @@ export const consultationRouter = (app: Elysia) =>
           params: t.Object({ doctorId: doctorIdSchema }),
           response: {
             200: t.Array(doctorConsultationSchema),
-            400: errorSchema,
-            404: errorSchema,
-            500: errorSchema,
+            400: appErrorSchema,
+            404: appErrorSchema,
+            500: appErrorSchema,
           },
           detail: {
             summary: 'Get Consultations from Doctor',

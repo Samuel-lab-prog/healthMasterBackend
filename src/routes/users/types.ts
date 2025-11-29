@@ -10,7 +10,7 @@ export type UserRow = {
   cpf: string;
   birth_date: string;
   created_at: Date;
-  updated_at: Date | null;
+  updated_at: string | null;
   password_hash: string;
 };
 

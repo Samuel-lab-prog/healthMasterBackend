@@ -1,5 +1,5 @@
 import { Elysia, t } from 'elysia';
-import { errorSchema } from '../../utils/AppError.ts';
+import { appErrorSchema } from '../../utils/schemas.ts';
 import {
   getReferralById,
   registerReferral,
@@ -34,9 +34,9 @@ export const referralRouter = (app: Elysia) =>
           body: postReferralSchema,
           response: {
             201: t.Object({ id: idSchema }),
-            400: errorSchema,
-            409: errorSchema,
-            500: errorSchema,
+            400: appErrorSchema,
+            409: appErrorSchema,
+            500: appErrorSchema,
           },
           detail: {
             summary: 'Register',
@@ -53,7 +53,7 @@ export const referralRouter = (app: Elysia) =>
         {
           response: {
             200: t.Array(referralSchema),
-            500: errorSchema,
+            500: appErrorSchema,
           },
           detail: {
             summary: 'Get All Referrals',
@@ -71,9 +71,9 @@ export const referralRouter = (app: Elysia) =>
           params: t.Object({ id: idSchema }),
           response: {
             200: referralSchema,
-            400: errorSchema,
-            404: errorSchema,
-            500: errorSchema,
+            400: appErrorSchema,
+            404: appErrorSchema,
+            500: appErrorSchema,
           },
           detail: {
             summary: 'Get Referral by ID',
@@ -91,9 +91,9 @@ export const referralRouter = (app: Elysia) =>
           params: t.Object({ consultationId: idSchema }),
           response: {
             200: t.Array(referralSchema),
-            400: errorSchema,
-            404: errorSchema,
-            500: errorSchema,
+            400: appErrorSchema,
+            404: appErrorSchema,
+            500: appErrorSchema,
           },
           detail: {
             summary: 'Get Referrals by Consultation ID',
@@ -111,9 +111,9 @@ export const referralRouter = (app: Elysia) =>
           params: t.Object({ userId: idSchema }),
           response: {
             200: t.Array(referralSchema),
-            400: errorSchema,
-            404: errorSchema,
-            500: errorSchema,
+            400: appErrorSchema,
+            404: appErrorSchema,
+            500: appErrorSchema,
           },
           detail: {
             summary: 'Get Referrals by User ID',
@@ -131,9 +131,9 @@ export const referralRouter = (app: Elysia) =>
           params: t.Object({ doctorId: idSchema }),
           response: {
             200: t.Array(referralSchema),
-            400: errorSchema,
-            404: errorSchema,
-            500: errorSchema,
+            400: appErrorSchema,
+            404: appErrorSchema,
+            500: appErrorSchema,
           },
           detail: {
             summary: 'Get Referrals by Doctor ID',

@@ -11,7 +11,7 @@ export type ConsultationRow = {
   id: number;
   user_id: number;
   doctor_id: number;
-  consultation_date: Date;
+  consultation_date: string;
   notes: string;
   created_at: Date;
   updated_at: Date | null;

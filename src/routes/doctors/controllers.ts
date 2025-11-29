@@ -1,5 +1,5 @@
 import { Elysia, t } from 'elysia';
-import { errorSchema } from '../../utils/AppError.ts';
+import { appErrorSchema } from '../../utils/schemas.ts';
 import {
   registerDoctor,
   loginDoctor,
@@ -15,7 +15,7 @@ export const doctorRouter = (app: Elysia) =>
     app
       .post(
         '/login',
-        async ({ body, set, cookie }) => {
+        async ({ body, cookie }) => {
           const { token, doctor } = await loginDoctor(body);
 
           cookie.token!.path = '/';
@@ -23,16 +23,15 @@ export const doctorRouter = (app: Elysia) =>
           cookie.token!.sameSite = 'lax';
           cookie.token!.value = token;
 
-          set.status = 200;
           return doctor;
         },
         {
           body: loginDoctorSchema,
           response: {
             200: doctorSchema,
-            401: errorSchema,
-            422: errorSchema,
-            500: errorSchema,
+            401: appErrorSchema,
+            422: appErrorSchema,
+            500: appErrorSchema,
           },
           detail: {
             summary: 'Login',
@@ -50,8 +49,8 @@ export const doctorRouter = (app: Elysia) =>
         {
           response: {
             200: t.Array(doctorSchema),
-            404: errorSchema,
-            500: errorSchema,
+            404: appErrorSchema,
+            500: appErrorSchema,
           },
           detail: {
             summary: 'Get All Doctors',
@@ -65,9 +64,9 @@ export const doctorRouter = (app: Elysia) =>
         // All routes below require doctor login authentication
         cookie: tokenSchema,
         response: {
-          400: errorSchema,
-          401: errorSchema,
-          500: errorSchema,
+          400: appErrorSchema,
+          401: appErrorSchema,
+          500: appErrorSchema,
         },
         beforeHandle: async ({ cookie, store }) => {
           const doctor = await authenticateDoctor(cookie.token.value);
@@ -77,7 +76,7 @@ export const doctorRouter = (app: Elysia) =>
       .guard({
         // All routes below require admin authentication
         response: {
-          403: errorSchema,
+          403: appErrorSchema,
         },
         beforeHandle: async ({ store }) => {
           await authenticateAdmin(store.doctorId);
@@ -93,7 +92,7 @@ export const doctorRouter = (app: Elysia) =>
           body: postDoctorSchema,
           response: {
             201: t.Object({ id: idSchema }),
-            409: errorSchema,
+            409: appErrorSchema,
           },
           detail: {
             summary: 'Register',

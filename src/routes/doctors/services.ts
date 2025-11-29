@@ -36,7 +36,7 @@ export async function registerDoctor(body: PostDoctor): Promise<Pick<Doctor, 'id
 export async function getAllDoctors(): Promise<Doctor[]> {
   const doctors = await selectAllDoctors();
   if (!doctors) {
-    throwNotFoundError(null, 'No doctors found');
+    throwNotFoundError('No doctors found');
   }
   return doctors.map(mapFullDoctorToDoctor);
 }

@@ -16,6 +16,10 @@ export function makeBadRequestError(message: string) {
     },
   };
 }
+export const appErrorSchema = t.Object({
+  errorMessages: t.Array(t.String()),
+  statusCode: t.Number(),
+});
 
 export const tokenSchema = t.Object({
   token: t.String({
