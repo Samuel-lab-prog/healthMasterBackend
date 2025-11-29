@@ -97,7 +97,7 @@ VALUES (
         'admin@gmail.com',
         '$2b$10$Cq9c5B2qo5N/gOOAjVAMi.V7nMURPZZQ6DqeslRgP1ThpVczXJjKG',
         'CRM890123',
-        'admin',
+        'doctor',
         '1970-11-30',
         '456.789.012-33'
     );

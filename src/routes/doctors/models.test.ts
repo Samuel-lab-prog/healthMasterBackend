@@ -3,11 +3,7 @@ import { pool } from '../../db/connection.ts';
 
 import {
   insertDoctor,
-  selectDoctorByEmail,
-  selectDoctorById,
-  selectDoctorByPhoneNumber,
-  selectDoctorByCRM,
-  selectDoctorByCPF,
+  selectDoctorByField,
   selectAllDoctors,
 } from './models';
 
@@ -75,61 +71,56 @@ describe('Doctor Model Tests', () => {
     ).rejects.toThrow(AppError);
   });
 
-  it('selectDoctorById → Should return a Doctor', async () => {
-    const Doctor = await selectDoctorById(DEFAULT_DOCTOR_ID);
+  it('selectDoctorByField → Should return a Doctor', async () => {
+    const Doctor = await selectDoctorByField('id', DEFAULT_DOCTOR_ID);
 
     expect(Doctor).not.toBeNull();
     expect(Doctor?.id).toBe(DEFAULT_DOCTOR_ID);
   });
 
-  it('selectDoctorById → Should return null for non-existing id', async () => {
-    const Doctor = await selectDoctorById(9999);
-    expect(Doctor).toBeNull();
+  it('selectDoctorByField → Should throw AppError for non-existing id', async () => {
+    await expect(selectDoctorByField('id', 9999)).rejects.toThrow(AppError);
   });
 
-  it('selectDoctorByEmail → Should return a Doctor', async () => {
-    const Doctor = await selectDoctorByEmail(DEFAULT_DOCTOR.email);
+  it('selectDoctorByField → Should return a Doctor', async () => {
+    const Doctor = await selectDoctorByField('email', DEFAULT_DOCTOR.email);
 
     expect(Doctor).not.toBeNull();
     expect(Doctor?.email).toBe(DEFAULT_DOCTOR.email);
   });
 
-  it('selectDoctorByEmail → Should return null for non-existing email', async () => {
-    const Doctor = await selectDoctorByEmail('nope@example.com');
-    expect(Doctor).toBeNull();
+  it('selectDoctorByField → Should throw AppError for non-existing email', async () => {
+    await expect(selectDoctorByField('email', 'nope@example.com')).rejects.toThrow(AppError);
   });
 
-  it('selectDoctorByPhoneNumber → Should return a Doctor', async () => {
-    const Doctor = await selectDoctorByPhoneNumber(DEFAULT_DOCTOR.phoneNumber!);
+  it('selectDoctorByField → Should return a Doctor', async () => {
+    const Doctor = await selectDoctorByField('phone_number', DEFAULT_DOCTOR.phoneNumber!);
     expect(Doctor).not.toBeNull();
     expect(Doctor?.phoneNumber).toBe(DEFAULT_DOCTOR.phoneNumber);
   });
 
-  it('selectDoctorByPhoneNumber → Should return null for non-existing phone', async () => {
-    const Doctor = await selectDoctorByPhoneNumber('not-a-phone');
-    expect(Doctor).toBeNull();
+  it('selectDoctorByField → Should throw AppError for non-existing phone', async () => {
+    await expect(selectDoctorByField('phone_number', 'not-a-phone')).rejects.toThrow(AppError);
   });
 
-  it('selectDoctorByCRM → Should return a Doctor', async () => {
-    const Doctor = await selectDoctorByCRM(DEFAULT_DOCTOR.crm);
+  it('selectDoctorByField → Should return a Doctor', async () => {
+    const Doctor = await selectDoctorByField('crm', DEFAULT_DOCTOR.crm);
     expect(Doctor).not.toBeNull();
     expect(Doctor?.crm).toBe(DEFAULT_DOCTOR.crm);
   });
 
-  it('selectDoctorByCRM → Should return null for non-existing CRM', async () => {
-    const Doctor = await selectDoctorByCRM('no-crm');
-    expect(Doctor).toBeNull();
+  it('selectDoctorByField → Should throw AppError for non-existing CRM', async () => {
+    await expect(selectDoctorByField('crm', 'no-crm')).rejects.toThrow(AppError);
   });
 
-  it('selectDoctorByCPF → Should return a Doctor', async () => {
-    const Doctor = await selectDoctorByCPF(DEFAULT_DOCTOR.cpf);
+  it('selectDoctorByField → Should return a Doctor', async () => {
+    const Doctor = await selectDoctorByField('cpf', DEFAULT_DOCTOR.cpf);
     expect(Doctor).not.toBeNull();
     expect(Doctor?.cpf).toBe(DEFAULT_DOCTOR.cpf);
   });
 
-  it('selectDoctorByCPF → Should return null for non-existing CPF', async () => {
-    const Doctor = await selectDoctorByCPF('000.000.000-00');
-    expect(Doctor).toBeNull();
+  it('selectDoctorByField → Should throw AppError for non-existing CPF', async () => {
+    await expect(selectDoctorByField('cpf', '000.000.000-00')).rejects.toThrow(AppError);
   });
 
   it('selectAllDoctors → Should return all Doctors', async () => {

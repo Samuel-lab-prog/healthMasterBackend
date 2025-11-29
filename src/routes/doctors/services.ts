@@ -1,17 +1,6 @@
 import bcrypt from 'bcryptjs';
-import {
-  throwForbiddenError,
-  throwNotFoundError,
-  throwServerError,
-  throwUnauthorizedError,
-} from '../../utils/AppError.ts';
-import {
-  insertDoctor,
-  selectDoctorByCRM,
-  selectDoctorByEmail,
-  selectDoctorById,
-  selectAllDoctors,
-} from './models.ts';
+import { throwForbiddenError, throwUnauthorizedError } from '../../utils/AppError.ts';
+import { insertDoctor, selectDoctorByField, selectAllDoctors } from './models.ts';
 import { mapFullDoctorToDoctor } from './types.ts';
 import { generateDoctorToken, verifyDoctorToken, type DoctorPayload } from '../../utils/jwt.ts';
 import type { PostDoctor, Doctor } from './types.ts';
@@ -27,9 +16,6 @@ export async function registerDoctor(body: PostDoctor): Promise<Pick<Doctor, 'id
     passwordHash: passwordHash,
   });
 
-  if (!result) {
-    throwServerError(); // This should not happen under normal circumstances
-  }
   return result;
 }
 
@@ -44,10 +30,7 @@ export async function authenticateDoctor(token: string): Promise<Doctor> {
   if (!payload.crm) {
     throwForbiddenError('Doctors only');
   }
-  const doctor = await selectDoctorByCRM(payload.crm);
-  if (!doctor) {
-    throwNotFoundError('Doctor not found with provided CRM');
-  }
+  const doctor = await selectDoctorByField('id', payload.id);
 
   return mapFullDoctorToDoctor(doctor!);
 }
@@ -56,11 +39,7 @@ export async function loginDoctor(body: {
   email: string;
   password: string;
 }): Promise<{ token: string; doctor: Doctor }> {
-  const doctor = await selectDoctorByEmail(body.email);
-
-  if (!doctor) {
-    throwNotFoundError('Doctor not found with provided email');
-  }
+  const doctor = await selectDoctorByField('email', body.email);
   if (!(await bcrypt.compare(body.password, doctor.passwordHash))) {
     throwUnauthorizedError('Invalid credentials');
   }
@@ -75,11 +54,8 @@ export async function loginDoctor(body: {
 }
 
 export async function authenticateAdmin(id: number): Promise<Doctor> {
-  const doctor = await selectDoctorById(id);
+  const doctor = await selectDoctorByField('id', id);
 
-  if (!doctor) {
-    throwNotFoundError('Doctor not found with provided ID');
-  }
   if (doctor.role !== 'admin') {
     throwForbiddenError('Doctor is not an admin');
   }

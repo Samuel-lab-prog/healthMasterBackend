@@ -8,12 +8,11 @@ import {
   selectDoctorReferralsByDoctorId,
 } from './models.ts';
 import type { PostReferral, Referral } from './types.ts';
-import { throwNotFoundError, throwServerError } from '../../utils/AppError.ts';
+import { throwNotFoundError } from '../../utils/AppError.ts';
 
 export async function registerReferral(body: PostReferral): Promise<Pick<Referral, 'id'>> {
-  const result = await insertReferral(body);
-  if (!result) throwServerError(); // This should not happen under normal circumstances
-  return result;
+  return await insertReferral(body);
+
 }
 
 export async function getReferralById(id: number): Promise<Referral> {

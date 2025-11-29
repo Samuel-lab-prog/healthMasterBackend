@@ -2,15 +2,15 @@ import { runQuery } from '../../db/utils.ts';
 import { mapReferralRowToFullReferral } from './types.ts';
 import type { Referral, FullReferral, ReferralRow, InsertReferral } from './types.ts';
 
-export async function selectReferralById(id: number): Promise<FullReferral | null> {
+export async function selectReferralById(id: number): Promise<FullReferral> {
   const query = `SELECT * FROM referrals WHERE id = $1`;
-  const rows = await runQuery<ReferralRow, FullReferral>(query, [id], mapReferralRowToFullReferral);
-  return rows[0] ?? null;
+  const referral = await runQuery<ReferralRow, FullReferral>(query, [id], mapReferralRowToFullReferral, { expectSingleRow: true, throwIfNoRows: true });
+  return referral;
 }
 
 export async function insertReferral(
   referralData: InsertReferral
-): Promise<Pick<Referral, 'id'> | null> {
+): Promise<Pick<Referral, 'id'>> {
   const { notes, consultationId } = referralData;
   const values = [consultationId, notes];
 
@@ -20,10 +20,10 @@ export async function insertReferral(
     RETURNING id
   `;
 
-  const rows = await runQuery<{ id: number }, { id: number }>(query, values, (row) => ({
+  const referral = await runQuery<{ id: number }, { id: number }>(query, values, (row) => ({
     id: row.id,
-  }));
-  return rows[0] ?? null;
+  }), { expectSingleRow: true });
+  return referral;
 }
 
 export async function selectAllReferrals(): Promise<FullReferral[]> {

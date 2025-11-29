@@ -92,9 +92,8 @@ describe('Referral Model Tests', () => {
     expect(Referral?.id).toBe(DEFAULT_REFERRAL_ID);
   });
 
-  it('selectReferralById → Should return null for non-existing id', async () => {
-    const Referral = await selectReferralById(9999);
-    expect(Referral).toBeNull();
+  it('selectReferralById → Should throw AppError for non-existing id', async () => {
+    await expect(selectReferralById(9999)).rejects.toThrow(AppError);
   });
 
   it('selectReferralsByUserId → Should return Referrals for a User', async () => {

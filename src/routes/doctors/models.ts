@@ -1,70 +1,57 @@
 import { mapDoctorRowToFullDoctor } from './types';
-import { runQuery, createParams } from '../../db/utils.ts';
+import { runQuery } from '../../db/utils.ts';
 import type { Doctor, DoctorRow, FullDoctor, InsertDoctor } from './types';
 
-async function selectDoctorInternal(
-  field: 'email' | 'id' | 'phone_number' | 'crm' | 'cpf',
-  value: string | number
-): Promise<FullDoctor | null> {
-  const query = `SELECT * FROM Doctors WHERE ${field} = $1`;
-  const rows = await runQuery<DoctorRow, FullDoctor>(query, [value], mapDoctorRowToFullDoctor);
 
-  return rows[0] ?? null;
-}
-export async function selectDoctorByEmail(email: string): Promise<FullDoctor | null> {
-  return await selectDoctorInternal('email', email);
-}
+function buildInsertData<T extends Record<string, unknown>>(obj: T) {
+  const camelToSnake = (s: string) =>
+    s.replace(/[A-Z]/g, (c) => '_' + c.toLowerCase());
 
-export async function selectDoctorById(id: number): Promise<FullDoctor | null> {
-  return await selectDoctorInternal('id', id);
-}
+  const keys = Object.keys(obj);
+  const columns = keys.map(camelToSnake).join(', ');
+  const values = keys.map(k => obj[k]);
+  const placeholders = keys.map((_, i) => `$${i + 1}`).join(', ');
 
-export async function selectDoctorByPhoneNumber(phoneNumber: string): Promise<FullDoctor | null> {
-  return await selectDoctorInternal('phone_number', phoneNumber);
-}
+  const insertFragment = `(${columns}) VALUES (${placeholders})`;
 
-export async function selectDoctorByCRM(crm: string): Promise<FullDoctor | null> {
-  return await selectDoctorInternal('crm', crm);
+  return {
+    values,
+    columns,
+    placeholders,
+    insertFragment
+  };
 }
 
-export async function selectDoctorByCPF(cpf: string): Promise<FullDoctor | null> {
-  return await selectDoctorInternal('cpf', cpf);
-}
-
-export async function insertDoctor(data: InsertDoctor): Promise<Pick<Doctor, 'id'> | null> {
-  const values = [
-    data.firstName,
-    data.lastName,
-    data.email,
-    data.passwordHash,
-    data.phoneNumber,
-    data.speciality,
-    data.crm,
-    data.role,
-    data.birthDate,
-    data.cpf,
-  ];
-
-  const placeholders = createParams(values);
+export async function insertDoctor(data: InsertDoctor): Promise<Pick<Doctor, 'id'>> {
+  const { values, insertFragment } = buildInsertData(data);
   const query = `
-    INSERT INTO doctors (
-      first_name, last_name, email,
-      password_hash, phone_number, speciality,
-      crm, role, birth_date, cpf
-    )
-    VALUES (${placeholders})
+    INSERT INTO doctors ${insertFragment}
     RETURNING id
   `;
 
-  const rows = await runQuery<{ id: number }, { id: number }>(query, values, (row) => ({
-    id: row.id,
-  }));
-  return rows[0] ?? null;
+  return await runQuery<{ id: number }, { id: number }>(
+    query,
+    values,
+    (row) => ({
+      id: row.id,
+    }),
+    { expectSingleRow: true }
+  );
 }
 
 export async function selectAllDoctors(): Promise<FullDoctor[]> {
   const query = `SELECT * FROM doctors ORDER BY id ASC`;
-  const rows = await runQuery<DoctorRow, FullDoctor>(query, [], mapDoctorRowToFullDoctor);
+  return await runQuery<DoctorRow, FullDoctor>(query, [], mapDoctorRowToFullDoctor);
+}
 
-  return rows ?? [];
+export async function selectDoctorByField(
+  field: 'email' | 'id' | 'phone_number' | 'crm' | 'cpf',
+  value: string | number
+): Promise<FullDoctor> {
+  const query = `SELECT * FROM Doctors WHERE ${field} = $1`;
+  
+  return await runQuery<DoctorRow, FullDoctor>(query, [value], mapDoctorRowToFullDoctor, {
+    expectSingleRow: true,
+    throwIfNoRows: true,
+  });
 }
