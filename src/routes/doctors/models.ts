@@ -2,30 +2,25 @@ import { mapDoctorRowToFullDoctor } from './types';
 import { runQuery } from '../../db/utils.ts';
 import type { Doctor, DoctorRow, FullDoctor, InsertDoctor } from './types';
 
-
-function buildInsertData<T extends Record<string, unknown>>(obj: T) {
-  const camelToSnake = (s: string) =>
-    s.replace(/[A-Z]/g, (c) => '_' + c.toLowerCase());
-
-  const keys = Object.keys(obj);
-  const columns = keys.map(camelToSnake).join(', ');
-  const values = keys.map(k => obj[k]);
-  const placeholders = keys.map((_, i) => `$${i + 1}`).join(', ');
-
-  const insertFragment = `(${columns}) VALUES (${placeholders})`;
-
-  return {
-    values,
-    columns,
-    placeholders,
-    insertFragment
-  };
-}
-
 export async function insertDoctor(data: InsertDoctor): Promise<Pick<Doctor, 'id'>> {
-  const { values, insertFragment } = buildInsertData(data);
+  const { passwordHash, firstName, lastName, email, phoneNumber, crm, cpf, speciality, role } =
+    data;
+
+  const values = [
+    firstName,
+    lastName,
+    email,
+    phoneNumber,
+    crm,
+    cpf,
+    speciality,
+    role,
+    passwordHash,
+  ];
+
   const query = `
-    INSERT INTO doctors ${insertFragment}
+    INSERT INTO doctors (first_name, last_name, email, phone_number, crm, cpf, speciality, role, password_hash)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
     RETURNING id
   `;
 
@@ -49,7 +44,7 @@ export async function selectDoctorByField(
   value: string | number
 ): Promise<FullDoctor> {
   const query = `SELECT * FROM Doctors WHERE ${field} = $1`;
-  
+
   return await runQuery<DoctorRow, FullDoctor>(query, [value], mapDoctorRowToFullDoctor, {
     expectSingleRow: true,
     throwIfNoRows: true,

@@ -2,7 +2,7 @@
 import xss from 'xss';
 import type { Context } from 'elysia';
 
-function sanitize(value: any): any {
+export function sanitize(value: any): any {
   if (typeof value === 'string') return xss(value);
   if (Array.isArray(value)) return value.map(sanitize);
   if (typeof value === 'object' && value !== null) {

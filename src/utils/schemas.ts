@@ -1,6 +1,20 @@
 import { t } from 'elysia';
 import { makeBadRequestError, makeValidationError } from './AppError';
 
+export const loginSchema = t.Object({
+  email: t.String({
+    format: 'email',
+    example: 'user@example.com',
+    ...makeValidationError('Email must be a valid email address'),
+  }),
+  password: t.String({
+    minLength: 6,
+    maxLength: 30,
+    example: '12345678',
+    ...makeValidationError('Password must be between 6 and 30 characters long'),
+  }),
+});
+
 export const tokenSchema = t.Object({
   token: t.String({
     example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',

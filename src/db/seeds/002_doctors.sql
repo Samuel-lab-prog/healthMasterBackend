@@ -12,12 +12,12 @@ INSERT INTO
         cpf
     )
 VALUES (
-        'Dr. Emily',
+        'Emily',
         'Clark',
         'Cardiology',
         '456-789-0123',
         'emily.clark@example.com',
-        '$2a$10$7QJH6jF1Zp1Zp1Zp1Zp1uE6jF1Zp1Zp1Zp1Zp1Zp1Zp1Zp1Zp1Zp1Zp1',
+        '$2b$10$Cq9c5B2qo5N/gOOAjVAMi.V7nMURPZZQ6DqeslRgP1ThpVczXJjKG',
         'CRM123456',
         'doctor',
         '1980-05-15',
@@ -38,12 +38,12 @@ INSERT INTO
         cpf
     )
 VALUES (
-        'Dr. Michael',
+        'Michael',
         'Brown',
         'Dermatology',
         '567-890-1234',
         'michael.brown@example.com',
-        '$2a$10$7QJH6jF1Zp1Zp1Zp1Zp1uE6jF1Zp1Zp1Zp1Zp1Zp1Zp1Zp1Zp1Zp1Zp1',
+        '$2b$10$Cq9c5B2qo5N/gOOAjVAMi.V7nMURPZZQ6DqeslRgP1ThpVczXJjKG',
         'CRM654321',
         'doctor',
         '1978-09-23',
@@ -64,12 +64,12 @@ INSERT INTO
         cpf
     )
 VALUES (
-        'Dr. Sarah',
+        'Sarah',
         'Davis',
         'Pediatrics',
         '678-901-2345',
         'sarah.davis@example.com',
-        '$2a$10$7QJH6jF1Zp1Zp1Zp1Zp1uE6jF1Zp1Zp1Zp1Zp1Zp1Zp1Zp1Zp1Zp1Zp1',
+        '$2b$10$Cq9c5B2qo5N/gOOAjVAMi.V7nMURPZZQ6DqeslRgP1ThpVczXJjKG',
         'CRM789012',
         'doctor',
         '1985-04-12',
@@ -90,14 +90,14 @@ INSERT INTO
         cpf
     )
 VALUES (
-        'Dr. David',
+        'David',
         'Wilson',
         'Orthopedics',
         '789-012-3456',
         'admin@gmail.com',
         '$2b$10$Cq9c5B2qo5N/gOOAjVAMi.V7nMURPZZQ6DqeslRgP1ThpVczXJjKG',
         'CRM890123',
-        'doctor',
+        'admin',
         '1970-11-30',
         '456.789.012-33'
     );

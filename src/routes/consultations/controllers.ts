@@ -12,33 +12,38 @@ import {
   userConsultationSchema,
   doctorConsultationSchema,
 } from './schemas.ts';
-import { idSchema, tokenSchema } from '../../utils/schemas.ts';
-import { authenticateDoctor } from '../doctors/services.ts';
+import { idSchema } from '../../utils/schemas.ts';
+import { AuthPlugin } from '../../plugins/auth.ts';
 
 export const consultationRouter = (app: Elysia) =>
   app.group('/consultations', (app) =>
     app
-      .state('doctorId', 0)
-      .guard({
-        // All routes below require doctor login authentication
-        cookie: tokenSchema,
-        beforeHandle: async ({ cookie, store }) => {
-          const doctor = await authenticateDoctor(cookie.token.value);
-          store.doctorId = doctor.id;
+      .use(AuthPlugin())
+      .get(
+        '/users/:userId',
+        async ({ params }) => {
+          return await getUserConsultationsByUserId(params.userId);
         },
-        response: {
-          400: appErrorSchema,
-          401: appErrorSchema,
-          403: appErrorSchema,
-        },
-      })
+        {
+          params: t.Object({ userId: idSchema }),
+          response: {
+            200: t.Array(userConsultationSchema),
+            404: appErrorSchema,
+            500: appErrorSchema,
+          },
+          detail: {
+            summary: 'Get Consultations from User',
+            description: 'Retrieves all Consultations for a given User ID.',
+            tags: ['Consultations'],
+          },
+        }
+      )
+      .use(AuthPlugin('doctor'))
       .post(
         '/',
         async ({ body, set }) => {
-          console.log('Registering consultation with body:', body);
-          const consultation = await registerConsultation(body);
           set.status = 201;
-          return consultation;
+          return await registerConsultation(body);
         },
         {
           body: postConsultationSchema,
@@ -75,29 +80,9 @@ export const consultationRouter = (app: Elysia) =>
         }
       )
       .get(
-        '/users/:userId',
-        async ({ params }) => {
-          return await getUserConsultationsByUserId(params.userId);
-        },
-        {
-          params: t.Object({ userId: idSchema }),
-          response: {
-            200: t.Array(userConsultationSchema),
-            404: appErrorSchema,
-            500: appErrorSchema,
-          },
-          detail: {
-            summary: 'Get Consultations from User',
-            description: 'Retrieves all Consultations for a given User ID.',
-            tags: ['Consultations'],
-          },
-        }
-      )
-      .get(
         '/doctors/:doctorId',
         async ({ params }) => {
-          const result = await getDoctorConsultationsByDoctorId(params.doctorId);
-          return result;
+          return await getDoctorConsultationsByDoctorId(params.doctorId);
         },
         {
           params: t.Object({ doctorId: idSchema }),

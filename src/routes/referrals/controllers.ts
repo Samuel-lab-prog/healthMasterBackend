@@ -9,21 +9,34 @@ import {
   getDoctorReferralsByDoctorId,
 } from './services';
 import { postReferralSchema, referralSchema } from './schemas.ts';
-import { tokenSchema, idSchema } from '../../utils/schemas.ts';
-import { authenticateDoctor } from '../doctors/services.ts';
+import { idSchema } from '../../utils/schemas.ts';
+import { AuthPlugin } from '../../plugins/auth.ts';
 
 export const referralRouter = (app: Elysia) =>
   app.group('/referrals', (app) =>
     app
-      .state('doctorId', 0)
-      .guard({
-        // All routes below require doctor login authentication
-        cookie: tokenSchema,
-        beforeHandle: async ({ cookie, store }) => {
-          const doctor = await authenticateDoctor(cookie.token.value);
-          store.doctorId = doctor.id;
+      .use(AuthPlugin())
+      .get(
+        '/user/:userId',
+        async ({ params }) => {
+          return await getUserReferralsByUserId(params.userId);
         },
-      })
+        {
+          params: t.Object({ userId: idSchema }),
+          response: {
+            200: t.Array(referralSchema),
+            400: appErrorSchema,
+            404: appErrorSchema,
+            500: appErrorSchema,
+          },
+          detail: {
+            summary: 'Get Referrals by User ID',
+            description: 'Retrieves Referrals by the given user ID.',
+            tags: ['Referrals'],
+          },
+        }
+      )
+      .use(AuthPlugin('doctor'))
       .post(
         '/',
         async ({ body, set }) => {
@@ -98,26 +111,6 @@ export const referralRouter = (app: Elysia) =>
           detail: {
             summary: 'Get Referrals by Consultation ID',
             description: 'Retrieves Referrals by the given consultation ID.',
-            tags: ['Referrals'],
-          },
-        }
-      )
-      .get(
-        '/user/:userId',
-        async ({ params }) => {
-          return await getUserReferralsByUserId(params.userId);
-        },
-        {
-          params: t.Object({ userId: idSchema }),
-          response: {
-            200: t.Array(referralSchema),
-            400: appErrorSchema,
-            404: appErrorSchema,
-            500: appErrorSchema,
-          },
-          detail: {
-            summary: 'Get Referrals by User ID',
-            description: 'Retrieves Referrals by the given user ID.',
             tags: ['Referrals'],
           },
         }

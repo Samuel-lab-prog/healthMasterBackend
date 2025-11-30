@@ -1,17 +1,35 @@
 import Elysia from 'elysia';
-import { openapi } from '@elysiajs/openapi';
 import cors from '@elysiajs/cors';
+import { openapi } from '@elysiajs/openapi';
 import { handleError } from './utils/middlewares/handleError';
-import { xssClean } from './utils/middlewares/xssClean';
+import { sanitize } from './utils/middlewares/xssClean';
 import { userRouter } from './routes/users/controllers';
 import { doctorRouter } from './routes/doctors/controllers';
 import { consultationRouter } from './routes/consultations/controllers';
 import { referralRouter } from './routes/referrals/controllers';
+import { authRouter } from './routes/auth/controllers';
+import { StatePlugin } from './plugins/states';
+import { BunAdapter } from 'elysia/adapter/bun';
 
-new Elysia()
+const PREFIX = '/api/v1';
+const INSTANCE_NAME = 'mainServerInstance';
+const HOST_NAME = '0.0.0.0';
+const PORT = Number(process.env.PORT) || 3000;
+
+new Elysia({
+  adapter: BunAdapter,
+  name: INSTANCE_NAME,
+  prefix: PREFIX,
+  sanitize: (value) => sanitize(value),
+  serve: {
+    hostname: HOST_NAME,
+    port: PORT,
+  },
+})
   .onError(async ({ error, set }) => handleError(set, error))
   .use(cors())
-  .onBeforeHandle((ctx) => xssClean(ctx))
+  .use(StatePlugin)
+  .use(authRouter)
   .use(userRouter)
   .use(doctorRouter)
   .use(referralRouter)
@@ -28,9 +46,6 @@ new Elysia()
       },
     })
   )
-  .listen({
-    port: Number(process.env.PORT) || 3000,
-    hostname: '0.0.0.0',
-  });
+  .listen({ hostname: HOST_NAME, port: PORT });
 
-console.log('Server running at http://localhost:' + (process.env.PORT || 3000));
+console.log('Server running at http://' + HOST_NAME + ':' + PORT + PREFIX + '/docs');

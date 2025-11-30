@@ -77,56 +77,56 @@ export async function runQuery<Row, T>(
   if (!expectSingleRow) {
     entity = pluralize(entity);
   }
-    try {
-      const { rows, command } = await pool.query(query, params);
+  try {
+    const { rows, command } = await pool.query(query, params);
 
-      if (!expectSingleRow) {
-        if (throwIfNoRows && rows.length === 0) {
-          throwNotFoundError(`${entity} not found for ${keyName}=${keyValue}`);
-        }
-        return rows.map(mapper);
+    if (!expectSingleRow) {
+      if (throwIfNoRows && rows.length === 0) {
+        throwNotFoundError(`${entity} not found for ${keyName}=${keyValue}`);
       }
-
-      if (rows.length === 0) {
-        if (command === 'INSERT') {
-          throwDatabaseError(`No rows returned from INSERT query in ${entity}`);
-        }
-        if (command === 'SELECT') {
-          throwNotFoundError(`${entity} not found for ${keyName}=${keyValue}`);
-        }
-        if (command === 'UPDATE' || command === 'DELETE') {
-          throwDatabaseError(`No rows affected by ${command} query in ${entity}`);
-        }
-      }
-
-      if (rows.length > 1) {
-        throwDatabaseError(`Expected a single row but got ${rows.length}`);
-      }
-      return mapper(rows[0]);
-    } catch (error) {
-      if (error instanceof AppError) throw error;
-
-      if (error instanceof DatabaseError) {
-        const fieldFromDetail =
-          error.detail?.match(/Key \(([^)=]+)\)/)?.[1] ?? error.detail?.match(/\(([^)=]+)\)=\(/)?.[1];
-
-        const camelField = fieldFromDetail ? toCamelCase(fieldFromDetail) : undefined;
-
-        if (error.code === '23505') {
-          throwConflictError(`${camelField ?? 'field'} already exists`);
-        }
-
-        if (error.code === '23503') {
-          throwBadRequestError(`${camelField ?? 'field'} foreign key does not exist`);
-        }
-
-        if (error.code === '23502') {
-          throwBadRequestError(`${camelField ?? 'field'} cannot be null`);
-        }
-
-        throwDatabaseError();
-      }
-
-      throwServerError();
+      return rows.map(mapper);
     }
+
+    if (rows.length === 0) {
+      if (command === 'INSERT') {
+        throwDatabaseError(`No rows returned from INSERT query in ${entity}`);
+      }
+      if (command === 'SELECT') {
+        throwNotFoundError(`${entity} not found for ${keyName}=${keyValue}`);
+      }
+      if (command === 'UPDATE' || command === 'DELETE') {
+        throwDatabaseError(`No rows affected by ${command} query in ${entity}`);
+      }
+    }
+
+    if (rows.length > 1) {
+      throwDatabaseError(`Expected a single row but got ${rows.length}`);
+    }
+    return mapper(rows[0]);
+  } catch (error) {
+    if (error instanceof AppError) throw error;
+
+    if (error instanceof DatabaseError) {
+      const fieldFromDetail =
+        error.detail?.match(/Key \(([^)=]+)\)/)?.[1] ?? error.detail?.match(/\(([^)=]+)\)=\(/)?.[1];
+
+      const camelField = fieldFromDetail ? toCamelCase(fieldFromDetail) : undefined;
+
+      if (error.code === '23505') {
+        throwConflictError(`${camelField ?? 'field'} already exists`);
+      }
+
+      if (error.code === '23503') {
+        throwBadRequestError(`${camelField ?? 'field'} foreign key does not exist`);
+      }
+
+      if (error.code === '23502') {
+        throwBadRequestError(`${camelField ?? 'field'} cannot be null`);
+      }
+
+      throwDatabaseError();
+    }
+
+    throwServerError();
   }
+}

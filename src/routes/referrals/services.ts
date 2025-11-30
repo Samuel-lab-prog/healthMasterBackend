@@ -12,7 +12,6 @@ import { throwNotFoundError } from '../../utils/AppError.ts';
 
 export async function registerReferral(body: PostReferral): Promise<Pick<Referral, 'id'>> {
   return await insertReferral(body);
-
 }
 
 export async function getReferralById(id: number): Promise<Referral> {
