@@ -15,32 +15,25 @@ model Consultation {
   notes     String
   createdAt DateTime   @default(now())
   updatedAt String?
-
   doctor    Doctor     @relation(fields: [doctorId], references: [id])
   user      User       @relation(fields: [userId], references: [id])
-
   referrals Referral[]
 }
 
-enum Role {
-  doctor
-  admin
-}
-
 model Doctor {
-  id           Int            @id @default(autoincrement())
-  firstName    String
-  lastName     String
-  speciality   String
-  phoneNumber  String         @unique
-  birthDate    String
-  email        String         @unique
-  password     String
-  crm          String         @unique
-  cpf          String        @unique
-  role         Role          @default(doctor) 
-  createdAt    DateTime       @default(now())
-  updatedAt    String?
+  id            Int            @id @default(autoincrement())
+  firstName     String
+  lastName      String
+  speciality    String
+  phoneNumber   String         @unique
+  birthDate     String
+  email         String         @unique
+  password      String
+  crm           String         @unique
+  cpf           String         @unique
+  role          Role           @default(doctor)
+  createdAt     DateTime       @default(now())
+  updatedAt     String?
   consultations Consultation[]
 }
 
@@ -50,20 +43,24 @@ model Referral {
   consultationId Int
   createdAt      DateTime     @default(now())
   updatedAt      String?
-  consultation  Consultation @relation(fields: [consultationId], references: [id])
+  consultation   Consultation @relation(fields: [consultationId], references: [id])
 }
 
 model User {
-  id           Int            @id @default(autoincrement())
-  firstName    String
-  lastName     String
-  phoneNumber  String         @unique
-  email        String         @unique
-  cpf          String         @unique
-  birthDate    String
-  password     String
-  createdAt    DateTime       @default(now())
-  updatedAt    String?
+  id            Int            @id @default(autoincrement())
+  firstName     String
+  lastName      String
+  phoneNumber   String         @unique
+  email         String         @unique
+  cpf           String         @unique
+  birthDate     String
+  password      String
+  createdAt     DateTime       @default(now())
+  updatedAt     String?
   consultations Consultation[]
 }
 
+enum Role {
+  doctor
+  admin
+}
