@@ -32,7 +32,9 @@ export const authRouter = (app: Elysia) =>
         body: loginSchema,
         response: {
           200: t.Union([userSchema, doctorSchema]),
-          404: appErrorSchema,
+          400: appErrorSchema,
+          401: appErrorSchema,
+          422: appErrorSchema,
           500: appErrorSchema,
         },
         detail: {

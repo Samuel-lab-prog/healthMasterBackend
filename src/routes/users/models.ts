@@ -1,53 +1,30 @@
-import { mapUserRowToFullUser } from './types.ts';
-import { runQuery, createParams } from '../../db/utils.ts';
-import type { User, FullUser, UserRow, InsertUser } from './types.ts';
+import { prisma } from '../../prisma/client.ts';
+import type { Prisma } from '../../prisma/generated/prisma/client.ts';
+import { withPrismaErrorHandling } from '../../utils/AppError.ts';
+import type { UserCreateInput } from '../../prisma/generated/prisma/models';
 
-async function selectUserInternal(
-  field: 'email' | 'id' | 'phone_number' | 'cpf',
+type UserRow = Prisma.UserGetPayload<object>;
+
+export async function insertUser(userData: UserCreateInput): Promise<Pick<UserRow, 'id'> | null> {
+  return (
+    withPrismaErrorHandling<Pick<UserRow, 'id'>>(() =>
+      prisma.user.create({
+        data: userData,
+        select: {
+          id: true,
+        },
+      })
+    ) ?? null
+  );
+}
+
+export async function selectUserByField(
+  field: 'email' | 'id' | 'phoneNumber' | 'cpf',
   value: string | number
-): Promise<FullUser | null> {
-  const query = `SELECT * FROM users WHERE ${field} = $1`;
-
-  const rows = await runQuery<UserRow, FullUser>(query, [value], mapUserRowToFullUser);
-  return rows[0] ?? null;
+): Promise<UserRow | null> {
+  return withPrismaErrorHandling<UserRow>(() => prisma.user.$selectByField(field, value));
 }
 
-export async function selectUserByEmail(email: string): Promise<FullUser | null> {
-  return await selectUserInternal('email', email);
-}
-
-export async function selectUserById(id: number): Promise<FullUser | null> {
-  return await selectUserInternal('id', id);
-}
-
-export async function selectUserByPhoneNumber(phoneNumber: string): Promise<FullUser | null> {
-  return await selectUserInternal('phone_number', phoneNumber);
-}
-
-export async function selectUserByCPF(cpf: string): Promise<FullUser | null> {
-  return await selectUserInternal('cpf', cpf);
-}
-
-export async function insertUser(userData: InsertUser): Promise<Pick<User, 'id'> | null> {
-  const values = [
-    userData.firstName,
-    userData.lastName,
-    userData.email,
-    userData.passwordHash,
-    userData.phoneNumber,
-    userData.cpf,
-    userData.birthDate,
-  ];
-
-  const placeholders = createParams(values);
-  const query = `
-    INSERT INTO users (first_name, last_name, email, password_hash, phone_number, cpf, birth_date)
-    VALUES (${placeholders})
-    RETURNING id
-  `;
-
-  const rows = await runQuery<{ id: number }, { id: number }>(query, values, (row) => ({
-    id: row.id,
-  }));
-  return rows[0] ?? null;
+export async function selectAllUsers(): Promise<UserRow[] | null> {
+  return withPrismaErrorHandling<UserRow[]>(() => prisma.user.findMany()) || [];
 }

@@ -16,7 +16,6 @@ export const doctorRouter = (app: Elysia) =>
         {
           response: {
             200: t.Array(doctorSchema),
-            404: appErrorSchema,
             500: appErrorSchema,
           },
           detail: {
@@ -37,7 +36,11 @@ export const doctorRouter = (app: Elysia) =>
           body: postDoctorSchema,
           response: {
             201: t.Object({ id: idSchema }),
+            400: appErrorSchema,
+            401: appErrorSchema,
+            403: appErrorSchema,
             409: appErrorSchema,
+            422: appErrorSchema,
           },
           detail: {
             summary: 'Register',

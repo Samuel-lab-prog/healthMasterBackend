@@ -1,14 +1,7 @@
 import { Elysia, t } from 'elysia';
 import { appErrorSchema } from '../../utils/AppError.ts';
-import {
-  getReferralById,
-  registerReferral,
-  getAllReferrals,
-  getReferralsByConsultationId,
-  getUserReferralsByUserId,
-  getDoctorReferralsByDoctorId,
-} from './services';
-import { postReferralSchema, referralSchema } from './schemas.ts';
+import * as services from './services';
+import * as schemas from './schemas.ts';
 import { idSchema } from '../../utils/schemas.ts';
 import { AuthPlugin } from '../../plugins/auth.ts';
 
@@ -19,12 +12,12 @@ export const referralRouter = (app: Elysia) =>
       .get(
         '/user/:userId',
         async ({ params }) => {
-          return await getUserReferralsByUserId(params.userId);
+          return await services.getUserReferralsByUserId(params.userId);
         },
         {
           params: t.Object({ userId: idSchema }),
           response: {
-            200: t.Array(referralSchema),
+            200: t.Array(schemas.userReferralSchema),
             400: appErrorSchema,
             404: appErrorSchema,
             500: appErrorSchema,
@@ -41,10 +34,10 @@ export const referralRouter = (app: Elysia) =>
         '/',
         async ({ body, set }) => {
           set.status = 201;
-          return await registerReferral(body);
+          return await services.registerReferral(body);
         },
         {
-          body: postReferralSchema,
+          body: schemas.postReferralSchema,
           response: {
             201: t.Object({ id: idSchema }),
             400: appErrorSchema,
@@ -61,11 +54,11 @@ export const referralRouter = (app: Elysia) =>
       .get(
         '/',
         async () => {
-          return await getAllReferrals();
+          return await services.getAllReferrals();
         },
         {
           response: {
-            200: t.Array(referralSchema),
+            200: t.Array(schemas.referralSchema),
             500: appErrorSchema,
           },
           detail: {
@@ -78,12 +71,12 @@ export const referralRouter = (app: Elysia) =>
       .get(
         '/:id',
         async ({ params }) => {
-          return await getReferralById(params.id);
+          return await services.getReferralById(params.id);
         },
         {
           params: t.Object({ id: idSchema }),
           response: {
-            200: referralSchema,
+            200: schemas.referralSchema,
             400: appErrorSchema,
             404: appErrorSchema,
             500: appErrorSchema,
@@ -98,12 +91,12 @@ export const referralRouter = (app: Elysia) =>
       .get(
         '/consultation/:consultationId',
         async ({ params }) => {
-          return await getReferralsByConsultationId(params.consultationId);
+          return await services.getReferralsByConsultationId(params.consultationId);
         },
         {
           params: t.Object({ consultationId: idSchema }),
           response: {
-            200: t.Array(referralSchema),
+            200: t.Array(schemas.referralSchema),
             400: appErrorSchema,
             404: appErrorSchema,
             500: appErrorSchema,
@@ -118,12 +111,12 @@ export const referralRouter = (app: Elysia) =>
       .get(
         '/doctor/:doctorId',
         async ({ params }) => {
-          return await getDoctorReferralsByDoctorId(params.doctorId);
+          return await services.getDoctorReferralsByDoctorId(params.doctorId);
         },
         {
           params: t.Object({ doctorId: idSchema }),
           response: {
-            200: t.Array(referralSchema),
+            200: t.Array(schemas.doctorReferralSchema),
             400: appErrorSchema,
             404: appErrorSchema,
             500: appErrorSchema,

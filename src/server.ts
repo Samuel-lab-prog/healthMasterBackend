@@ -13,7 +13,7 @@ import { BunAdapter } from 'elysia/adapter/bun';
 
 const PREFIX = '/api/v1';
 const INSTANCE_NAME = 'mainServerInstance';
-const HOST_NAME = '0.0.0.0';
+const HOST_NAME = 'localhost';
 const PORT = Number(process.env.PORT) || 3000;
 
 new Elysia({

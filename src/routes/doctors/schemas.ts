@@ -50,19 +50,6 @@ export const postDoctorSchema = t.Object({
   role: roleSchema,
 });
 
-export const insertDoctorSchema = t.Object({
-  firstName: firstNameSchema,
-  lastName: lastNameSchema,
-  birthDate: stringDateSchema,
-  email: emailSchema,
-  cpf: cpfSchema,
-  speciality: specialitySchema,
-  crm: crmSchema,
-  phoneNumber: phoneNumberSchema,
-  passwordHash: t.String(),
-  role: roleSchema,
-});
-
 export const doctorSchema = t.Object({
   id: idSchema,
   firstName: firstNameSchema,
@@ -91,5 +78,5 @@ export const fullDoctorSchema = t.Object({
   crm: crmSchema,
   createdAt: createdAtSchema,
   updatedAt: updatedAtSchema,
-  passwordHash: t.String(),
+  password: t.String(),
 });

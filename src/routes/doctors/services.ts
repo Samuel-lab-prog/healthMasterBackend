@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import { insertDoctor, selectAllDoctors } from './models.ts';
 import { mapFullDoctorToDoctor } from './types.ts';
 import type { PostDoctor, Doctor } from './types.ts';
+import { throwServerError } from '../../utils/AppError.ts';
 
 export async function registerDoctor(body: PostDoctor): Promise<Pick<Doctor, 'id'>> {
   const passwordHash = await bcrypt.hash(
@@ -11,9 +12,12 @@ export async function registerDoctor(body: PostDoctor): Promise<Pick<Doctor, 'id
 
   const result = await insertDoctor({
     ...body,
-    passwordHash: passwordHash,
+    password: passwordHash,
   });
 
+  if (!result) {
+    throwServerError();
+  }
   return result;
 }
 

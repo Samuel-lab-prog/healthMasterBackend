@@ -16,6 +16,7 @@ export const userRouter = (app: Elysia) =>
         body: postUserSchema,
         response: {
           201: t.Object({ id: idSchema }),
+          400: appErrorSchema,
           422: appErrorSchema,
           409: appErrorSchema,
           500: appErrorSchema,

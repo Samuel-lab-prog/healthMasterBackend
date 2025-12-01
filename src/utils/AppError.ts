@@ -1,8 +1,66 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { t } from 'elysia';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/client';
+
+export function handlePrismaError<T>(error: PrismaClientKnownRequestError, data?: T): never {
+  const table = (error.meta as any)?.modelName || 'unknown';
+
+  switch (error.code) {
+    case 'P2002':
+      {
+        let fields: string[] = [];
+        const originalMsg = (error.meta as any)?.driverAdapterError?.cause?.originalMessage as
+          | string
+          | undefined;
+
+        if (originalMsg) {
+          const matches = [...originalMsg.matchAll(/"(?:[a-zA-Z0-9]+_)?([a-zA-Z0-9_]+)_key"/g)];
+          if (matches.length > 0) {
+            fields = matches.map((m) => m[1]).filter((s): s is string => typeof s === 'string');
+          }
+        }
+
+        if (fields.length === 0) fields = ['field'];
+
+        const isRecord = data !== undefined && data !== null && typeof data === 'object';
+        const d = data as Record<string, unknown> | undefined;
+        const messages = fields.map((f) =>
+          isRecord && f in (d as Record<string, unknown>) ? `${f} = ${String(d![f])}` : f
+        );
+        const finalMessage = `unique ${messages.join(', ')} already exists in ${table}`;
+
+        throwConflictError(finalMessage);
+      }
+      break;
+    case 'P2003':
+      {
+        const fkField = (error.meta as any)?.field_name || 'foreign key';
+        throwConflictError(`foreign key constraint failed on ${fkField} in ${table}`);
+      }
+      break;
+    default:
+      throw error;
+  }
+}
+
+export async function withPrismaErrorHandling<T>(callback: () => Promise<T>): Promise<T> {
+  try {
+    return await callback();
+  } catch (error) {
+    if (error instanceof PrismaClientKnownRequestError) {
+      handlePrismaError(error);
+    }
+    throwDatabaseError((error as Error).message);
+  }
+}
 
 export const appErrorSchema = t.Object({
   errorMessages: t.Array(t.String()),
-  statusCode: t.Number(),
+  statusCode: t.Number({
+    minimum: 400,
+    maximum: 599,
+    errorMessage: 'Error status code must be between 400 and 599',
+  }),
 });
 
 export function makeValidationError(message: string) {
@@ -50,7 +108,6 @@ export class AppError extends Error {
   }
 }
 
-// Utility functions for common error scenarios
 export function throwBadRequestError(message: string = 'Bad request'): never {
   throw new AppError({
     statusCode: 400,

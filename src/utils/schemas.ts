@@ -83,6 +83,13 @@ export const lastNameSchema = t.String({
   ...makeValidationError('Last name must be between 3 and 30 characters long'),
 });
 
+export const fullNameSchema = t.String({
+  minLength: 6,
+  maxLength: 60,
+  example: 'David Smith',
+  ...makeValidationError('Full name must be between 6 and 60 characters long'),
+});
+
 export const notesSchema = t.String({
   minLength: 10,
   maxLength: 1000,

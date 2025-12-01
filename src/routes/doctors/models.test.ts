@@ -1,32 +1,30 @@
 import { describe, it, beforeEach, expect } from 'bun:test';
-import { pool } from '../../db/connection.ts';
-
+import { prisma } from '../../prisma/client.ts';
+import type { DoctorCreateInput } from '../../prisma/generated/prisma/models';
+import { AppError } from '../../utils/AppError.ts';
 import { insertDoctor, selectDoctorByField, selectAllDoctors } from './models';
 
-import type { InsertDoctor } from './types';
-import { AppError } from '../../utils/AppError.ts';
-
-const DEFAULT_DOCTOR: InsertDoctor = {
+const DEFAULT_DOCTOR: DoctorCreateInput = {
   firstName: 'John',
   lastName: 'Doe',
-  cpf: '123.456.789-00',
+  cpf: '12345678900',
   birthDate: '1980-01-01',
   email: 'john@example.com',
   role: 'doctor',
-  passwordHash: 'hash123',
+  password: 'hash123',
   phoneNumber: '99999999',
   speciality: 'Cardiology',
   crm: '123456',
 };
 
-const TEST_DOCTOR: InsertDoctor = {
+const TEST_DOCTOR: DoctorCreateInput = {
   firstName: 'Jane',
   lastName: 'Doe',
-  cpf: '987.654.321-00',
+  cpf: '98765432100',
   birthDate: '1990-02-02',
   email: 'jane@example.com',
   role: 'doctor',
-  passwordHash: 'hash456',
+  password: 'hash456',
   phoneNumber: '88888888',
   speciality: 'Neurology',
   crm: '654321',
@@ -35,98 +33,108 @@ const TEST_DOCTOR: InsertDoctor = {
 let DEFAULT_DOCTOR_ID: number;
 
 beforeEach(async () => {
-  await pool.query('DELETE FROM referrals');
-  await pool.query('DELETE FROM consultations');
-  await pool.query('DELETE FROM doctors');
+  await prisma.referral.deleteMany();
+  await prisma.consultation.deleteMany();
+  await prisma.doctor.deleteMany();
+
   DEFAULT_DOCTOR_ID = (await insertDoctor(DEFAULT_DOCTOR))!.id;
 });
 
 describe('Doctor Model Tests', () => {
   it('insertDoctor → Should insert and return an id', async () => {
     const result = await insertDoctor(TEST_DOCTOR);
-
+    expect(result).not.toBeNull();
     expect(result).toHaveProperty('id');
     expect(typeof result!.id).toBe('number');
   });
 
   it('insertDoctor → Should throw AppError for duplicated email', async () => {
-    expect(insertDoctor({ ...TEST_DOCTOR, email: DEFAULT_DOCTOR.email })).rejects.toThrow(AppError);
+    await expect(insertDoctor({ ...TEST_DOCTOR, email: DEFAULT_DOCTOR.email })).rejects.toThrow(
+      AppError
+    );
   });
 
   it('insertDoctor → Should throw AppError for duplicated CPF', async () => {
-    expect(insertDoctor({ ...TEST_DOCTOR, cpf: DEFAULT_DOCTOR.cpf })).rejects.toThrow(AppError);
+    await expect(insertDoctor({ ...TEST_DOCTOR, cpf: DEFAULT_DOCTOR.cpf })).rejects.toThrow(
+      AppError
+    );
   });
 
   it('insertDoctor → Should throw AppError for duplicated CRM', async () => {
-    expect(insertDoctor({ ...TEST_DOCTOR, crm: DEFAULT_DOCTOR.crm })).rejects.toThrow(AppError);
+    await expect(insertDoctor({ ...TEST_DOCTOR, crm: DEFAULT_DOCTOR.crm })).rejects.toThrow(
+      AppError
+    );
   });
 
   it('insertDoctor → Should throw AppError for duplicated phone number', async () => {
-    expect(
-      insertDoctor({ ...TEST_DOCTOR, phoneNumber: DEFAULT_DOCTOR.phoneNumber! })
+    await expect(
+      insertDoctor({ ...TEST_DOCTOR, phoneNumber: DEFAULT_DOCTOR.phoneNumber })
     ).rejects.toThrow(AppError);
   });
 
-  it('selectDoctorByField → Should return a Doctor', async () => {
-    const Doctor = await selectDoctorByField('id', DEFAULT_DOCTOR_ID);
-
-    expect(Doctor).not.toBeNull();
-    expect(Doctor?.id).toBe(DEFAULT_DOCTOR_ID);
+  it('selectDoctorByField → Should return doctor by id', async () => {
+    const doctor = await selectDoctorByField('id', DEFAULT_DOCTOR_ID);
+    expect(doctor).not.toBeNull();
+    expect(doctor!.id).toBe(DEFAULT_DOCTOR_ID);
   });
 
-  it('selectDoctorByField → Should throw AppError for non-existing id', async () => {
-    await expect(selectDoctorByField('id', 9999)).rejects.toThrow(AppError);
+  it('selectDoctorByField → Should return null for non-existing id', async () => {
+    const doctor = await selectDoctorByField('id', 9999);
+    expect(doctor).toBeNull();
   });
 
-  it('selectDoctorByField → Should return a Doctor', async () => {
-    const Doctor = await selectDoctorByField('email', DEFAULT_DOCTOR.email);
-
-    expect(Doctor).not.toBeNull();
-    expect(Doctor?.email).toBe(DEFAULT_DOCTOR.email);
+  it('selectDoctorByField → Should return doctor by email', async () => {
+    const doctor = await selectDoctorByField('email', DEFAULT_DOCTOR.email);
+    expect(doctor).not.toBeNull();
+    expect(doctor!.email).toBe(DEFAULT_DOCTOR.email);
   });
 
-  it('selectDoctorByField → Should throw AppError for non-existing email', async () => {
-    await expect(selectDoctorByField('email', 'nope@example.com')).rejects.toThrow(AppError);
+  it('selectDoctorByField → Should return null for non-existing email', async () => {
+    const doctor = await selectDoctorByField('email', 'nope@example.com');
+    expect(doctor).toBeNull();
   });
 
-  it('selectDoctorByField → Should return a Doctor', async () => {
-    const Doctor = await selectDoctorByField('phone_number', DEFAULT_DOCTOR.phoneNumber!);
-    expect(Doctor).not.toBeNull();
-    expect(Doctor?.phoneNumber).toBe(DEFAULT_DOCTOR.phoneNumber);
+  it('selectDoctorByField → Should return doctor by phoneNumber', async () => {
+    const doctor = await selectDoctorByField('phoneNumber', DEFAULT_DOCTOR.phoneNumber);
+    expect(doctor).not.toBeNull();
+    expect(doctor!.phoneNumber).toBe(DEFAULT_DOCTOR.phoneNumber);
   });
 
-  it('selectDoctorByField → Should throw AppError for non-existing phone', async () => {
-    await expect(selectDoctorByField('phone_number', 'not-a-phone')).rejects.toThrow(AppError);
+  it('selectDoctorByField → Should return null for non-existing phoneNumber', async () => {
+    const doctor = await selectDoctorByField('phoneNumber', '00000000000');
+    expect(doctor).toBeNull();
   });
 
-  it('selectDoctorByField → Should return a Doctor', async () => {
-    const Doctor = await selectDoctorByField('crm', DEFAULT_DOCTOR.crm);
-    expect(Doctor).not.toBeNull();
-    expect(Doctor?.crm).toBe(DEFAULT_DOCTOR.crm);
+  it('selectDoctorByField → Should return doctor by crm', async () => {
+    const doctor = await selectDoctorByField('crm', DEFAULT_DOCTOR.crm);
+    expect(doctor).not.toBeNull();
+    expect(doctor!.crm).toBe(DEFAULT_DOCTOR.crm);
   });
 
-  it('selectDoctorByField → Should throw AppError for non-existing CRM', async () => {
-    await expect(selectDoctorByField('crm', 'no-crm')).rejects.toThrow(AppError);
+  it('selectDoctorByField → Should return null for non-existing crm', async () => {
+    const doctor = await selectDoctorByField('crm', '000000');
+    expect(doctor).toBeNull();
   });
 
-  it('selectDoctorByField → Should return a Doctor', async () => {
-    const Doctor = await selectDoctorByField('cpf', DEFAULT_DOCTOR.cpf);
-    expect(Doctor).not.toBeNull();
-    expect(Doctor?.cpf).toBe(DEFAULT_DOCTOR.cpf);
+  it('selectDoctorByField → Should return doctor by cpf', async () => {
+    const doctor = await selectDoctorByField('cpf', DEFAULT_DOCTOR.cpf);
+    expect(doctor).not.toBeNull();
+    expect(doctor!.cpf).toBe(DEFAULT_DOCTOR.cpf);
   });
 
-  it('selectDoctorByField → Should throw AppError for non-existing CPF', async () => {
-    await expect(selectDoctorByField('cpf', '000.000.000-00')).rejects.toThrow(AppError);
+  it('selectDoctorByField → Should return null for non-existing cpf', async () => {
+    const doctor = await selectDoctorByField('cpf', '00000000000');
+    expect(doctor).toBeNull();
   });
 
-  it('selectAllDoctors → Should return all Doctors', async () => {
+  it('selectAllDoctors → Should return all doctors', async () => {
     await insertDoctor(TEST_DOCTOR);
     const doctors = await selectAllDoctors();
-    expect(doctors!.length).toBe(2);
+    expect(doctors.length).toBe(2);
   });
 
-  it('selectAllDoctors → Should return [] when no Doctors', async () => {
-    await pool.query('DELETE FROM doctors');
+  it('selectAllDoctors → Should return [] when no doctors', async () => {
+    await prisma.doctor.deleteMany();
     const doctors = await selectAllDoctors();
     expect(doctors).toEqual([]);
   });

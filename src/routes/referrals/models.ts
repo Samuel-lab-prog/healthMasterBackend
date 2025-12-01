@@ -1,83 +1,104 @@
-import { runQuery } from '../../db/utils.ts';
-import { mapReferralRowToFullReferral } from './types.ts';
-import type { Referral, FullReferral, ReferralRow, InsertReferral } from './types.ts';
+import { prisma } from '../../prisma/client.ts';
+import * as types from './types.ts';
+import { withPrismaErrorHandling } from '../../utils/AppError.ts';
 
-export async function selectReferralById(id: number): Promise<FullReferral> {
-  const query = `SELECT * FROM referrals WHERE id = $1`;
-  const referral = await runQuery<ReferralRow, FullReferral>(
-    query,
-    [id],
-    mapReferralRowToFullReferral,
-    { expectSingleRow: true, throwIfNoRows: true }
-  );
-  return referral;
+export async function insertReferral(
+  data: types.CreateReferral
+): Promise<Pick<types.ReferralRow, 'id'> | null> {
+  return withPrismaErrorHandling(async () => {
+    return (
+      (await prisma.referral.create({
+        data: data,
+        select: { id: true },
+      })) ?? null
+    );
+  });
 }
 
-export async function insertReferral(referralData: InsertReferral): Promise<Pick<Referral, 'id'>> {
-  const { notes, consultationId } = referralData;
-  const values = [consultationId, notes];
+const referralIncludes = {
+  consultation: {
+    include: {
+      user: {
+        select: { firstName: true, lastName: true, phoneNumber: true, email: true },
+      },
+      doctor: {
+        select: { firstName: true, lastName: true },
+      },
+    },
+  },
+};
 
-  const query = `
-    INSERT INTO referrals (consultation_id, notes)
-    VALUES ($1, $2)
-    RETURNING id
-  `;
+const userReferralIncludes = {
+  consultation: {
+    include: {
+      doctor: {
+        select: { firstName: true, lastName: true },
+      },
+    },
+  },
+};
 
-  const referral = await runQuery<{ id: number }, { id: number }>(
-    query,
-    values,
-    (row) => ({
-      id: row.id,
-    }),
-    { expectSingleRow: true }
+const doctorReferralIncludes = {
+  consultation: {
+    include: {
+      user: {
+        select: { firstName: true, lastName: true, phoneNumber: true, email: true },
+      },
+    },
+  },
+};
+
+export async function selectReferralById(referralId: number): Promise<types.ReferralRow | null> {
+  return (
+    withPrismaErrorHandling<types.ReferralRow | null>(() =>
+      prisma.referral.findUnique({
+        where: { id: referralId },
+        include: referralIncludes,
+      })
+    ) ?? null
   );
-  return referral;
 }
-
-export async function selectAllReferrals(): Promise<FullReferral[]> {
-  const query = `SELECT * FROM referrals`;
-  const rows = await runQuery<ReferralRow, FullReferral>(query, [], mapReferralRowToFullReferral);
-  return rows ?? [];
+export async function selectAllReferrals(): Promise<types.ReferralRow[]> {
+  return await withPrismaErrorHandling<types.ReferralRow[]>(() =>
+    prisma.referral.findMany({
+      include: referralIncludes,
+    })
+  );
 }
 
 export async function selectReferralsByConsultationId(
   consultationId: number
-): Promise<FullReferral[]> {
-  const query = `SELECT * FROM referrals WHERE consultation_id = $1`;
-  const rows = await runQuery<ReferralRow, FullReferral>(
-    query,
-    [consultationId],
-    mapReferralRowToFullReferral
+): Promise<types.ReferralRow[]> {
+  return withPrismaErrorHandling<types.ReferralRow[]>(() =>
+    prisma.referral.findMany({
+      where: { consultationId },
+      include: referralIncludes,
+    })
   );
-  return rows ?? [];
 }
 
-export async function selectUserReferralsByUserId(userId: number): Promise<FullReferral[]> {
-  const query = `SELECT
-    r.*
-  FROM referrals r
-  JOIN consultations c ON r.consultation_id = c.id
-  WHERE c.user_id = $1`;
-
-  const rows = await runQuery<ReferralRow, FullReferral>(
-    query,
-    [userId],
-    mapReferralRowToFullReferral
+export async function selectUserReferrals(userId: number): Promise<types.UserReferralRow[]> {
+  return await withPrismaErrorHandling<types.UserReferralRow[]>(() =>
+    prisma.referral.findMany({
+      where: {
+        consultation: {
+          userId,
+        },
+      },
+      include: userReferralIncludes,
+    })
   );
-  return rows ?? [];
 }
 
-export async function selectDoctorReferralsByDoctorId(doctorId: number): Promise<FullReferral[]> {
-  const query = `SELECT
-    r.*
-  FROM referrals r
-  JOIN consultations c ON r.consultation_id = c.id
-  WHERE c.doctor_id = $1`;
-
-  const rows = await runQuery<ReferralRow, FullReferral>(
-    query,
-    [doctorId],
-    mapReferralRowToFullReferral
+export async function selectDoctorReferrals(doctorId: number): Promise<types.DoctorReferralRow[]> {
+  return await withPrismaErrorHandling<types.DoctorReferralRow[]>(() =>
+    prisma.referral.findMany({
+      where: {
+        consultation: {
+          doctorId,
+        },
+      },
+      include: doctorReferralIncludes,
+    })
   );
-  return rows ?? [];
 }

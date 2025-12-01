@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import { generateToken } from '../../utils/jwt.ts';
 import { selectDoctorByField } from '../doctors/models.ts';
-import { selectUserByEmail } from '../users/models.ts';
+import { selectUserByField } from '../users/models.ts';
 import type { Doctor } from '../doctors/types.ts';
 import type { User } from '../users/types.ts';
 import { throwUnauthorizedError } from '../../utils/AppError.ts';
@@ -14,9 +14,9 @@ export async function login(
 ): Promise<
   { type: 'user'; data: User; token: string } | { type: 'doctor'; data: Doctor; token: string }
 > {
-  const user = await selectUserByEmail(email);
+  const user = await selectUserByField('email', email);
 
-  if (user && bcrypt.compareSync(password, user.passwordHash)) {
+  if (user && bcrypt.compareSync(password, user.password)) {
     return {
       type: 'user',
       data: mapFullUserToUser(user),
@@ -30,7 +30,7 @@ export async function login(
 
   const doctor = await selectDoctorByField('email', email);
 
-  if (doctor && bcrypt.compareSync(password, doctor.passwordHash)) {
+  if (doctor && bcrypt.compareSync(password, doctor.password)) {
     return {
       type: 'doctor',
       data: mapFullDoctorToDoctor(doctor),
@@ -41,6 +41,5 @@ export async function login(
       }),
     };
   }
-
   throwUnauthorizedError('Invalid email or password');
 }

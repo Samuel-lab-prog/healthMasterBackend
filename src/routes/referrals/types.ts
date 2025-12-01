@@ -1,38 +1,89 @@
 import {
   postReferralSchema,
-  insertReferralSchema,
   referralSchema,
-  fullReferralSchema,
+  userReferralSchema,
+  doctorReferralSchema,
 } from './schemas';
-
-export type ReferralRow = {
-  id: number;
-  notes: string;
-  consultation_id: number;
-  created_at: Date;
-  updated_at: string | null;
-};
+import type { Prisma } from '../../prisma/generated/prisma/client';
+import type { ReferralUncheckedCreateInput } from '../../prisma/generated/prisma/models.ts';
 
 export type Referral = (typeof referralSchema)['static'];
-export type FullReferral = (typeof fullReferralSchema)['static'];
 export type PostReferral = (typeof postReferralSchema)['static'];
-export type InsertReferral = (typeof insertReferralSchema)['static'];
+export type UserReferral = (typeof userReferralSchema)['static'];
+export type DoctorReferral = (typeof doctorReferralSchema)['static'];
 
-export function mapReferralRowToFullReferral(row: ReferralRow): FullReferral {
+export type ReferralRow = Prisma.ReferralGetPayload<{
+  include: {
+    consultation: {
+      select: {
+        user: {
+          select: { firstName: true; lastName: true; phoneNumber: true; email: true };
+        };
+        doctor: {
+          select: { firstName: true; lastName: true };
+        };
+      };
+    };
+  };
+}>;
+
+export type CreateReferral = ReferralUncheckedCreateInput;
+
+export type UserReferralRow = Prisma.ReferralGetPayload<{
+  include: {
+    consultation: {
+      select: {
+        doctor: {
+          select: { firstName: true; lastName: true };
+        };
+      };
+    };
+  };
+}>;
+
+export type DoctorReferralRow = Prisma.ReferralGetPayload<{
+  include: {
+    consultation: {
+      select: {
+        user: {
+          select: { firstName: true; lastName: true; phoneNumber: true; email: true };
+        };
+      };
+    };
+  };
+}>;
+
+export function mapReferralRowToReferral(row: ReferralRow): Referral {
   return {
     id: row.id,
+    consultationId: row.consultationId,
     notes: row.notes,
-    consultationId: row.consultation_id,
-    createdAt: row.created_at,
-    updatedAt: row.updated_at ? row.updated_at : null,
+    userName: `${row.consultation.user.firstName} ${row.consultation.user.lastName}`,
+    doctorName: `${row.consultation.doctor.firstName} ${row.consultation.doctor.lastName}`,
+    userPhoneNumber: row.consultation.user.phoneNumber,
+    userEmail: row.consultation.user.email,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
   };
 }
 
-export function mapFullReferralToReferral(row: FullReferral): Referral {
+export function mapUserReferralRowToUserReferral(row: UserReferralRow): UserReferral {
   return {
     id: row.id,
     notes: row.notes,
-    consultationId: row.consultationId,
+    doctorName: `${row.consultation.doctor.firstName} ${row.consultation.doctor.lastName}`,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
+  };
+}
+
+export function mapDoctorReferralRowToDoctorReferral(row: DoctorReferralRow): DoctorReferral {
+  return {
+    id: row.id,
+    notes: row.notes,
+    userName: `${row.consultation.user.firstName} ${row.consultation.user.lastName}`,
+    userPhoneNumber: row.consultation.user.phoneNumber,
+    userEmail: row.consultation.user.email,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
   };

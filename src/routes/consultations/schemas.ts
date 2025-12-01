@@ -5,13 +5,16 @@ import {
   notesSchema,
   createdAtSchema,
   updatedAtSchema,
+  fullNameSchema,
+  phoneNumberSchema,
+  emailSchema,
 } from '../../utils/schemas.ts';
 
 export const consultationSchema = t.Object({
   id: idSchema,
-  userId: idSchema,
-  doctorId: idSchema,
-  consultationDate: stringDateSchema,
+  userFullName: fullNameSchema,
+  doctorFullName: fullNameSchema,
+  date: stringDateSchema,
   notes: notesSchema,
   createdAt: createdAtSchema,
   updatedAt: updatedAtSchema,
@@ -20,7 +23,7 @@ export const consultationSchema = t.Object({
 export const postConsultationSchema = t.Object({
   userId: idSchema,
   doctorId: idSchema,
-  consultationDate: stringDateSchema,
+  date: stringDateSchema,
   notes: notesSchema,
 });
 
@@ -29,7 +32,7 @@ export const userConsultationSchema = t.Object({
   date: stringDateSchema,
   notes: notesSchema,
   doctorId: idSchema,
-  doctorName: t.String(),
+  doctorName: fullNameSchema,
   doctorSpeciality: t.String(),
 });
 
@@ -38,8 +41,7 @@ export const doctorConsultationSchema = t.Object({
   date: stringDateSchema,
   notes: notesSchema,
   userId: idSchema,
-  userName: t.String(),
+  userName: fullNameSchema,
+  userPhoneNumber: phoneNumberSchema,
+  userEmail: emailSchema,
 });
-
-export const fullConsultationSchema = consultationSchema;
-export const insertConsultationSchema = postConsultationSchema;

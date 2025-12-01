@@ -1,30 +1,24 @@
 import { describe, it, beforeEach, expect } from 'bun:test';
-import { pool } from '../../db/connection.ts';
+import { prisma } from '../../prisma/client.ts';
+import type { UserCreateInput } from '../../prisma/generated/prisma/models';
 import { AppError } from '../../utils/AppError.ts';
-import {
-  insertUser,
-  selectUserById,
-  selectUserByCPF,
-  selectUserByEmail,
-  selectUserByPhoneNumber,
-} from './models.ts';
-import type { InsertUser } from './types.ts';
+import { insertUser, selectUserByField } from './models.ts';
 
-const DEFAULT_USER: InsertUser = {
+const DEFAULT_USER: UserCreateInput = {
   firstName: 'Default',
   lastName: 'User',
   email: 'default@example.com',
-  passwordHash: 'hashdefault',
+  password: 'hashdefault',
   phoneNumber: '99999999',
   cpf: '12345678900',
   birthDate: '1990-01-01',
 };
 
-const TEST_USER: InsertUser = {
+const TEST_USER: UserCreateInput = {
   firstName: 'Test',
   lastName: 'User',
   email: 'test@example.com',
-  passwordHash: 'hashtest',
+  password: 'hashtest',
   phoneNumber: '88888888',
   cpf: '09876543211',
   birthDate: '1995-05-15',
@@ -33,9 +27,9 @@ const TEST_USER: InsertUser = {
 let DEFAULT_USER_ID: number;
 
 beforeEach(async () => {
-  await pool.query('DELETE FROM referrals'); // Clear dependent tables first
-  await pool.query('DELETE FROM consultations');
-  await pool.query('DELETE FROM users');
+  await prisma.referral.deleteMany(); // Clear dependent tables first
+  await prisma.consultation.deleteMany();
+  await prisma.user.deleteMany();
 
   DEFAULT_USER_ID = (await insertUser(DEFAULT_USER))!.id;
 });
@@ -46,7 +40,7 @@ describe('User Model Tests', () => {
       firstName: 'Alice',
       lastName: 'Smith',
       email: 'alice@example.com',
-      passwordHash: 'hashabc',
+      password: 'hashabc',
       phoneNumber: '88888888',
       cpf: '09876543211',
       birthDate: '1995-05-15',
@@ -83,53 +77,47 @@ describe('User Model Tests', () => {
     ).rejects.toThrow(AppError);
   });
 
-  it('selectUserById → Should return a user', async () => {
-    const user = await selectUserById(DEFAULT_USER_ID);
-
+  it('selectUserByField → Should return user by email', async () => {
+    const user = await selectUserByField('email', DEFAULT_USER.email!);
     expect(user).not.toBeNull();
-    expect(user?.id).toBe(DEFAULT_USER_ID);
+    expect(user!.id).toBe(DEFAULT_USER_ID);
   });
 
-  it('selectUserById → Should return null for non-existing id', async () => {
-    const user = await selectUserById(9999);
+  it('selectUserByField → Should return user by id', async () => {
+    const user = await selectUserByField('id', DEFAULT_USER_ID);
+    expect(user).not.toBeNull();
+    expect(user!.email).toBe(DEFAULT_USER.email);
+  });
 
+  it('selectUserByField → Should return user by phoneNumber', async () => {
+    const user = await selectUserByField('phoneNumber', DEFAULT_USER.phoneNumber!);
+    expect(user).not.toBeNull();
+    expect(user!.phoneNumber).toBe(DEFAULT_USER.phoneNumber);
+  });
+
+  it('selectUserByField → Should return user by cpf', async () => {
+    const user = await selectUserByField('cpf', DEFAULT_USER.cpf!);
+    expect(user).not.toBeNull();
+    expect(user!.cpf).toBe(DEFAULT_USER.cpf);
+  });
+
+  it('selectUserByField → Should return null for non-existing email', async () => {
+    const user = await selectUserByField('email', 'nonexistent@example.com');
     expect(user).toBeNull();
   });
 
-  it('selectUserByCPF → Should return a user', async () => {
-    const user = await selectUserByCPF(DEFAULT_USER.cpf!);
-
-    expect(user).not.toBeNull();
-    expect(user?.cpf).toBe(DEFAULT_USER.cpf);
-  });
-
-  it('selectUserByCPF → Should return null for non-existing CPF', async () => {
-    const user = await selectUserByCPF('00000000000');
+  it('selectUserByField → Should return null for non-existing cpf', async () => {
+    const user = await selectUserByField('cpf', '00000000000');
     expect(user).toBeNull();
   });
 
-  it('selectUserByEmail → Should return a user', async () => {
-    const user = await selectUserByEmail(DEFAULT_USER.email);
-
-    expect(user).not.toBeNull();
-    expect(user?.email).toBe(DEFAULT_USER.email);
-  });
-
-  it('selectUserByEmail → Should return null for non-existing email', async () => {
-    const user = await selectUserByEmail('nope@example.com');
+  it('selectUserByField → Should return null for non-existing phoneNumber', async () => {
+    const user = await selectUserByField('phoneNumber', '00000000');
     expect(user).toBeNull();
   });
 
-  it('selectUserByPhoneNumber → Should return a user', async () => {
-    const user = await selectUserByPhoneNumber(DEFAULT_USER.phoneNumber!);
-
-    expect(user).not.toBeNull();
-    expect(user?.phoneNumber).toBe(DEFAULT_USER.phoneNumber);
-  });
-
-  it('selectUserByPhoneNumber → Should return null for non-existing phone', async () => {
-    const user = await selectUserByPhoneNumber('not-a-phone');
-
+  it('selectUserByField → Should return null for non-existing id', async () => {
+    const user = await selectUserByField('id', 9999);
     expect(user).toBeNull();
   });
 });

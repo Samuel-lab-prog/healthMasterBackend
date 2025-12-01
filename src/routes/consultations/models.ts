@@ -1,87 +1,85 @@
-import { runQuery } from '../../db/utils.ts';
-import {
-  mapConsultationRowToFullConsultation,
-  mapDoctorConsultationRowToDoctorConsultation,
-  mapUserConsultationRowToUserConsultation,
-} from './types';
-import type {
-  Consultation,
-  FullConsultation,
-  ConsultationRow,
-  InsertConsultation,
-  UserConsultationRow,
-  UserConsultation,
-  DoctorConsultationRow,
-  DoctorConsultation,
-} from './types';
-
-export async function selectConsultationById(id: number): Promise<FullConsultation | null> {
-  const query = `SELECT * FROM consultations WHERE id = $1`;
-  const rows = await runQuery<ConsultationRow, FullConsultation>(
-    query,
-    [id],
-    mapConsultationRowToFullConsultation
-  );
-
-  return rows[0] ?? null;
-}
+import { prisma } from '../../prisma/client.ts';
+import type { ConsultationUncheckedCreateInput } from '../../prisma/generated/prisma/models.ts';
+import { withPrismaErrorHandling } from '../../utils/AppError.ts';
+import type { ConsultationRow, UserConsultationRow, DoctorConsultationRow } from './types.ts';
 
 export async function insertConsultation(
-  ConsultationData: InsertConsultation
-): Promise<Pick<Consultation, 'id'> | null> {
-  const { userId, doctorId, consultationDate, notes } = ConsultationData;
-
-  const values = [userId, doctorId, consultationDate, notes];
-  const query = `
-    INSERT INTO consultations (user_id, doctor_id, date, notes)
-    VALUES ($1, $2, $3, $4)
-    RETURNING id
-  `;
-
-  const rows = await runQuery<{ id: number }, { id: number }>(query, values, (row) => ({
-    id: row.id,
-  }));
-  return rows[0] ?? null;
+  data: ConsultationUncheckedCreateInput
+): Promise<Pick<ConsultationRow, 'id'> | null> {
+  return withPrismaErrorHandling(async () => {
+    return (
+      (await prisma.consultation.create({
+        data: {
+          userId: data.userId,
+          doctorId: data.doctorId,
+          date: data.date,
+          notes: data.notes,
+        },
+        select: { id: true },
+      })) ?? null
+    );
+  });
 }
 
-export async function selectUserConsultationsByUserId(userId: number): Promise<UserConsultation[]> {
-  const query = `SELECT
-      c.id,
-      c.notes,
-      c.date,
-      d.id AS "doctor_id",
-      d.speciality AS "doctor_speciality",
-      (d.first_name || ' ' || d.last_name) AS "doctor_name"
-    FROM consultations c
-    JOIN doctors d ON c.doctor_id = d.id
-    WHERE c.user_id = $1
-    ORDER BY c.date DESC`;
-  const rows = await runQuery<UserConsultationRow, UserConsultation>(
-    query,
-    [userId],
-    mapUserConsultationRowToUserConsultation
+export async function selectConsultationById(
+  consultationId: number
+): Promise<ConsultationRow | null> {
+  return (
+    withPrismaErrorHandling<ConsultationRow | null>(() =>
+      prisma.consultation.findUnique({
+        include: {
+          user: {
+            select: { firstName: true, lastName: true },
+          },
+          doctor: {
+            select: { firstName: true, lastName: true },
+          },
+        },
+        where: { id: consultationId },
+      })
+    ) ?? null
   );
-
-  return rows ?? [];
 }
 
-export async function selectDoctorConsultationsByDoctorId(
+export async function selectUserConsultations(userId: number): Promise<UserConsultationRow[]> {
+  return await withPrismaErrorHandling<UserConsultationRow[]>(() =>
+    prisma.consultation.findMany({
+      where: { userId },
+      include: {
+        doctor: {
+          select: { firstName: true, lastName: true, speciality: true },
+        },
+      },
+    })
+  );
+}
+
+export async function selectDoctorConsultations(
   doctorId: number
-): Promise<DoctorConsultation[]> {
-  const query = `SELECT
-      c.id,
-      c.date,
-      c.notes,
-      u.id AS "user_id",
-      (u.first_name || ' ' || u.last_name) AS "user_name"
-    FROM consultations c
-    JOIN users u ON c.user_id = u.id
-    WHERE c.doctor_id = $1
-    ORDER BY c.date DESC`;
-  const rows = await runQuery<DoctorConsultationRow, DoctorConsultation>(
-    query,
-    [doctorId],
-    mapDoctorConsultationRowToDoctorConsultation
+): Promise<DoctorConsultationRow[]> {
+  return await withPrismaErrorHandling<DoctorConsultationRow[]>(() =>
+    prisma.consultation.findMany({
+      where: { doctorId },
+      include: {
+        user: {
+          select: { firstName: true, lastName: true, phoneNumber: true, email: true },
+        },
+      },
+    })
   );
-  return rows ?? [];
+}
+
+export async function selectAllConsultations(): Promise<ConsultationRow[]> {
+  return await withPrismaErrorHandling<ConsultationRow[]>(() =>
+    prisma.consultation.findMany({
+      include: {
+        user: {
+          select: { firstName: true, lastName: true },
+        },
+        doctor: {
+          select: { firstName: true, lastName: true },
+        },
+      },
+    })
+  );
 }

@@ -3,8 +3,8 @@ import { appErrorSchema } from '../../utils/AppError.ts';
 import {
   getConsultationById,
   registerConsultation,
-  getUserConsultationsByUserId,
-  getDoctorConsultationsByDoctorId,
+  getUserConsultations,
+  getDoctorConsultations,
 } from './services.ts';
 import {
   postConsultationSchema,
@@ -22,7 +22,7 @@ export const consultationRouter = (app: Elysia) =>
       .get(
         '/users/:userId',
         async ({ params }) => {
-          return await getUserConsultationsByUserId(params.userId);
+          return await getUserConsultations(params.userId);
         },
         {
           params: t.Object({ userId: idSchema }),
@@ -82,7 +82,7 @@ export const consultationRouter = (app: Elysia) =>
       .get(
         '/doctors/:doctorId',
         async ({ params }) => {
-          return await getDoctorConsultationsByDoctorId(params.doctorId);
+          return await getDoctorConsultations(params.doctorId);
         },
         {
           params: t.Object({ doctorId: idSchema }),

@@ -1,5 +1,13 @@
 import { t } from 'elysia';
-import { idSchema, createdAtSchema, updatedAtSchema, notesSchema } from '../../utils/schemas.ts';
+import {
+  idSchema,
+  createdAtSchema,
+  updatedAtSchema,
+  notesSchema,
+  fullNameSchema,
+  emailSchema,
+  phoneNumberSchema,
+} from '../../utils/schemas.ts';
 
 export const postReferralSchema = t.Object({
   consultationId: idSchema,
@@ -10,9 +18,28 @@ export const referralSchema = t.Object({
   id: idSchema,
   consultationId: idSchema,
   notes: notesSchema,
+  userName: fullNameSchema,
+  doctorName: fullNameSchema,
+  userPhoneNumber: phoneNumberSchema,
+  userEmail: emailSchema,
   createdAt: createdAtSchema,
   updatedAt: updatedAtSchema,
 });
 
-export const fullReferralSchema = referralSchema;
-export const insertReferralSchema = postReferralSchema;
+export const userReferralSchema = t.Object({
+  id: idSchema,
+  notes: notesSchema,
+  doctorName: fullNameSchema,
+  createdAt: createdAtSchema,
+  updatedAt: updatedAtSchema,
+});
+
+export const doctorReferralSchema = t.Object({
+  id: idSchema,
+  notes: notesSchema,
+  userName: fullNameSchema,
+  userPhoneNumber: phoneNumberSchema,
+  userEmail: emailSchema,
+  createdAt: createdAtSchema,
+  updatedAt: updatedAtSchema,
+});
