@@ -27,12 +27,26 @@ new Elysia({
   },
 })
   .onError(async ({ error, set }) => handleError(set, error))
-  .use(cors({
-    origin: 'https://health-master-1inz4vujv-samuel-lab-progs-projects.vercel.app/',
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Access-Control-Allow-Origin'],  
-    credentials: true,
-  }))
+  .use(
+    cors({
+      origin: '*',
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+      allowedHeaders: [
+        'Content-Type',
+        'Authorization',
+        'Access-Control-Allow-Origin',
+        'Access-Control-Allow-Headers',
+        'Access-Control-Allow-Methods',
+        'X-Requested-With',
+        'Accept',
+        'Origin',
+        'Access-Control-Request-Method',
+        'Access-Control-Request-Headers',
+      ],
+      credentials: true,
+    })
+  )
+  .get('/', () => 'HealthMaster API is running')
   .use(StatePlugin)
   .use(authRouter)
   .use(userRouter)
@@ -52,5 +66,3 @@ new Elysia({
     })
   )
   .listen({ hostname: HOST_NAME, port: PORT });
-
-console.log('Server running at http://' + HOST_NAME + ':' + PORT + PREFIX + '/docs');

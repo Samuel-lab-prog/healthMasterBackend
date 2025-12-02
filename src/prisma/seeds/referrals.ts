@@ -1,26 +1,18 @@
 import { prisma } from '../client';
 
-async function seedReferrals() {
+export async function seedReferrals() {
   const referralsData = [
-    {
-      consultationId: 1,
-      notes: 'Referred for heart palpitations',
-    },
-    {
-      consultationId: 2,
-      notes: 'Referred for skin rash',
-    },
+    { consultationId: 1, notes: 'Referred for heart palpitations' },
+    { consultationId: 2, notes: 'Referred for skin rash' },
   ];
 
-  referralsData.map(async (referral) => {
-    await prisma.referral.create({
-      data: referral,
-    });
-  });
-}
+  for (const referral of referralsData) {
+    const consultationExists = await prisma.consultation.findUnique({ where: { id: referral.consultationId } });
+    if (!consultationExists) {
+      console.log(`Skipping referral: consultationId ${referral.consultationId} not found`);
+      continue;
+    }
 
-seedReferrals().then(() => {
-  console.log('Referrals seeded successfully.');
-}).catch((error) => {
-  console.error('Error seeding referrals:', error);
-});
+    await prisma.referral.create({ data: referral });
+  }
+}

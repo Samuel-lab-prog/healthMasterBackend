@@ -1,6 +1,6 @@
 import { prisma } from '../client';
 
-async function seedUsers() {
+export async function seedUsers() {
   const usersData = [
     {
       firstName: 'Samuel',
@@ -8,7 +8,7 @@ async function seedUsers() {
       email: 'samuelgomes@user.com',
       phoneNumber: '51991669896',
       password: '$2b$10$N5d3Gu9fbGYeS.s5v5EY0.JoVlWQLD6cr8g3OEbXvdWaWx6jpUeD6',
-      birthDate: "17/12/2007",
+      birthDate: '2007-12-17',
       cpf: '12345678901',
     },
     {
@@ -17,19 +17,15 @@ async function seedUsers() {
       email: 'leonelrocha@user.com',
       phoneNumber: '987-654-3210',
       password: '$2b$10$N5d3Gu9fbGYeS.s5v5EY0.JoVlWQLD6cr8g3OEbXvdWaWx6jpUeD6',
-      birthDate: "23/08/1985",
+      birthDate: '1985-08-23',
       cpf: '10987654321',
-    }
-
+    },
   ];
+
   for (const user of usersData) {
-    await prisma.user.create({
-      data: user,
-    });
+    const exists = await prisma.user.findUnique({ where: { email: user.email } });
+    if (!exists) {
+      await prisma.user.create({ data: user });
+    }
   }
 }
-seedUsers().then(() => {
-  console.log('Users seeded successfully.');
-}).catch((error) => {
-  console.error('Error seeding users:', error);
-});
