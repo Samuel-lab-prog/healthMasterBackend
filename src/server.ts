@@ -27,7 +27,12 @@ new Elysia({
   },
 })
   .onError(async ({ error, set }) => handleError(set, error))
-  .use(cors())
+  .use(cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],  
+    credentials: true,
+  }))
   .use(StatePlugin)
   .use(authRouter)
   .use(userRouter)
