@@ -30,7 +30,7 @@ new Elysia({
   .use(cors({
     origin: 'https://health-master-1inz4vujv-samuel-lab-progs-projects.vercel.app/',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],  
+    allowedHeaders: ['Content-Type', 'Authorization', 'Access-Control-Allow-Origin'],  
     credentials: true,
   }))
   .use(StatePlugin)
