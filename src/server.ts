@@ -28,7 +28,7 @@ new Elysia({
 })
   .onError(async ({ error, set }) => handleError(set, error))
   .use(cors({
-    origin: '*',
+    origin: 'https://health-master-1inz4vujv-samuel-lab-progs-projects.vercel.app/',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],  
     credentials: true,
