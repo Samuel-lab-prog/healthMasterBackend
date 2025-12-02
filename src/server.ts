@@ -28,24 +28,19 @@ new Elysia({
 })
   .onError(async ({ error, set }) => handleError(set, error))
   .use(
-    cors({
-      origin: '*',
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-      allowedHeaders: [
-        'Content-Type',
-        'Authorization',
-        'Access-Control-Allow-Origin',
-        'Access-Control-Allow-Headers',
-        'Access-Control-Allow-Methods',
-        'X-Requested-With',
-        'Accept',
-        'Origin',
-        'Access-Control-Request-Method',
-        'Access-Control-Request-Headers',
-      ],
-      credentials: true,
-    })
-  )
+  cors({
+    origin: 'https://health-master-gamma.vercel.app',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'X-Requested-With',
+      'Accept',
+      'Origin',
+    ],
+    credentials: true, 
+  })
+)
   .get('/', () => 'HealthMaster API is running')
   .use(StatePlugin)
   .use(authRouter)
