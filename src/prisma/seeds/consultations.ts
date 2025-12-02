@@ -16,15 +16,9 @@ async function seedConsultations() {
     },
     {
       userId: 2,
-      doctorId: 2,
+      doctorId: 1,
       date: '2024-07-02',
       notes: 'Consulta para erupção cutânea',
-    },
-    {
-      userId: 2,
-      doctorId: 2,
-      date: '2024-07-04',
-      notes: 'Referred for further evaluation',
     },
   ];
 

@@ -7,7 +7,7 @@ async function seedUsers() {
       lastName: 'Gomes',
       email: 'samuelgomes@user.com',
       phoneNumber: '51991669896',
-      password: 'hashedpassword1',
+      password: '$2b$10$N5d3Gu9fbGYeS.s5v5EY0.JoVlWQLD6cr8g3OEbXvdWaWx6jpUeD6',
       birthDate: "17/12/2007",
       cpf: '12345678901',
     },
@@ -16,7 +16,7 @@ async function seedUsers() {
       lastName: 'Rocha',
       email: 'leonelrocha@user.com',
       phoneNumber: '987-654-3210',
-      password: 'hashedpassword2',
+      password: '$2b$10$N5d3Gu9fbGYeS.s5v5EY0.JoVlWQLD6cr8g3OEbXvdWaWx6jpUeD6',
       birthDate: "23/08/1985",
       cpf: '10987654321',
     }
