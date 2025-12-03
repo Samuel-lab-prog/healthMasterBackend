@@ -1,5 +1,5 @@
 import { prisma } from '../../prisma/client.ts';
-import type { ConsultationUncheckedCreateInput } from '../../prisma/generated/prisma/models.ts';
+import type { ConsultationUncheckedCreateInput } from '../../generated/models.ts';
 import { withPrismaErrorHandling } from '../../utils/AppError.ts';
 import type { ConsultationRow, UserConsultationRow, DoctorConsultationRow } from './types.ts';
 

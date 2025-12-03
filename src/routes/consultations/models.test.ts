@@ -11,8 +11,8 @@ import {
 import type { CreateConsultation } from './types.ts';
 import { insertDoctor } from '../doctors/models.ts';
 import { insertUser } from '../users/models.ts';
-import type { DoctorCreateInput } from '../../prisma/generated/prisma/models';
-import type { UserCreateInput } from '../../prisma/generated/prisma/models';
+import type { DoctorCreateInput } from '../../generated/models';
+import type { UserCreateInput } from '../../generated/models';
 import { AppError } from '../../utils/AppError.ts';
 
 const DEFAULT_CONSULTATION: CreateConsultation = {

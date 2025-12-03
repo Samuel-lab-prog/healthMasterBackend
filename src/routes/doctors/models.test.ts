@@ -1,6 +1,6 @@
 import { describe, it, beforeEach, expect } from 'bun:test';
 import { prisma } from '../../prisma/client.ts';
-import type { DoctorCreateInput } from '../../prisma/generated/prisma/models';
+import type { DoctorCreateInput } from '../../generated/models';
 import { AppError } from '../../utils/AppError.ts';
 import { insertDoctor, selectDoctorByField, selectAllDoctors } from './models';
 

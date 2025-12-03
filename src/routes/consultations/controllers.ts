@@ -13,7 +13,7 @@ import {
   doctorConsultationSchema,
 } from './schemas.ts';
 import { idSchema } from '../../utils/schemas.ts';
-import { AuthPlugin } from '../../plugins/auth.ts';
+import { AuthPlugin } from '../../plugins/index.ts';
 
 export const consultationRouter = (app: Elysia) =>
   app.group('/consultations', (app) =>

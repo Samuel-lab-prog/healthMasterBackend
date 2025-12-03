@@ -1,20 +1,31 @@
 import Elysia from 'elysia';
 import cors from '@elysiajs/cors';
 import { openapi } from '@elysiajs/openapi';
-import { handleError } from './utils/middlewares/handleError';
-import { sanitize } from './utils/middlewares/xssClean';
+import { BunAdapter } from 'elysia/adapter/bun';
+import { handleError } from './utils/handleError';
+import { sanitize } from './utils/xssClean';
+
+import { authRouter } from './routes/auth/controllers';
 import { userRouter } from './routes/users/controllers';
 import { doctorRouter } from './routes/doctors/controllers';
 import { consultationRouter } from './routes/consultations/controllers';
 import { referralRouter } from './routes/referrals/controllers';
-import { authRouter } from './routes/auth/controllers';
-import { StatePlugin } from './plugins/states';
-import { BunAdapter } from 'elysia/adapter/bun';
+
 
 const PREFIX = '/api/v1';
 const INSTANCE_NAME = 'mainServerInstance';
-const HOST_NAME = '0.0.0.0';
+const HOST_NAME = 'localhost';
 const PORT = Number(process.env.PORT) || 3000;
+const OPEN_API_SETTINGS = {
+  path: '/docs',
+  documentation: {
+    info: {
+      title: 'HealthMaster API',
+      description: 'API documentation for HealthMaster API',
+      version: '1.0.0',
+    },
+  },
+}
 
 new Elysia({
   adapter: BunAdapter,
@@ -27,40 +38,15 @@ new Elysia({
   },
 })
   .onError(async ({ error, set }) => handleError(set, error))
-  .use(
-    cors({
-      origin: 'https://health-master-gamma.vercel.app',
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-      allowedHeaders: [
-        'Content-Type',
-        'Authorization',
-        'X-Requested-With',
-        'Accept',
-        'Origin',
-      ],
-      credentials: true,
-    })
-  )
-  .options('/*', () => {
-    return { status: 200 };
-  })
+  .use(cors())
   .get('/', () => 'HealthMaster API is running')
-  .use(StatePlugin)
   .use(authRouter)
   .use(userRouter)
   .use(doctorRouter)
-  .use(referralRouter)
   .use(consultationRouter)
-  .use(
-    openapi({
-      path: '/docs',
-      documentation: {
-        info: {
-          title: 'HealthMaster API',
-          description: 'API documentation for HealthMaster API',
-          version: '1.0.0',
-        },
-      },
-    })
-  )
+  .use(referralRouter)
+  .use(openapi(OPEN_API_SETTINGS))
   .listen({ hostname: HOST_NAME, port: PORT });
+
+
+console.log(`🚀 Server running at http://${HOST_NAME}:${PORT}${PREFIX}/docs`);

@@ -1,7 +1,15 @@
 generator client {
   provider = "prisma-client"
-  output   = "generated/prisma"
+  output   = "../generated/prisma-client"
 }
+
+generator prismabox { 
+  provider = "prismabox"
+  typeboxImportDependencyName = "elysia"
+  typeboxImportVariableName = "t"
+  inputModel = true
+  output   = "../generated/prismabox"
+} 
 
 datasource db {
   provider = "postgresql"
@@ -48,7 +56,7 @@ model Referral {
 
 model User {
   id            Int            @id @default(autoincrement())
-  firstName     String
+  firstName     String 
   lastName      String
   phoneNumber   String         @unique
   email         String         @unique
@@ -57,6 +65,7 @@ model User {
   password      String
   createdAt     DateTime       @default(now())
   updatedAt     String?
+  role          String         @default("user")
   consultations Consultation[]
 }
 

@@ -11,6 +11,7 @@ export function mapFullUserToUser(fullUser: FullUser): User {
     phoneNumber: fullUser.phoneNumber,
     createdAt: fullUser.createdAt,
     updatedAt: fullUser.updatedAt,
+    role: 'user',
   };
 }
 

@@ -1,7 +1,7 @@
 import { prisma } from '../../prisma/client.ts';
-import type { Prisma } from '../../prisma/generated/prisma/client.ts';
+import type { Prisma } from '../../generated/client.ts';
 import { withPrismaErrorHandling } from '../../utils/AppError.ts';
-import type { UserCreateInput } from '../../prisma/generated/prisma/models';
+import type { UserCreateInput } from '../../generated/models';
 
 type UserRow = Prisma.UserGetPayload<object>;
 

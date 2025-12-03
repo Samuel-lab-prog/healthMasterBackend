@@ -4,11 +4,11 @@ import { loginSchema } from '../../utils/schemas.ts';
 import { userSchema } from '../users/schemas.ts';
 import { doctorSchema } from '../doctors/schemas.ts';
 import { login } from './services.ts';
-import { StatePlugin } from '../../plugins/states.ts';
+import { SetupPlugin } from '../../plugins/index.ts';
 
 export const authRouter = (app: Elysia) =>
   app.group('/auth', (app) =>
-    app.use(StatePlugin).post(
+    app.use(SetupPlugin).post(
       '/login',
       async ({ body, cookie, store }) => {
         const result = await login(body.email, body.password);
@@ -18,14 +18,9 @@ export const authRouter = (app: Elysia) =>
         cookie.token!.path = '/';
         cookie.token!.secure = true;
 
-        store.isAuthenticated = true;
-        store.type = result.type;
-        store.data = result.data;
-        store.isAdmin = false;
+        store.authLevel = result.data.role;
+        store.clientData = result.data;
 
-        if ('role' in result.data && result.data.role === 'admin') {
-          store.isAdmin = true;
-        }
         return result.data;
       },
       {

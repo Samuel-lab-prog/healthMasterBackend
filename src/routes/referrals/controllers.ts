@@ -3,7 +3,7 @@ import { appErrorSchema } from '../../utils/AppError.ts';
 import * as services from './services';
 import * as schemas from './schemas.ts';
 import { idSchema } from '../../utils/schemas.ts';
-import { AuthPlugin } from '../../plugins/auth.ts';
+import { AuthPlugin } from '../../plugins/index.ts';
 
 export const referralRouter = (app: Elysia) =>
   app.group('/referrals', (app) =>

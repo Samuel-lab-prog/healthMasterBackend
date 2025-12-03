@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import { insertUser } from './models.ts';
 import type { PostUser } from './types.ts';
-import type { Prisma } from '../../prisma/generated/prisma/client.ts';
+import type { Prisma } from '../../generated/client.ts';
 
 type UserRow = Prisma.UserGetPayload<object>;
 

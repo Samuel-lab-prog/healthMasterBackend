@@ -4,6 +4,8 @@ import { registerUser } from './services.ts';
 import { postUserSchema } from './schemas.ts';
 import { idSchema } from '../../utils/schemas.ts';
 
+import { UserPlain, UserPlainInputCreate } from '../../generated/prismabox/User'
+
 export const userRouter = (app: Elysia) =>
   app.group('/users', (app) =>
     app.post(
@@ -13,7 +15,7 @@ export const userRouter = (app: Elysia) =>
         return await registerUser(body);
       },
       {
-        body: postUserSchema,
+        body: UserPlainInputCreate,
         response: {
           201: t.Object({ id: idSchema }),
           400: appErrorSchema,

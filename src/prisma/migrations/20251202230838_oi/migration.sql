@@ -1,32 +1,5 @@
-/*
-  Warnings:
-
-  - You are about to drop the `consultations` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `doctors` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `referrals` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `users` table. If the table is not empty, all the data it contains will be lost.
-
-*/
--- DropForeignKey
-ALTER TABLE "consultations" DROP CONSTRAINT "consultations_doctorId_fkey";
-
--- DropForeignKey
-ALTER TABLE "consultations" DROP CONSTRAINT "consultations_userId_fkey";
-
--- DropForeignKey
-ALTER TABLE "referrals" DROP CONSTRAINT "referrals_consultationId_fkey";
-
--- DropTable
-DROP TABLE "consultations";
-
--- DropTable
-DROP TABLE "doctors";
-
--- DropTable
-DROP TABLE "referrals";
-
--- DropTable
-DROP TABLE "users";
+-- CreateEnum
+CREATE TYPE "Role" AS ENUM ('doctor', 'admin');
 
 -- CreateTable
 CREATE TABLE "Consultation" (
@@ -36,7 +9,7 @@ CREATE TABLE "Consultation" (
     "date" TEXT NOT NULL,
     "notes" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3),
+    "updatedAt" TEXT,
 
     CONSTRAINT "Consultation_pkey" PRIMARY KEY ("id")
 );
@@ -83,6 +56,7 @@ CREATE TABLE "User" (
     "password" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TEXT,
+    "role" TEXT NOT NULL DEFAULT 'user',
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );

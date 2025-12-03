@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { AppError } from '../../utils/AppError.ts';
+import { AppError } from '../utils/AppError.ts';
 
 export function handleError(set: any, error: unknown) {
   if (error instanceof AppError) {

@@ -3,7 +3,7 @@ import { appErrorSchema } from '../../utils/AppError.ts';
 import { registerDoctor, getAllDoctors } from './services.ts';
 import { postDoctorSchema, doctorSchema } from './schemas.ts';
 import { idSchema } from '../../utils/schemas.ts';
-import { AuthPlugin } from '../../plugins/auth.ts';
+import { AuthPlugin } from '../../plugins/index.ts';
 
 export const doctorRouter = (app: Elysia) =>
   app.group('/doctors', (app) =>
