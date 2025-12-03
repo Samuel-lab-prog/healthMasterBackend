@@ -23,28 +23,15 @@ export const postUserSchema = t.Object({
 });
 
 export const userSchema = t.Object({
-  id: idSchema,
-  cpf: cpfSchema,
-  birthDate: stringDateSchema,
   firstName: firstNameSchema,
   lastName: lastNameSchema,
   email: emailSchema,
-  role: t.Literal('user'),
   phoneNumber: phoneNumberSchema,
-  createdAt: createdAtSchema,
-  updatedAt: updatedAtSchema,
-});
+  cpf: cpfSchema,
+  birthDate: stringDateSchema,
 
-export const fullUserSchema = t.Object({
   id: idSchema,
-  firstName: firstNameSchema,
-  lastName: lastNameSchema,
-  email: emailSchema,
-  phoneNumber: phoneNumberSchema,
   createdAt: createdAtSchema,
-  role: t.Literal('user'),
   updatedAt: updatedAtSchema,
-  cpf: cpfSchema,
-  birthDate: stringDateSchema,
-  password: t.String(),
+  role: t.Literal('user'),
 });

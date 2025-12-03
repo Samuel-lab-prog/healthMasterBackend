@@ -16,4 +16,4 @@ main()
   })
   .catch((error) => {
     console.error('Error during seeding:', error);
-  })
+  });

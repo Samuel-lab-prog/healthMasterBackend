@@ -1,15 +1,7 @@
 generator client {
   provider = "prisma-client"
-  output   = "../generated/prisma-client"
+  output   = "generated/prisma-client"
 }
-
-generator prismabox { 
-  provider = "prismabox"
-  typeboxImportDependencyName = "elysia"
-  typeboxImportVariableName = "t"
-  inputModel = true
-  output   = "../generated/prismabox"
-} 
 
 datasource db {
   provider = "postgresql"

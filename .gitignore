@@ -34,6 +34,6 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 
 /src/generated/prisma
 
-/generated/prisma
+/src/prisma/generated
 
 /env

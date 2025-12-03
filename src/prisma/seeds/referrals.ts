@@ -7,7 +7,9 @@ export async function seedReferrals() {
   ];
 
   for (const referral of referralsData) {
-    const consultationExists = await prisma.consultation.findUnique({ where: { id: referral.consultationId } });
+    const consultationExists = await prisma.consultation.findUnique({
+      where: { id: referral.consultationId },
+    });
     if (!consultationExists) {
       console.log(`Skipping referral: consultationId ${referral.consultationId} not found`);
       continue;

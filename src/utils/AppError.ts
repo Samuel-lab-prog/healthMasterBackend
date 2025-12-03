@@ -48,7 +48,7 @@ export async function withPrismaErrorHandling<T>(callback: () => Promise<T>): Pr
     return await callback();
   } catch (error) {
     if (error instanceof PrismaClientKnownRequestError) {
-      handlePrismaError(error);
+      handlePrismaError<T>(error);
     }
     throwDatabaseError((error as Error).message);
   }

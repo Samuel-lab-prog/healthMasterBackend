@@ -1,6 +1,8 @@
-import { postUserSchema, userSchema, fullUserSchema } from './schemas';
+import type { Prisma } from '../../prisma/generated/prisma-client/browser';
+import type { UserCreateInput } from '../../prisma/generated/prisma-client/models';
+import { postUserSchema, userSchema } from './schemas';
 
-export function mapFullUserToUser(fullUser: FullUser): User {
+export function mapUserRowToUser(fullUser: UserRow): User {
   return {
     id: fullUser.id,
     firstName: fullUser.firstName,
@@ -16,5 +18,6 @@ export function mapFullUserToUser(fullUser: FullUser): User {
 }
 
 export type User = (typeof userSchema)['static'];
-export type FullUser = (typeof fullUserSchema)['static'];
 export type PostUser = (typeof postUserSchema)['static'];
+export type UserRow = Prisma.UserGetPayload<object>;
+export type InsertUser = UserCreateInput;

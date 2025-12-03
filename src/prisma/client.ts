@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import 'dotenv/config';
 import { PrismaPg } from '@prisma/adapter-pg';
-import { PrismaClient } from '../generated/client';
+import { PrismaClient } from './generated/prisma-client/client.ts';
 
 const connectionString = `${process.env.TEST_DATABASE_URL}`;
 

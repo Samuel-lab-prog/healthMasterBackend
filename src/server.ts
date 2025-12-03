@@ -11,7 +11,6 @@ import { doctorRouter } from './routes/doctors/controllers';
 import { consultationRouter } from './routes/consultations/controllers';
 import { referralRouter } from './routes/referrals/controllers';
 
-
 const PREFIX = '/api/v1';
 const INSTANCE_NAME = 'mainServerInstance';
 const HOST_NAME = 'localhost';
@@ -25,7 +24,7 @@ const OPEN_API_SETTINGS = {
       version: '1.0.0',
     },
   },
-}
+};
 
 new Elysia({
   adapter: BunAdapter,
@@ -47,6 +46,5 @@ new Elysia({
   .use(referralRouter)
   .use(openapi(OPEN_API_SETTINGS))
   .listen({ hostname: HOST_NAME, port: PORT });
-
 
 console.log(`🚀 Server running at http://${HOST_NAME}:${PORT}${PREFIX}/docs`);

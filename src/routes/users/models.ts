@@ -1,11 +1,8 @@
 import { prisma } from '../../prisma/client.ts';
-import type { Prisma } from '../../generated/client.ts';
 import { withPrismaErrorHandling } from '../../utils/AppError.ts';
-import type { UserCreateInput } from '../../generated/models';
+import type { UserRow, InsertUser } from './types.ts';
 
-type UserRow = Prisma.UserGetPayload<object>;
-
-export async function insertUser(userData: UserCreateInput): Promise<Pick<UserRow, 'id'> | null> {
+export async function insertUser(userData: InsertUser): Promise<Pick<UserRow, 'id'>> {
   return (
     withPrismaErrorHandling<Pick<UserRow, 'id'>>(() =>
       prisma.user.create({
@@ -14,7 +11,7 @@ export async function insertUser(userData: UserCreateInput): Promise<Pick<UserRo
           id: true,
         },
       })
-    ) ?? null
+    )
   );
 }
 
@@ -22,9 +19,9 @@ export async function selectUserByField(
   field: 'email' | 'id' | 'phoneNumber' | 'cpf',
   value: string | number
 ): Promise<UserRow | null> {
-  return withPrismaErrorHandling<UserRow>(() => prisma.user.$selectByField(field, value));
+  return withPrismaErrorHandling<UserRow | null>(() => prisma.user.$selectByField(field, value));
 }
 
-export async function selectAllUsers(): Promise<UserRow[] | null> {
-  return withPrismaErrorHandling<UserRow[]>(() => prisma.user.findMany()) || [];
+export async function selectAllUsers(): Promise<UserRow[]> {
+  return withPrismaErrorHandling<UserRow[]>(() => prisma.user.findMany());
 }

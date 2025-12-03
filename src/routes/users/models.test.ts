@@ -1,10 +1,10 @@
 import { describe, it, beforeEach, expect } from 'bun:test';
 import { prisma } from '../../prisma/client.ts';
-import type { UserCreateInput } from '../../generated/models';
+import type { InsertUser } from './types.ts';
 import { AppError } from '../../utils/AppError.ts';
 import { insertUser, selectUserByField } from './models.ts';
 
-const DEFAULT_USER: UserCreateInput = {
+const DEFAULT_USER: InsertUser = {
   firstName: 'Default',
   lastName: 'User',
   email: 'default@example.com',
@@ -14,7 +14,7 @@ const DEFAULT_USER: UserCreateInput = {
   birthDate: '1990-01-01',
 };
 
-const TEST_USER: UserCreateInput = {
+const TEST_USER: InsertUser = {
   firstName: 'Test',
   lastName: 'User',
   email: 'test@example.com',
@@ -31,7 +31,7 @@ beforeEach(async () => {
   await prisma.consultation.deleteMany();
   await prisma.user.deleteMany();
 
-  DEFAULT_USER_ID = (await insertUser(DEFAULT_USER))!.id;
+  DEFAULT_USER_ID = (await insertUser(DEFAULT_USER)).id;
 });
 
 describe('User Model Tests', () => {

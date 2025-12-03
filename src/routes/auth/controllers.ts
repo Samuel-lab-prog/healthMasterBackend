@@ -4,39 +4,36 @@ import { loginSchema } from '../../utils/schemas.ts';
 import { userSchema } from '../users/schemas.ts';
 import { doctorSchema } from '../doctors/schemas.ts';
 import { login } from './services.ts';
-import { SetupPlugin } from '../../plugins/index.ts';
 
 export const authRouter = (app: Elysia) =>
   app.group('/auth', (app) =>
-    app.use(SetupPlugin).post(
-      '/login',
-      async ({ body, cookie, store }) => {
-        const result = await login(body.email, body.password);
+    app
+      .post(
+        '/login',
+        async ({ body, cookie }) => {
+          const result = await login(body.email, body.password);
 
-        cookie.token!.value = result.token;
-        cookie.token!.httpOnly = true;
-        cookie.token!.path = '/';
-        cookie.token!.secure = true;
+          cookie.token!.value = result.token;
+          cookie.token!.httpOnly = true;
+          cookie.token!.path = '/';
+          cookie.token!.secure = true;
 
-        store.authLevel = result.data.role;
-        store.clientData = result.data;
-
-        return result.data;
-      },
-      {
-        body: loginSchema,
-        response: {
-          200: t.Union([userSchema, doctorSchema]),
-          400: appErrorSchema,
-          401: appErrorSchema,
-          422: appErrorSchema,
-          500: appErrorSchema,
+          return result.data;
         },
-        detail: {
-          summary: 'Login',
-          description: 'Authenticates a user or doctor and returns their data along with a token.',
-          tags: ['Auth'],
-        },
-      }
-    )
+        {
+          body: loginSchema,
+          response: {
+            200: t.Union([userSchema, doctorSchema]),
+            400: appErrorSchema,
+            401: appErrorSchema,
+            422: appErrorSchema,
+            500: appErrorSchema,
+          },
+          detail: {
+            summary: 'Login',
+            description: 'Authenticates a user or doctor and returns their data along with a token.',
+            tags: ['Auth'],
+          },
+        }
+      )
   );
