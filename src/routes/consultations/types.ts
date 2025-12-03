@@ -4,39 +4,48 @@ import {
   userConsultationSchema,
   doctorConsultationSchema,
 } from './schemas';
-import type { Prisma } from '../../prisma/generated/prisma/client';
-import type { ConsultationUncheckedCreateInput } from '../../prisma/generated/prisma/models.ts';
+import type { Prisma } from '../../prisma/generated/prisma-client/browser';
+import type { ConsultationUncheckedCreateInput } from '../../prisma/generated/prisma-client/models';
 
 export type Consultation = (typeof consultationSchema)['static'];
 export type UserConsultation = (typeof userConsultationSchema)['static'];
 export type DoctorConsultation = (typeof doctorConsultationSchema)['static'];
 export type PostConsultation = (typeof postConsultationSchema)['static'];
 
-export type CreateConsultation = ConsultationUncheckedCreateInput;
+export type InsertConsultation = ConsultationUncheckedCreateInput;
+
 export type UserConsultationRow = Prisma.ConsultationGetPayload<{
   include: {
     doctor: {
-      select: { firstName: true; lastName: true; speciality: true };
+      select: {
+        firstName: true;
+        lastName: true;
+        speciality: true;
+      };
     };
   };
 }>;
+
 export type DoctorConsultationRow = Prisma.ConsultationGetPayload<{
   include: {
     user: {
-      select: { firstName: true; lastName: true; phoneNumber: true; email: true };
+      select: {
+        firstName: true;
+        lastName: true;
+        phoneNumber: true;
+        email: true;
+      };
     };
   };
 }>;
+
 export type ConsultationRow = Prisma.ConsultationGetPayload<{
   include: {
-    user: {
-      select: { firstName: true; lastName: true };
-    };
-    doctor: {
-      select: { firstName: true; lastName: true };
-    };
+    user: { select: { firstName: true; lastName: true } };
+    doctor: { select: { firstName: true; lastName: true } };
   };
 }>;
+
 
 export function mapConsultationRowToConsultation(row: ConsultationRow): Consultation {
   return {
@@ -49,6 +58,7 @@ export function mapConsultationRowToConsultation(row: ConsultationRow): Consulta
     updatedAt: row.updatedAt,
   };
 }
+
 export function mapUserConsultationRowToUserConsultation(
   row: UserConsultationRow
 ): UserConsultation {
@@ -61,6 +71,7 @@ export function mapUserConsultationRowToUserConsultation(
     doctorSpeciality: row.doctor.speciality,
   };
 }
+
 export function mapDoctorConsultationRowToDoctorConsultation(
   row: DoctorConsultationRow
 ): DoctorConsultation {

@@ -1,101 +1,87 @@
 import { Elysia, t } from 'elysia';
 import { appErrorSchema } from '../../utils/AppError.ts';
-import {
-  getConsultationById,
-  registerConsultation,
-  getUserConsultations,
-  getDoctorConsultations,
-} from './services.ts';
-import {
-  postConsultationSchema,
-  consultationSchema,
-  userConsultationSchema,
-  doctorConsultationSchema,
-} from './schemas.ts';
 import { idSchema } from '../../utils/schemas.ts';
 import { AuthPlugin } from '../../plugins/index.ts';
+import * as services from './services.ts';
+import * as schemas from './schemas.ts';
 
-export const consultationRouter = (app: Elysia) =>
-  app.group('/consultations', (app) =>
-    app
-      .use(AuthPlugin())
-      .get(
-        '/users/:userId',
-        async ({ params }) => {
-          return await getUserConsultations(params.userId);
-        },
-        {
-          params: t.Object({ userId: idSchema }),
-          response: {
-            200: t.Array(userConsultationSchema),
-            404: appErrorSchema,
-            500: appErrorSchema,
-          },
-          detail: {
-            summary: 'Get Consultations from User',
-            description: 'Retrieves all Consultations for a given User ID.',
-            tags: ['Consultations'],
-          },
-        }
-      )
-      .use(AuthPlugin('doctor'))
-      .post(
-        '/',
-        async ({ body, set }) => {
-          set.status = 201;
-          return await registerConsultation(body);
-        },
-        {
-          body: postConsultationSchema,
-          response: {
-            201: t.Object({ id: idSchema }),
-            409: appErrorSchema,
-            500: appErrorSchema,
-          },
-          detail: {
-            summary: 'Register',
-            description:
-              'Creates a new Consultation. Returns an object with the new Consultation ID.',
-            tags: ['Consultations'],
-          },
-        }
-      )
-      .get(
-        '/:id',
-        async ({ params }) => {
-          return await getConsultationById(params.id);
-        },
-        {
-          params: t.Object({ id: idSchema }),
-          response: {
-            200: consultationSchema,
-            404: appErrorSchema,
-            500: appErrorSchema,
-          },
-          detail: {
-            summary: 'Get Consultation by ID',
-            description: 'Retrieves a Consultation by its ID.',
-            tags: ['Consultations'],
-          },
-        }
-      )
-      .get(
-        '/doctors/:doctorId',
-        async ({ params }) => {
-          return await getDoctorConsultations(params.doctorId);
-        },
-        {
-          params: t.Object({ doctorId: idSchema }),
-          response: {
-            200: t.Array(doctorConsultationSchema),
-            404: appErrorSchema,
-            500: appErrorSchema,
-          },
-          detail: {
-            summary: 'Get Consultations from Doctor',
-            description: 'Retrieves all Consultations for a given Doctor ID.',
-            tags: ['Consultations'],
-          },
-        }
-      )
+
+export const consultationRouter = new Elysia({
+  prefix: '/consultations'
+})
+  .use(AuthPlugin('user'))
+  .get(
+    '/users/:userId',
+    async ({ params }) => services.getUserConsultations(params.userId),
+    {
+      params: t.Object({ userId: idSchema }),
+      response: {
+        200: t.Array(schemas.userConsultationSchema),
+        404: appErrorSchema,
+        500: appErrorSchema
+      },
+      detail: {
+        summary: 'Get Consultations from User',
+        description: 'Retrieves all Consultations for a given User ID.',
+        tags: ['Consultations']
+      }
+    }
+  )
+
+  .use(AuthPlugin('doctor'))
+  .post(
+    '/',
+    async ({ body, set }) => {
+      set.status = 201;
+      return services.registerConsultation(body);
+    },
+    {
+      body: schemas.postConsultationSchema,
+      response: {
+        201: t.Object({ id: idSchema }),
+        409: appErrorSchema,
+        500: appErrorSchema
+      },
+      detail: {
+        summary: 'Register',
+        description: 'Creates a new Consultation and returns its ID.',
+        tags: ['Consultations']
+      }
+    }
+  )
+
+  .get(
+    '/:id',
+    async ({ params }) => services.getConsultationById(params.id),
+    {
+      params: t.Object({ id: idSchema }),
+      response: {
+        200: schemas.consultationSchema,
+        404: appErrorSchema,
+        500: appErrorSchema
+      },
+      detail: {
+        summary: 'Get Consultation by ID',
+        description: 'Retrieves a Consultation by its ID.',
+        tags: ['Consultations']
+      }
+    }
+  )
+
+  .get(
+    '/doctors/:doctorId',
+    async ({ params }) => services.getDoctorConsultations(params.doctorId),
+    {
+      params: t.Object({ doctorId: idSchema }),
+      response: {
+        200: t.Array(schemas.doctorConsultationSchema),
+        404: appErrorSchema,
+        500: appErrorSchema
+      },
+      detail: {
+        summary: 'Get Consultations from Doctor',
+        description: 'Retrieves all Consultations for the given Doctor ID.',
+        tags: ['Consultations']
+      }
+    }
   );
