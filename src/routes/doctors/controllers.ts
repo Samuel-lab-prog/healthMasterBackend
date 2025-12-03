@@ -5,9 +5,10 @@ import { postDoctorSchema, doctorSchema } from './schemas.ts';
 import { idSchema } from '../../utils/schemas.ts';
 import { AuthPlugin } from '../../plugins/index.ts';
 
-export const doctorRouter = (app: Elysia) =>
-  app.group('/doctors', (app) =>
+export const doctorRouter = new Elysia()
+  .group('/doctors', (app) =>
     app
+      .use(AuthPlugin('admin'))
       .get(
         '/',
         async () => {
@@ -25,7 +26,6 @@ export const doctorRouter = (app: Elysia) =>
           },
         }
       )
-      .use(AuthPlugin('admin'))
       .post(
         '/',
         async ({ body, set }) => {

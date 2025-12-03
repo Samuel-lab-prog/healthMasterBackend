@@ -5,7 +5,7 @@ import { selectUserByField } from '../users/models.ts';
 import type { Doctor } from '../doctors/types.ts';
 import type { User } from '../users/types.ts';
 import { throwUnauthorizedError } from '../../utils/AppError.ts';
-import { mapFullDoctorToDoctor } from '../doctors/types.ts';
+import { mapDoctorRowToDoctor } from '../doctors/types.ts';
 import { mapUserRowToUser } from '../users/types.ts';
 
 export async function login(
@@ -31,7 +31,7 @@ export async function login(
 
   if (doctor && bcrypt.compareSync(password, doctor.password)) {
     return {
-      data: mapFullDoctorToDoctor(doctor),
+      data: mapDoctorRowToDoctor(doctor),
       token: generateToken({
         id: doctor.id,
         email: doctor.email,
@@ -42,7 +42,7 @@ export async function login(
   throwUnauthorizedError('Invalid email or password');
 }
 
-export async function athenticate(token: string): Promise<User | Doctor | null> {
+export async function authenticate(token: string): Promise<User | Doctor | null> {
   try {
     const payload = verifyToken(token);
     if (!payload || !payload.role || !payload.id) {
@@ -54,7 +54,7 @@ export async function athenticate(token: string): Promise<User | Doctor | null> 
     }
     if (payload.role === 'doctor' || payload.role === 'admin') {
       const doctor = await selectDoctorByField('id', payload.id);
-      return doctor ? mapFullDoctorToDoctor(doctor) : null;
+      return doctor ? mapDoctorRowToDoctor(doctor) : null;
     }
     return null;
 } catch {

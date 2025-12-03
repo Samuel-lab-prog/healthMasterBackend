@@ -21,3 +21,4 @@ export type User = (typeof userSchema)['static'];
 export type PostUser = (typeof postUserSchema)['static'];
 export type UserRow = Prisma.UserGetPayload<object>;
 export type InsertUser = UserCreateInput;
+export type UniqueUserField = 'id' | 'email' | 'cpf' | 'phoneNumber';

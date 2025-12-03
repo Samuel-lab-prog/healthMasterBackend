@@ -32,11 +32,6 @@ export const crmSchema = t.String({
   ...makeValidationError('CRM must be between 5 and 20 characters long'),
 });
 
-export const loginDoctorSchema = t.Object({
-  email: emailSchema,
-  password: passwordSchema,
-});
-
 export const postDoctorSchema = t.Object({
   firstName: firstNameSchema,
   lastName: lastNameSchema,
@@ -50,6 +45,7 @@ export const postDoctorSchema = t.Object({
   role: roleSchema,
 });
 
+
 export const doctorSchema = t.Object({
   id: idSchema,
   firstName: firstNameSchema,
@@ -61,22 +57,8 @@ export const doctorSchema = t.Object({
   speciality: specialitySchema,
   role: roleSchema,
   crm: crmSchema,
-  createdAt: createdAtSchema,
-  updatedAt: updatedAtSchema,
-});
 
-export const fullDoctorSchema = t.Object({
-  id: idSchema,
-  firstName: firstNameSchema,
-  lastName: lastNameSchema,
-  birthDate: stringDateSchema,
-  email: emailSchema,
-  cpf: cpfSchema,
-  phoneNumber: phoneNumberSchema,
-  speciality: specialitySchema,
-  role: roleSchema,
-  crm: crmSchema,
   createdAt: createdAtSchema,
-  updatedAt: updatedAtSchema,
-  password: t.String(),
+
+  updatedAt: t.Union([updatedAtSchema, t.Null()]),
 });

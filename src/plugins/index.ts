@@ -1,35 +1,38 @@
-import type { User } from '../routes/users/types.ts';
-import type { Doctor } from '../routes/doctors/types.ts';
-import { throwForbiddenError, throwUnauthorizedError } from '../utils/AppError.ts';
 import { Elysia } from 'elysia';
+import { authenticate } from '../routes/auth/services.ts';
+import { throwUnauthorizedError, throwForbiddenError } from '../utils/AppError.ts';
+import type { Doctor } from '../routes/doctors/types.ts';
+import type { User } from '../routes/users/types.ts';
 
-export type AuthLevels = 'user' | 'doctor' | 'admin' | null;
-
-export const SetupPlugin = new Elysia()
-  .state('authLevel', null as AuthLevels)
-  .state('clientData', null as User | Doctor | null);
+export type AuthLevels = 'user' | 'doctor' | 'admin';
 
 export const AuthPlugin = (requestedLevel: AuthLevels = 'user') =>
-  new Elysia().use(SetupPlugin).onBeforeHandle({ as: 'scoped' }, ({ store }) => {
-    console.log('AuthPlugin: Checking authentication for level:', requestedLevel);
-    console.log('Current authLevel:', store.authLevel);
-    const authLevel = store.authLevel;
+  new Elysia()
+    .state('clientData', <null | Doctor | User>(null))
+    .onBeforeHandle({ as: 'scoped' }, async ({ cookie, store }) => {
+      if (!cookie.token || typeof cookie.token.value !== 'string') {
+        throwUnauthorizedError('Authentication required');
+      }
 
-    switch (requestedLevel) {
-      case 'user':
-        if (authLevel === null) {
-          throwUnauthorizedError('Authentication required');
-        }
-        break;
-      case 'doctor':
-        if (authLevel !== 'doctor' && authLevel !== 'admin') {
-          throwForbiddenError('Doctor access only');
-        }
-        break;
-      case 'admin':
-        if (authLevel !== 'admin') {
-          throwForbiddenError('Admin access only');
-        }
-        break;
-    }
-  });
+      const entity = await authenticate(cookie.token.value);
+      if (!entity) {
+        throwUnauthorizedError('Authentication required');
+      }
+
+      store.clientData = entity;
+
+      const role = entity.role;
+
+      if (requestedLevel === 'user') return;
+
+      if (requestedLevel === 'doctor') {
+        if (role === 'doctor' || role === 'admin') return;
+        throwForbiddenError('Doctor level required');
+      }
+
+      if (requestedLevel === 'admin') {
+        if (role === 'admin') return;
+        throwForbiddenError('Admin level required');
+      }
+
+    });

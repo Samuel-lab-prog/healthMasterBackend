@@ -1,10 +1,10 @@
 import { describe, it, beforeEach, expect } from 'bun:test';
 import { prisma } from '../../prisma/client.ts';
-import type { DoctorCreateInput } from '../../generated/models';
 import { AppError } from '../../utils/AppError.ts';
-import { insertDoctor, selectDoctorByField, selectAllDoctors } from './models';
+import { insertDoctor, selectDoctorByField, selectAllDoctors, } from './models';
+import type { InsertDoctor } from './types.ts';
 
-const DEFAULT_DOCTOR: DoctorCreateInput = {
+const DEFAULT_DOCTOR: InsertDoctor = {
   firstName: 'John',
   lastName: 'Doe',
   cpf: '12345678900',
@@ -17,7 +17,7 @@ const DEFAULT_DOCTOR: DoctorCreateInput = {
   crm: '123456',
 };
 
-const TEST_DOCTOR: DoctorCreateInput = {
+const TEST_DOCTOR: InsertDoctor = {
   firstName: 'Jane',
   lastName: 'Doe',
   cpf: '98765432100',

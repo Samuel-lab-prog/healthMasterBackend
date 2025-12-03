@@ -26,7 +26,7 @@
   },
   "scripts": {
     "start": "bun run src/server.ts",
-    "dev": "bun --env-file=.env src/server.ts",
+    "dev": "bun --watch src/server.ts",
     "format": "eslint . --fix && prettier --write .",
     "build": "bun build src/server.ts --outdir dist --target bun",
     "test": "bun test",

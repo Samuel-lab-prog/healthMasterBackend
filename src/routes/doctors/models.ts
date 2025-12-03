@@ -1,31 +1,29 @@
 import { prisma } from '../../prisma/client.ts';
-import type { Prisma } from '../../generated/client.ts';
 import { withPrismaErrorHandling } from '../../utils/AppError.ts';
-import type { DoctorCreateInput } from '../../generated/models';
-
-type DoctorRow = Prisma.DoctorGetPayload<object>;
+import type { UniqueDoctorField, InsertDoctor, DoctorRow } from './types.ts';
 
 export async function insertDoctor(
-  doctorData: DoctorCreateInput
-): Promise<Pick<DoctorRow, 'id'> | null> {
-  return (
-    withPrismaErrorHandling<Pick<DoctorRow, 'id'>>(() =>
-      prisma.doctor.create({
-        data: doctorData,
-        select: { id: true },
-      })
-    ) ?? null
+  doctorData: InsertDoctor
+): Promise<Pick<DoctorRow, 'id'>> {
+  return withPrismaErrorHandling(() =>
+    prisma.doctor.create({
+      data: doctorData,
+      select: { id: true },
+    })
   );
 }
 
 export async function selectAllDoctors(): Promise<DoctorRow[]> {
-  return (await withPrismaErrorHandling<DoctorRow[]>(() => prisma.doctor.findMany())) || [];
+  return withPrismaErrorHandling(() => prisma.doctor.findMany());
 }
-type UniqueDoctorField = 'id' | 'email' | 'crm' | 'cpf' | 'phoneNumber';
 
-export async function selectDoctorByField(
-  field: UniqueDoctorField,
-  value: string | number
+export async function selectDoctorByField<K extends UniqueDoctorField>(
+  field: K,
+  value: DoctorRow[K]
 ): Promise<DoctorRow | null> {
-  return withPrismaErrorHandling<DoctorRow>(() => prisma.doctor.$selectByField(field, value));
+  return withPrismaErrorHandling(() =>
+    prisma.doctor.findFirst({
+      where: { [field]: value },
+    })
+  );
 }
