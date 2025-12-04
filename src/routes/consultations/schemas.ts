@@ -5,7 +5,7 @@ export const consultationSchema = t.Object({
   id: s.idSchema,
   userFullName: s.fullNameSchema,
   doctorFullName: s.fullNameSchema,
-  date: s.stringDateSchema,
+  date: s.DateSchema,
   notes: s.notesSchema,
   createdAt: s.createdAtSchema,
   updatedAt: s.updatedAtSchema,
@@ -14,13 +14,13 @@ export const consultationSchema = t.Object({
 export const postConsultationSchema = t.Object({
   userId: s.idSchema,
   doctorId: s.idSchema,
-  date: s.stringDateSchema,
+  date: s.DateSchema,
   notes: s.notesSchema,
 });
 
 export const userConsultationSchema = t.Object({
   id: s.idSchema,
-  date: s.stringDateSchema,
+  date: s.DateSchema,
   notes: s.notesSchema,
   doctorId: s.idSchema,
   doctorName: s.fullNameSchema,
@@ -29,7 +29,7 @@ export const userConsultationSchema = t.Object({
 
 export const doctorConsultationSchema = t.Object({
   id: s.idSchema,
-  date: s.stringDateSchema,
+  date: s.DateSchema,
   notes: s.notesSchema,
   userId: s.idSchema,
   userName: s.fullNameSchema,

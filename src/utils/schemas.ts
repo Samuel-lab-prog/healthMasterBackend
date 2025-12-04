@@ -1,6 +1,40 @@
 import { t } from 'elysia';
 import { makeBadRequestError, makeValidationError } from './AppError';
 
+// Common Schemas
+//---------------------------------------------------------------------------//
+
+export const DateSchema = t.Date({
+  example: '2024-01-01T12:00:00Z',
+  ...makeValidationError('Date must be a valid date'),
+});
+
+export const createdAtSchema = t.Date({
+  example: '2024-01-01T12:00:00Z',
+  ...makeValidationError('createdAt must be a valid date string'),
+});
+
+export const deletedAtSchema = t.Union([t.Date(), t.Null()], {
+  example: null,
+  ...makeValidationError('deletedAt must be a valid date string or null'),
+});
+
+export const updatedAtSchema = t.Union([t.Date(), t.Null()], {
+  example: null,
+  ...makeValidationError('updatedAt must be a valid date or null'),
+});
+
+export const tokenSchema = t.Object({
+  token: t.String({
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+    ...makeBadRequestError('Token must be a valid string'),
+  }),
+});
+
+export const idSchema = t.Number({
+  minimum: 1,
+  example: 1,
+});
 export const loginSchema = t.Object({
   email: t.String({
     format: 'email',
@@ -15,32 +49,13 @@ export const loginSchema = t.Object({
   }),
 });
 
-export const tokenSchema = t.Object({
-  token: t.String({
-    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
-    ...makeBadRequestError('Token must be a valid string'),
-  }),
+//---------------------------------------------------------------------------//
+
+export const referralStatusSchema = t.UnionEnum(['pending', 'completed', 'cancelled'], {
+  example: 'pending',
+  ...makeBadRequestError('Status must be one of: pending, completed, cancelled'),
 });
 
-export const idSchema = t.Number({
-  minimum: 1,
-  example: 1,
-});
-
-export const stringDateSchema = t.String({
-  example: '2024-01-01T12:00:00Z',
-  ...makeValidationError('Date must be in ISO 8601 format'),
-});
-
-export const createdAtSchema = t.Date({
-  example: new Date(),
-  ...makeValidationError('createdAt must be a valid date'),
-});
-
-export const updatedAtSchema = t.Union([t.String(), t.Null()], {
-  example: null,
-  ...makeValidationError('updatedAt must be a valid date or null'),
-});
 
 export const emailSchema = t.String({
   format: 'email',
@@ -90,9 +105,17 @@ export const fullNameSchema = t.String({
   ...makeValidationError('Full name must be between 6 and 60 characters long'),
 });
 
-export const notesSchema = t.String({
-  minLength: 10,
-  maxLength: 1000,
-  example: 'Patient shows symptoms of ...',
-  ...makeValidationError('Notes must be between 10 and 1000 characters long'),
+export const notesSchema = t.Union([t.String(), t.Null()], {
+  example: 'Patient shows signs of improvement.',
+  ...makeValidationError('Notes must be a valid string or null'),
+});
+
+export const reasonSchema = t.Union([t.String()], {
+  example: 'Referral for specialized care.',
+  ...makeValidationError('Reason must be a valid string or null'),
+});
+
+export const referredToIdSchema = t.Union([t.Number(), t.Null()], {
+  minimum: 1,
+  example: 1,
 });

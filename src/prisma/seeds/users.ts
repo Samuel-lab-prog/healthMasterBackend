@@ -8,7 +8,7 @@ export async function seedUsers() {
       email: 'samuelgomes@user.com',
       phoneNumber: '51991669896',
       password: '$2b$10$N5d3Gu9fbGYeS.s5v5EY0.JoVlWQLD6cr8g3OEbXvdWaWx6jpUeD6',
-      birthDate: '2007-12-17',
+      birthDate: new Date('2007-12-17'),
       cpf: '12345678901',
     },
     {
@@ -17,7 +17,7 @@ export async function seedUsers() {
       email: 'leonelrocha@user.com',
       phoneNumber: '987-654-3210',
       password: '$2b$10$N5d3Gu9fbGYeS.s5v5EY0.JoVlWQLD6cr8g3OEbXvdWaWx6jpUeD6',
-      birthDate: '1985-08-23',
+      birthDate: new Date('1990-06-25'),
       cpf: '10987654321',
     },
   ];

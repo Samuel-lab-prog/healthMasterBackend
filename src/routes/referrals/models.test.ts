@@ -13,7 +13,7 @@ const DEFAULT_USER = {
   password: 'password123',
   phoneNumber: `+10000000${Math.floor(Math.random() * 9999)}`,
   cpf: `${Math.floor(Math.random() * 10 ** 11)}`.padStart(11, '0'),
-  birthDate: '1990-01-01',
+  birthDate: new Date('1990-01-01'),
 };
 
 const DEFAULT_DOCTOR = {
@@ -23,7 +23,7 @@ const DEFAULT_DOCTOR = {
   password: 'password123',
   phoneNumber: `+20000000${Math.floor(Math.random() * 9999)}`,
   cpf: `${Math.floor(Math.random() * 10 ** 11)}`.padStart(11, '0'),
-  birthDate: '1980-01-01',
+  birthDate: new Date('1980-01-01'),
   role: 'doctor' as const,
   speciality: 'General',
   crm: `CRM${Math.floor(Math.random() * 999999)}`,
@@ -54,6 +54,10 @@ beforeEach(async () => {
 
   const referral = await ref.insertReferral({
     consultationId: DEFAULT_CONSULTATION_ID,
+    userId: DEFAULT_USER_ID,
+    referredById: DEFAULT_DOCTOR_ID,
+    referredToId: DEFAULT_DOCTOR_ID,
+    reason: 'Routine test',
     notes: 'Initial Referral notes',
   });
 
@@ -64,6 +68,10 @@ describe('Referral Model Tests', () => {
   it('insertReferral → Should insert and return an id', async () => {
     const result = await ref.insertReferral({
       consultationId: DEFAULT_CONSULTATION_ID,
+      userId: DEFAULT_USER_ID,
+      referredById: DEFAULT_DOCTOR_ID,
+      referredToId: DEFAULT_DOCTOR_ID,
+      reason: 'Follow-up',
       notes: 'Referral for further tests',
     });
 
@@ -74,6 +82,10 @@ describe('Referral Model Tests', () => {
     await expect(
       ref.insertReferral({
         consultationId: 999999,
+        userId: DEFAULT_USER_ID,
+        referredById: DEFAULT_DOCTOR_ID,
+        referredToId: DEFAULT_DOCTOR_ID,
+        reason: 'Invalid test',
         notes: 'Invalid',
       })
     ).rejects.toThrow(AppError);
@@ -124,4 +136,43 @@ describe('Referral Model Tests', () => {
   it('selectReferralsByConsultationId → Should return empty array for invalid consultation', async () => {
     expect(await ref.selectReferralsByConsultationId(999999)).toEqual([]);
   });
+
+  it('softDeleteReferral → Should soft delete a referral', async () => {
+    const result = await ref.softDeleteReferral(DEFAULT_REFERRAL_ID);
+
+    expect(result).toHaveProperty('id', DEFAULT_REFERRAL_ID);
+
+    const deleted = await prisma.referral.findUnique({
+      where: { id: DEFAULT_REFERRAL_ID },
+    });
+
+    expect(deleted?.deletedAt).not.toBeNull();
+  });
+
+  it('softDeleteReferral → Should throw AppError for invalid referral id', async () => {
+    await expect(ref.softDeleteReferral(999999)).rejects.toThrow(AppError);
+  });
+
+  it('updateReferralStatus → Should update referral status successfully', async () => {
+    const updated = await ref.updateReferralStatus(DEFAULT_REFERRAL_ID, 'completed');
+
+    expect(updated.id).toBe(DEFAULT_REFERRAL_ID);
+    expect(updated.status).toBe('completed');
+  });
+
+  it('updateReferralStatus → Should throw AppError for invalid referral id', async () => {
+    await expect(
+      ref.updateReferralStatus(999999, 'completed')
+    ).rejects.toThrow(AppError);
+  });
+
+  it('updateReferralStatus → Should allow all valid statuses', async () => {
+    const statuses = ['pending', 'cancelled', 'completed'] as const;
+
+    for (const status of statuses) {
+      const updated = await ref.updateReferralStatus(DEFAULT_REFERRAL_ID, status);
+      expect(updated.status).toBe(status);
+    }
+  });
+
 });

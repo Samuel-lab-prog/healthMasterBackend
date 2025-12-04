@@ -41,3 +41,15 @@ export async function getDoctorReferrals(doctorId: number): Promise<types.Doctor
   const rows = await models.selectDoctorReferrals(doctorId);
   return rows.map(types.mapDoctorReferralRowToDoctorReferral);
 }
+
+export async function updateReferralStatus(
+  id: number,
+  status: types.ReferralStatus
+): Promise<types.Referral> {
+  const row = await models.updateReferralStatus(id, status);
+  return types.mapReferralRowToReferral(row);
+}
+
+export async function deleteReferral(id: number): Promise<Pick<types.Referral, 'id'>> {
+  return await models.softDeleteReferral(id);
+}

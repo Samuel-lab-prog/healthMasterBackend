@@ -11,7 +11,7 @@ const DEFAULT_USER: InsertUser = {
   password: 'hashdefault',
   phoneNumber: '99999999',
   cpf: '12345678900',
-  birthDate: '1990-01-01',
+  birthDate: new Date(),
 };
 
 const TEST_USER: InsertUser = {
@@ -21,7 +21,7 @@ const TEST_USER: InsertUser = {
   password: 'hashtest',
   phoneNumber: '88888888',
   cpf: '09876543211',
-  birthDate: '1995-05-15',
+  birthDate: new Date(),
 };
 
 let DEFAULT_USER_ID: number;
@@ -43,7 +43,7 @@ describe('User Model Tests', () => {
       password: 'hashabc',
       phoneNumber: '88888888',
       cpf: '09876543211',
-      birthDate: '1995-05-15',
+      birthDate: new Date(),
     });
 
     expect(result).not.toBeNull();

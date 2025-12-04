@@ -18,7 +18,15 @@ export function handleError(set: any, error: unknown, code: any) {
     };
   }
 
-  const converted = convertElysiaError(code);
+  // Normaliza o code vindo do Elysia
+  const normalizedCode =
+    typeof code === 'string'
+      ? code
+      : typeof code?.type === 'string'
+      ? code.type
+      : 'UNKNOWN';
+
+  const converted = convertElysiaError(normalizedCode);
 
   if (converted instanceof AppError) {
     const statusCode = converted.statusCode;
@@ -36,7 +44,9 @@ export function handleError(set: any, error: unknown, code: any) {
     };
   }
 
-  const statusCode = typeof set.status === 'number' && set.status >= 400 ? set.status : 500;
+  // fallback para erros inesperados
+  const statusCode =
+    typeof set.status === 'number' && set.status >= 400 ? set.status : 500;
 
   set.status = statusCode;
 

@@ -8,7 +8,7 @@ export const postUserSchema = t.Object({
   password: s.passwordSchema,
   phoneNumber: s.phoneNumberSchema,
   cpf: s.cpfSchema,
-  birthDate: s.stringDateSchema,
+  birthDate: s.DateSchema,
 });
 
 export const userSchema = t.Object({
@@ -17,7 +17,7 @@ export const userSchema = t.Object({
   email: s.emailSchema,
   phoneNumber: s.phoneNumberSchema,
   cpf: s.cpfSchema,
-  birthDate: s.stringDateSchema,
+  birthDate: s.DateSchema,
   id: s.idSchema,
   createdAt: s.createdAtSchema,
   updatedAt: s.updatedAtSchema,

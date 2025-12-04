@@ -11,10 +11,11 @@ model Consultation {
   id        Int        @id @default(autoincrement())
   userId    Int
   doctorId  Int
-  date      String
+  date      DateTime
   notes     String
   createdAt DateTime   @default(now())
-  updatedAt String?
+  updatedAt DateTime?  @updatedAt
+  deletedAt DateTime?  
   doctor    Doctor     @relation(fields: [doctorId], references: [id])
   user      User       @relation(fields: [userId], references: [id])
   referrals Referral[]
@@ -26,25 +27,39 @@ model Doctor {
   lastName      String
   speciality    String
   phoneNumber   String         @unique
-  birthDate     String
+  birthDate     DateTime
   email         String         @unique
   password      String
   crm           String         @unique
   cpf           String         @unique
   role          Role           @default(doctor)
   createdAt     DateTime       @default(now())
-  updatedAt     String?
+  updatedAt     DateTime?      @updatedAt
   consultations Consultation[]
+
+  referralsMade     Referral[] @relation("ReferralReferredBy")
+  referralsReceived Referral[] @relation("ReferralReferredTo")
 }
 
 model Referral {
   id             Int          @id @default(autoincrement())
-  notes          String
   consultationId Int
+  userId         Int
+  referredById   Int
+  referredToId   Int
+  reason         String
+  notes          String?      
+  status         String       @default("pending")
   createdAt      DateTime     @default(now())
-  updatedAt      String?
+  updatedAt      DateTime     @updatedAt
+  deletedAt      DateTime?    
   consultation   Consultation @relation(fields: [consultationId], references: [id])
+  user           User         @relation(fields: [userId], references: [id])
+  referredBy     Doctor       @relation("ReferralReferredBy", fields: [referredById], references: [id])
+  referredTo     Doctor       @relation("ReferralReferredTo", fields: [referredToId], references: [id])
 }
+
+
 
 model User {
   id            Int            @id @default(autoincrement())
@@ -53,12 +68,15 @@ model User {
   phoneNumber   String         @unique
   email         String         @unique
   cpf           String         @unique
-  birthDate     String
   password      String
+  birthDate     DateTime
   createdAt     DateTime       @default(now())
-  updatedAt     String?
+  updatedAt     DateTime?
+  deletedAt     DateTime?
   role          String         @default("user")
   consultations Consultation[]
+
+  referrals Referral[]
 }
 
 enum Role {

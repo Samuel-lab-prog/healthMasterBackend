@@ -31,7 +31,7 @@ const DEFAULT_USER: InsertUser = {
   password: 'hash123',
   phoneNumber: '99999999',
   cpf: '12345678900',
-  birthDate: '1990-01-01',
+  birthDate: new Date('1980-01-01'),
 };
 
 const DEFAULT_DOCTOR: InsertDoctor = {
@@ -43,7 +43,7 @@ const DEFAULT_DOCTOR: InsertDoctor = {
   phoneNumber: '88888888',
   speciality: 'Neurology',
   cpf: '09876543210',
-  birthDate: '1985-05-05',
+  birthDate: new Date('1985-05-05'),
   crm: '654321',
 };
 

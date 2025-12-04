@@ -116,32 +116,35 @@ function handlePrismaError<T>(error: PrismaClientKnownRequestError, data?: T): n
   const table = (error.meta as any)?.modelName || 'unknown';
 
   switch (error.code) {
-    case 'P2002':
-      {
-        let fields = extractUniqueFields(error) || (error.meta as any)?.target || [];
+    case 'P2002': {
+      let fields = extractUniqueFields(error) || (error.meta as any)?.target || [];
 
-        if (!Array.isArray(fields) || fields.length === 0) fields = ['field'];
+      if (!Array.isArray(fields) || fields.length === 0) fields = ['field'];
 
-        const record = data && typeof data === 'object' ? (data as Record<string, any>) : null;
+      const record = data && typeof data === 'object' ? (data as Record<string, any>) : null;
 
-        const messages = fields.map((f) =>
-          record && f in record ? `${f} = ${String(record[f])}` : f
-        );
+      const messages = fields.map((f) =>
+        record && f in record ? `${f} = ${String(record[f])}` : f
+      );
 
-        throwConflictError(`unique ${messages.join(', ')} already exists in ${table}`);
-      }
+      throwConflictError(`unique ${messages.join(', ')} already exists in ${table}`);
+    }
       break;
-    case 'P2003':
-      {
-        const fkField = (error.meta as any)?.field_name || 'foreign key';
-        throwConflictError(`foreign key constraint failed on ${fkField} in ${table}`);
-      }
+
+    case 'P2003': {
+      const fkField = (error.meta as any)?.field_name || 'foreign key';
+      throwConflictError(`foreign key constraint failed on ${fkField} in ${table}`);
+    }
+      break;
+
+    case 'P2025': {
+      throwNotFoundError(`${table} not found`);
+    }
       break;
     default:
       throw error;
   }
 }
-
 export async function withPrismaErrorHandling<T>(callback: () => Promise<T>): Promise<T> {
   try {
     return await callback();

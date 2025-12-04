@@ -2,14 +2,14 @@ import { prisma } from '../client';
 
 export async function seedConsultations() {
   const consultationsData = [
-    { userId: 1, doctorId: 1, date: '2024-07-01', notes: 'Checkup de rotina' },
+    { userId: 1, doctorId: 1, date: new Date('2024-07-01'), notes: 'Checkup de rotina' },
     {
       userId: 1,
       doctorId: 2,
-      date: '2024-07-03',
+      date: new Date('2024-07-03'),
       notes: 'Consulta para dores de cabeça frequentes',
     },
-    { userId: 2, doctorId: 1, date: '2024-07-02', notes: 'Consulta para erupção cutânea' },
+    { userId: 2, doctorId: 1, date: new Date('2024-07-02'), notes: 'Consulta para erupção cutânea' },
   ];
 
   for (const consultation of consultationsData) {

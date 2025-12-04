@@ -107,4 +107,31 @@ export const referralRouter = new Elysia({ prefix: '/referrals' })
         tags: ['Referrals'],
       },
     }
-  );
+  )
+  .patch(
+    '/:id/status',
+    async ({ params, body }) => await services.updateReferralStatus(params.id, body.status),
+    {
+      params: t.Object({ id: idSchema }),
+      body: t.Object({ status: schemas.postReferralSchema.properties.status }),
+      response: {
+        200: schemas.referralSchema,
+        ...errorResponses,
+      },
+      detail: {
+        summary: 'Update Referral Status',
+        tags: ['Referrals'],
+      },
+    }
+  )
+  .delete('/:id', async ({ params }) => await services.deleteReferral(params.id), {
+    params: t.Object({ id: idSchema }),
+    response: {
+      200: t.Object({ id: idSchema }),
+      ...errorResponses,
+    },
+    detail: {
+      summary: 'Delete Referral',
+      tags: ['Referrals'],
+    },
+  });
