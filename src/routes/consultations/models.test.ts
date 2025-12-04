@@ -4,7 +4,7 @@ import { prisma } from '../../prisma/client.ts';
 import * as m from './models.ts';
 
 import type { InsertConsultation } from './types.ts';
-import type { InsertUser} from '../users/types.ts';
+import type { InsertUser } from '../users/types.ts';
 import type { InsertDoctor } from '../doctors/types.ts';
 import { insertDoctor } from '../doctors/models.ts';
 import { insertUser } from '../users/models.ts';
@@ -60,13 +60,11 @@ beforeEach(async () => {
   DEFAULT_USER_ID = (await insertUser(DEFAULT_USER))!.id;
   DEFAULT_DOCTOR_ID = (await insertDoctor(DEFAULT_DOCTOR))!.id;
 
-  DEFAULT_CONSULTATION_ID = (
-    await m.insertConsultation({
-      ...DEFAULT_CONSULTATION,
-      userId: DEFAULT_USER_ID,
-      doctorId: DEFAULT_DOCTOR_ID,
-    })
-  )!.id;
+  DEFAULT_CONSULTATION_ID = (await m.insertConsultation({
+    ...DEFAULT_CONSULTATION,
+    userId: DEFAULT_USER_ID,
+    doctorId: DEFAULT_DOCTOR_ID,
+  }))!.id;
 });
 
 describe('consultation Model Tests', () => {

@@ -45,7 +45,6 @@ export const postDoctorSchema = t.Object({
   role: roleSchema,
 });
 
-
 export const doctorSchema = t.Object({
   id: idSchema,
   firstName: firstNameSchema,

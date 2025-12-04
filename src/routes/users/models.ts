@@ -3,15 +3,13 @@ import { withPrismaErrorHandling } from '../../utils/AppError.ts';
 import type { UserRow, InsertUser, UniqueUserField } from './types.ts';
 
 export async function insertUser(userData: InsertUser): Promise<Pick<UserRow, 'id'>> {
-  return (
-    withPrismaErrorHandling<Pick<UserRow, 'id'>>(() =>
-      prisma.user.create({
-        data: userData,
-        select: {
-          id: true,
-        },
-      })
-    )
+  return withPrismaErrorHandling<Pick<UserRow, 'id'>>(() =>
+    prisma.user.create({
+      data: userData,
+      select: {
+        id: true,
+      },
+    })
   );
 }
 
@@ -25,7 +23,6 @@ export async function selectUserByField<K extends UniqueUserField>(
     })
   );
 }
-
 
 export async function selectAllUsers(): Promise<UserRow[]> {
   return withPrismaErrorHandling<UserRow[]>(() => prisma.user.findMany());

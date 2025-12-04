@@ -11,9 +11,7 @@ import { mapUserRowToUser } from '../users/types.ts';
 export async function login(
   email: string,
   password: string
-): Promise<
-  { data: User; token: string } | { data: Doctor; token: string }
-> {
+): Promise<{ data: User; token: string } | { data: Doctor; token: string }> {
   const user = await selectUserByField('email', email);
 
   if (user && bcrypt.compareSync(password, user.password)) {
@@ -57,7 +55,7 @@ export async function authenticate(token: string): Promise<User | Doctor | null>
       return doctor ? mapDoctorRowToDoctor(doctor) : null;
     }
     return null;
-} catch {
+  } catch {
     return null;
   }
 }

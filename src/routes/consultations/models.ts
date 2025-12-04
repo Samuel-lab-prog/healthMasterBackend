@@ -43,9 +43,7 @@ export async function selectAllConsultations(): Promise<ConsultationRow[]> {
   );
 }
 
-export async function selectUserConsultations(
-  userId: number
-): Promise<UserConsultationRow[]> {
+export async function selectUserConsultations(userId: number): Promise<UserConsultationRow[]> {
   return withPrismaErrorHandling(() =>
     prisma.consultation.findMany({
       where: { userId },
@@ -81,4 +79,3 @@ export async function selectDoctorConsultations(
     })
   );
 }
-

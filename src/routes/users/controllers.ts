@@ -4,28 +4,27 @@ import { registerUser } from './services.ts';
 import { idSchema } from '../../utils/schemas.ts';
 import { postUserSchema } from './schemas.ts';
 
-export const userRouter = new Elysia()
-  .group('/users', (app) =>
-    app.post(
-      '/register',
-      async ({ body, set }) => {
-        set.status = 201;
-        return await registerUser(body);
+export const userRouter = new Elysia().group('/users', (app) =>
+  app.post(
+    '/register',
+    async ({ body, set }) => {
+      set.status = 201;
+      return await registerUser(body);
+    },
+    {
+      body: postUserSchema,
+      response: {
+        201: t.Object({ id: idSchema }),
+        400: appErrorSchema,
+        422: appErrorSchema,
+        409: appErrorSchema,
+        500: appErrorSchema,
       },
-      {
-        body: postUserSchema,
-        response: {
-          201: t.Object({ id: idSchema }),
-          400: appErrorSchema,
-          422: appErrorSchema,
-          409: appErrorSchema,
-          500: appErrorSchema,
-        },
-        detail: {
-          summary: 'Create',
-          description: 'Creates a new user. Returns an object with the new user ID.',
-          tags: ['Users'],
-        },
-      }
-    )
-  );
+      detail: {
+        summary: 'Create',
+        description: 'Creates a new user. Returns an object with the new user ID.',
+        tags: ['Users'],
+      },
+    }
+  )
+);

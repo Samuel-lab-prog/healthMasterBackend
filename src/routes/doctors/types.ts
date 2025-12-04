@@ -1,10 +1,7 @@
 import type { Prisma } from '../../prisma/generated/prisma-client/browser';
 import type { DoctorCreateInput } from '../../prisma/generated/prisma-client/models';
 
-import {
-  doctorSchema,
-  postDoctorSchema,
-} from './schemas';
+import { doctorSchema, postDoctorSchema } from './schemas';
 
 export function mapDoctorRowToDoctor(fullDoctor: DoctorRow): Doctor {
   return {
@@ -19,7 +16,7 @@ export function mapDoctorRowToDoctor(fullDoctor: DoctorRow): Doctor {
     role: fullDoctor.role,
     crm: fullDoctor.crm,
     createdAt: fullDoctor.createdAt,
-    updatedAt: fullDoctor.updatedAt, 
+    updatedAt: fullDoctor.updatedAt,
   };
 }
 
@@ -36,7 +33,7 @@ export function mapDoctorRowToFullDoctor(fullDoctor: DoctorRow): Doctor {
     role: fullDoctor.role,
     crm: fullDoctor.crm,
     createdAt: fullDoctor.createdAt,
-    updatedAt: fullDoctor.updatedAt, 
+    updatedAt: fullDoctor.updatedAt,
   };
 }
 

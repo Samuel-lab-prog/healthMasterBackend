@@ -1,40 +1,44 @@
-import {
-  postReferralSchema,
-  referralSchema,
-  userReferralSchema,
-  doctorReferralSchema,
-} from './schemas';
-import type { Prisma } from '../../prisma/generated/prisma/client';
-import type { ReferralUncheckedCreateInput } from '../../prisma/generated/prisma/models.ts';
+import * as schemas from './schemas';
+import type { Prisma } from '../../prisma/generated/prisma-client/browser';
 
-export type Referral = (typeof referralSchema)['static'];
-export type PostReferral = (typeof postReferralSchema)['static'];
-export type UserReferral = (typeof userReferralSchema)['static'];
-export type DoctorReferral = (typeof doctorReferralSchema)['static'];
+export type Referral = typeof schemas.referralSchema.static;
+export type PostReferral = typeof schemas.postReferralSchema.static;
+export type UserReferral = typeof schemas.userReferralSchema.static;
+export type DoctorReferral = typeof schemas.doctorReferralSchema.static;
+export type InsertReferral = Prisma.ReferralUncheckedCreateInput;
 
 export type ReferralRow = Prisma.ReferralGetPayload<{
   include: {
     consultation: {
       select: {
         user: {
-          select: { firstName: true; lastName: true; phoneNumber: true; email: true };
+          select: {
+            firstName: true;
+            lastName: true;
+            phoneNumber: true;
+            email: true;
+          };
         };
         doctor: {
-          select: { firstName: true; lastName: true };
+          select: {
+            firstName: true;
+            lastName: true;
+          };
         };
       };
     };
   };
 }>;
 
-export type CreateReferral = ReferralUncheckedCreateInput;
-
 export type UserReferralRow = Prisma.ReferralGetPayload<{
   include: {
     consultation: {
       select: {
         doctor: {
-          select: { firstName: true; lastName: true };
+          select: {
+            firstName: true;
+            lastName: true;
+          };
         };
       };
     };
@@ -46,7 +50,12 @@ export type DoctorReferralRow = Prisma.ReferralGetPayload<{
     consultation: {
       select: {
         user: {
-          select: { firstName: true; lastName: true; phoneNumber: true; email: true };
+          select: {
+            firstName: true;
+            lastName: true;
+            phoneNumber: true;
+            email: true;
+          };
         };
       };
     };

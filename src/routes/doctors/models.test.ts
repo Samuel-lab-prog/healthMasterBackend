@@ -1,7 +1,7 @@
 import { describe, it, beforeEach, expect } from 'bun:test';
 import { prisma } from '../../prisma/client.ts';
 import { AppError } from '../../utils/AppError.ts';
-import { insertDoctor, selectDoctorByField, selectAllDoctors, } from './models';
+import { insertDoctor, selectDoctorByField, selectAllDoctors } from './models';
 import type { InsertDoctor } from './types.ts';
 
 const DEFAULT_DOCTOR: InsertDoctor = {

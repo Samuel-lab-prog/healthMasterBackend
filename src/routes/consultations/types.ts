@@ -46,7 +46,6 @@ export type ConsultationRow = Prisma.ConsultationGetPayload<{
   };
 }>;
 
-
 export function mapConsultationRowToConsultation(row: ConsultationRow): Consultation {
   return {
     id: row.id,

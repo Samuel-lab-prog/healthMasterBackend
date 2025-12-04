@@ -8,7 +8,7 @@ export type AuthLevels = 'user' | 'doctor' | 'admin';
 
 export const AuthPlugin = (requestedLevel: AuthLevels = 'user') =>
   new Elysia()
-    .state('clientData', <null | Doctor | User>(null))
+    .state('clientData', <null | Doctor | User>null)
     .onBeforeHandle({ as: 'scoped' }, async ({ cookie, store }) => {
       if (!cookie.token || typeof cookie.token.value !== 'string') {
         throwUnauthorizedError('Authentication required');
@@ -34,5 +34,4 @@ export const AuthPlugin = (requestedLevel: AuthLevels = 'user') =>
         if (role === 'admin') return;
         throwForbiddenError('Admin level required');
       }
-
     });

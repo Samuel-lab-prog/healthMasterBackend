@@ -10,6 +10,4 @@ export async function registerUser(body: PostUser): Promise<Pick<UserRow, 'id'>>
     ...body,
     password: passwordHash,
   });
-
-  
 }

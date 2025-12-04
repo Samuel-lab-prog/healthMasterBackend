@@ -1,45 +1,37 @@
 import { t } from 'elysia';
-import {
-  idSchema,
-  createdAtSchema,
-  updatedAtSchema,
-  notesSchema,
-  fullNameSchema,
-  emailSchema,
-  phoneNumberSchema,
-} from '../../utils/schemas.ts';
+import * as schemas from '../../utils/schemas.ts';
 
 export const postReferralSchema = t.Object({
-  consultationId: idSchema,
-  notes: notesSchema,
+  consultationId: schemas.idSchema,
+  notes: schemas.notesSchema,
 });
 
 export const referralSchema = t.Object({
-  id: idSchema,
-  consultationId: idSchema,
-  notes: notesSchema,
-  userName: fullNameSchema,
-  doctorName: fullNameSchema,
-  userPhoneNumber: phoneNumberSchema,
-  userEmail: emailSchema,
-  createdAt: createdAtSchema,
-  updatedAt: updatedAtSchema,
+  id: schemas.idSchema,
+  consultationId: schemas.idSchema,
+  notes: schemas.notesSchema,
+  userName: schemas.fullNameSchema,
+  doctorName: schemas.fullNameSchema,
+  userPhoneNumber: schemas.phoneNumberSchema,
+  userEmail: schemas.emailSchema,
+  createdAt: schemas.createdAtSchema,
+  updatedAt: schemas.updatedAtSchema,
 });
 
 export const userReferralSchema = t.Object({
-  id: idSchema,
-  notes: notesSchema,
-  doctorName: fullNameSchema,
-  createdAt: createdAtSchema,
-  updatedAt: updatedAtSchema,
+  id: schemas.idSchema,
+  notes: schemas.notesSchema,
+  doctorName: schemas.fullNameSchema,
+  createdAt: schemas.createdAtSchema,
+  updatedAt: schemas.updatedAtSchema,
 });
 
 export const doctorReferralSchema = t.Object({
-  id: idSchema,
-  notes: notesSchema,
-  userName: fullNameSchema,
-  userPhoneNumber: phoneNumberSchema,
-  userEmail: emailSchema,
-  createdAt: createdAtSchema,
-  updatedAt: updatedAtSchema,
+  id: schemas.idSchema,
+  notes: schemas.notesSchema,
+  userName: schemas.fullNameSchema,
+  userPhoneNumber: schemas.phoneNumberSchema,
+  userEmail: schemas.emailSchema,
+  createdAt: schemas.createdAtSchema,
+  updatedAt: schemas.updatedAtSchema,
 });

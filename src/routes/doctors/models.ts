@@ -2,9 +2,7 @@ import { prisma } from '../../prisma/client.ts';
 import { withPrismaErrorHandling } from '../../utils/AppError.ts';
 import type { UniqueDoctorField, InsertDoctor, DoctorRow } from './types.ts';
 
-export async function insertDoctor(
-  doctorData: InsertDoctor
-): Promise<Pick<DoctorRow, 'id'>> {
+export async function insertDoctor(doctorData: InsertDoctor): Promise<Pick<DoctorRow, 'id'>> {
   return withPrismaErrorHandling(() =>
     prisma.doctor.create({
       data: doctorData,

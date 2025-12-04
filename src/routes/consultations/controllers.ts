@@ -5,28 +5,23 @@ import { AuthPlugin } from '../../plugins/index.ts';
 import * as services from './services.ts';
 import * as schemas from './schemas.ts';
 
-
 export const consultationRouter = new Elysia({
-  prefix: '/consultations'
+  prefix: '/consultations',
 })
   .use(AuthPlugin('user'))
-  .get(
-    '/users/:userId',
-    async ({ params }) => services.getUserConsultations(params.userId),
-    {
-      params: t.Object({ userId: idSchema }),
-      response: {
-        200: t.Array(schemas.userConsultationSchema),
-        404: appErrorSchema,
-        500: appErrorSchema
-      },
-      detail: {
-        summary: 'Get Consultations from User',
-        description: 'Retrieves all Consultations for a given User ID.',
-        tags: ['Consultations']
-      }
-    }
-  )
+  .get('/users/:userId', async ({ params }) => services.getUserConsultations(params.userId), {
+    params: t.Object({ userId: idSchema }),
+    response: {
+      200: t.Array(schemas.userConsultationSchema),
+      404: appErrorSchema,
+      500: appErrorSchema,
+    },
+    detail: {
+      summary: 'Get Consultations from User',
+      description: 'Retrieves all Consultations for a given User ID.',
+      tags: ['Consultations'],
+    },
+  })
 
   .use(AuthPlugin('doctor'))
   .post(
@@ -40,33 +35,29 @@ export const consultationRouter = new Elysia({
       response: {
         201: t.Object({ id: idSchema }),
         409: appErrorSchema,
-        500: appErrorSchema
+        500: appErrorSchema,
       },
       detail: {
         summary: 'Register',
         description: 'Creates a new Consultation and returns its ID.',
-        tags: ['Consultations']
-      }
+        tags: ['Consultations'],
+      },
     }
   )
 
-  .get(
-    '/:id',
-    async ({ params }) => services.getConsultationById(params.id),
-    {
-      params: t.Object({ id: idSchema }),
-      response: {
-        200: schemas.consultationSchema,
-        404: appErrorSchema,
-        500: appErrorSchema
-      },
-      detail: {
-        summary: 'Get Consultation by ID',
-        description: 'Retrieves a Consultation by its ID.',
-        tags: ['Consultations']
-      }
-    }
-  )
+  .get('/:id', async ({ params }) => services.getConsultationById(params.id), {
+    params: t.Object({ id: idSchema }),
+    response: {
+      200: schemas.consultationSchema,
+      404: appErrorSchema,
+      500: appErrorSchema,
+    },
+    detail: {
+      summary: 'Get Consultation by ID',
+      description: 'Retrieves a Consultation by its ID.',
+      tags: ['Consultations'],
+    },
+  })
 
   .get(
     '/doctors/:doctorId',
@@ -76,12 +67,12 @@ export const consultationRouter = new Elysia({
       response: {
         200: t.Array(schemas.doctorConsultationSchema),
         404: appErrorSchema,
-        500: appErrorSchema
+        500: appErrorSchema,
       },
       detail: {
         summary: 'Get Consultations from Doctor',
         description: 'Retrieves all Consultations for the given Doctor ID.',
-        tags: ['Consultations']
-      }
+        tags: ['Consultations'],
+      },
     }
   );
