@@ -4,6 +4,7 @@ export async function seedReferrals() {
   const referralsData = [
     { consultationId: 1, notes: 'Referred for heart palpitations' },
     { consultationId: 2, notes: 'Referred for skin rash' },
+    { consultationId: 3, notes: 'Referred for migraine evaluation' },
   ];
 
   for (const referral of referralsData) {

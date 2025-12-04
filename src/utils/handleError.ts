@@ -24,7 +24,7 @@ export function handleError(set: any, error: unknown, code: any) {
     const statusCode = converted.statusCode;
     set.status = statusCode;
 
-    console.error('------------------Converted Error------------------');
+    console.error('------------------AppError------------------');
     console.error(`Status: ${statusCode}`);
     console.error(`Messages: ${converted.errorMessages.join(', ')}`);
     console.error(`Stack: ${converted.stack ?? 'No stack trace available'}`);
@@ -36,19 +36,14 @@ export function handleError(set: any, error: unknown, code: any) {
     };
   }
 
-  const statusCode =
-    typeof set.status === 'number' && set.status >= 400 ? set.status : 500;
+  const statusCode = typeof set.status === 'number' && set.status >= 400 ? set.status : 500;
 
   set.status = statusCode;
 
   console.error('------------------Unexpected Error------------------');
   console.error(`Status: ${statusCode}`);
-  console.error(
-    `Error: ${error instanceof Error ? error.message : String(error)}`
-  );
-  console.error(
-    `Stack: ${error instanceof Error ? error.stack : 'No stack trace available'}`
-  );
+  console.error(`Error: ${error instanceof Error ? error.message : String(error)}`);
+  console.error(`Stack: ${error instanceof Error ? error.stack : 'No stack trace available'}`);
   console.error('----------------------------------------------------');
 
   return {
@@ -62,11 +57,20 @@ function convertElysiaError(code: string): AppError {
     case 'NOT_FOUND':
       return new AppError({ statusCode: 404, errorMessages: ['Not Found: resource not found'] });
     case 'PARSE':
-      return new AppError({ statusCode: 400, errorMessages: ['Bad request: failed to parse request body'] });
+      return new AppError({
+        statusCode: 400,
+        errorMessages: ['Bad request: failed to parse request body'],
+      });
     case 'VALIDATION':
-      return new AppError({ statusCode: 422, errorMessages: ['Unprocessable entity: validation failed'] });
+      return new AppError({
+        statusCode: 422,
+        errorMessages: ['Unprocessable entity: validation failed'],
+      });
     case 'INVALID_COOKIE_SIGNATURE':
-      return new AppError({ statusCode: 401, errorMessages: ['Unauthorized: invalid cookie signature'] });
+      return new AppError({
+        statusCode: 401,
+        errorMessages: ['Unauthorized: invalid cookie signature'],
+      });
     case 'INVALID_FILE_TYPE':
       return new AppError({ statusCode: 400, errorMessages: ['Bad request: invalid file type'] });
     case 'INTERNAL_SERVER_ERROR':

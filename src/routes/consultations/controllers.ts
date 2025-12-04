@@ -13,10 +13,7 @@ export const consultationRouter = new Elysia({
     '/users/:userId',
     async ({ params, store }) => {
       const targetId = params.userId;
-      if (
-        store.clientData!.role !== 'admin' &&
-        store.clientData!.id !== targetId
-      ) {
+      if (store.clientData!.role !== 'admin' && store.clientData!.id !== targetId) {
         throwForbiddenError('You cannot access this user’s consultations.');
       }
 
@@ -55,22 +52,18 @@ export const consultationRouter = new Elysia({
       },
     }
   )
-  .get(
-    '/:id',
-    async ({ params }) => services.getConsultationById(params.id),
-    {
-      params: t.Object({ id: idSchema }),
-      response: {
-        200: schemas.consultationSchema,
-        404: appErrorSchema,
-        500: appErrorSchema,
-      },
-      detail: {
-        summary: 'Get Consultation by ID',
-        tags: ['Consultations'],
-      },
-    }
-  )
+  .get('/:id', async ({ params }) => services.getConsultationById(params.id), {
+    params: t.Object({ id: idSchema }),
+    response: {
+      200: schemas.consultationSchema,
+      404: appErrorSchema,
+      500: appErrorSchema,
+    },
+    detail: {
+      summary: 'Get Consultation by ID',
+      tags: ['Consultations'],
+    },
+  })
   .get(
     '/doctors/:doctorId',
     async ({ params }) => services.getDoctorConsultations(params.doctorId),

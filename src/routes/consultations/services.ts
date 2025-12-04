@@ -1,6 +1,6 @@
 import * as models from './models.ts';
 import * as types from './types.ts';
-import { throwNotFoundError} from '../../utils/AppError.ts';
+import { throwNotFoundError } from '../../utils/AppError.ts';
 
 export async function registerConsultation(
   body: types.PostConsultation
@@ -21,7 +21,9 @@ export async function getUserConsultations(userId: number): Promise<types.UserCo
   return result.map(types.mapUserConsultationRowToUserConsultation);
 }
 
-export async function getDoctorConsultations(doctorId: number): Promise<types.DoctorConsultation[]> {
+export async function getDoctorConsultations(
+  doctorId: number
+): Promise<types.DoctorConsultation[]> {
   const result = await models.selectDoctorConsultations(doctorId);
   return result.map(types.mapDoctorConsultationRowToDoctorConsultation);
 }

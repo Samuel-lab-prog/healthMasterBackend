@@ -6,20 +6,17 @@ import * as services from './services.ts';
 import * as schemas from './schemas.ts';
 
 export const doctorRouter = new Elysia({ prefix: '/doctors' })
-  .get(
-    '/', async () => await services.getAllDoctors(),
-    {
-      response: {
-        200: t.Array(schemas.doctorSchema),
-        500: appErrorSchema,
-      },
-      detail: {
-        summary: 'Get All Doctors',
-        description: 'Retrieves a list of all Doctors.',
-        tags: ['Doctor'],
-      },
-    }
-  )
+  .get('/', async () => await services.getAllDoctors(), {
+    response: {
+      200: t.Array(schemas.doctorSchema),
+      500: appErrorSchema,
+    },
+    detail: {
+      summary: 'Get All Doctors',
+      description: 'Retrieves a list of all Doctors.',
+      tags: ['Doctor'],
+    },
+  })
   .use(AuthPlugin('admin'))
   .post(
     '/',

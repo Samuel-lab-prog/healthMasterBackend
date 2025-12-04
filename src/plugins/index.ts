@@ -10,28 +10,26 @@ export const AuthPlugin = (requestedLevel: AuthLevels = 'user') =>
   new Elysia()
     .state('clientData', <null | Doctor | User>null)
     .onBeforeHandle({ as: 'scoped' }, async ({ cookie, store }) => {
-      if (!cookie.token || typeof cookie.token.value !== 'string') {
+      const token = cookie.token?.value;
+
+      if (!token || typeof token !== 'string') {
         throwUnauthorizedError('Authentication required');
       }
 
-      const entity = await authenticate(cookie.token.value);
-      if (!entity) {
-        throwUnauthorizedError('Authentication required');
-      }
+      const entity = await authenticate(token);
+      if (!entity) throwUnauthorizedError('Authentication required');
 
       store.clientData = entity;
 
       const role = entity.role;
 
-      if (requestedLevel === 'user') return;
+      const hierarchy = {
+        user: 1,
+        doctor: 2,
+        admin: 3,
+      };
 
-      if (requestedLevel === 'doctor') {
-        if (role === 'doctor' || role === 'admin') return;
-        throwForbiddenError('Doctor level required');
-      }
-
-      if (requestedLevel === 'admin') {
-        if (role === 'admin') return;
-        throwForbiddenError('Admin level required');
+      if (hierarchy[role] < hierarchy[requestedLevel]) {
+        throwForbiddenError(`${requestedLevel} level required`);
       }
     });

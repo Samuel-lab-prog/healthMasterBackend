@@ -14,7 +14,7 @@ export async function login(
 ): Promise<{ data: User; token: string } | { data: Doctor; token: string }> {
   const user = await selectUserByField('email', email);
 
-  if (user && await bcrypt.compare(password, user.password)) {
+  if (user && (await bcrypt.compare(password, user.password))) {
     return {
       data: mapUserRowToUser(user),
       token: generateToken({
@@ -27,7 +27,7 @@ export async function login(
 
   const doctor = await selectDoctorByField('email', email);
 
-  if (doctor && await bcrypt.compare(password, doctor.password)) {
+  if (doctor && (await bcrypt.compare(password, doctor.password))) {
     return {
       data: mapDoctorRowToDoctor(doctor),
       token: generateToken({

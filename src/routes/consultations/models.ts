@@ -38,7 +38,9 @@ export async function selectAllConsultations(): Promise<types.ConsultationRow[]>
   );
 }
 
-export async function selectUserConsultations(userId: number): Promise<types.UserConsultationRow[]> {
+export async function selectUserConsultations(
+  userId: number
+): Promise<types.UserConsultationRow[]> {
   return withPrismaErrorHandling(() =>
     prisma.consultation.findMany({
       where: { userId },

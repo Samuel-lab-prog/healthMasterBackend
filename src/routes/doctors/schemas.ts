@@ -48,5 +48,5 @@ export const doctorSchema = t.Object({
 
   createdAt: s.createdAtSchema,
 
-  updatedAt: s.updatedAtSchema
+  updatedAt: s.updatedAtSchema,
 });
