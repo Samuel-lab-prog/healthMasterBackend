@@ -1,5 +1,5 @@
 import { Elysia, t } from 'elysia';
-import { appErrorSchema } from '../../utils/AppError.ts';
+import { appErrorSchema, throwForbiddenError } from '../../utils/AppError.ts';
 import { idSchema } from '../../utils/schemas.ts';
 import { AuthPlugin } from '../../plugins/index.ts';
 import * as services from './services.ts';
@@ -9,20 +9,32 @@ export const consultationRouter = new Elysia({
   prefix: '/consultations',
 })
   .use(AuthPlugin('user'))
-  .get('/users/:userId', async ({ params }) => services.getUserConsultations(params.userId), {
-    params: t.Object({ userId: idSchema }),
-    response: {
-      200: t.Array(schemas.userConsultationSchema),
-      404: appErrorSchema,
-      500: appErrorSchema,
-    },
-    detail: {
-      summary: 'Get Consultations from User',
-      description: 'Retrieves all Consultations for a given User ID.',
-      tags: ['Consultations'],
-    },
-  })
+  .get(
+    '/users/:userId',
+    async ({ params, store }) => {
+      const targetId = params.userId;
+      if (
+        store.clientData!.role !== 'admin' &&
+        store.clientData!.id !== targetId
+      ) {
+        throwForbiddenError('You cannot access this user’s consultations.');
+      }
 
+      return await services.getUserConsultations(targetId);
+    },
+    {
+      params: t.Object({ userId: idSchema }),
+      response: {
+        200: t.Array(schemas.userConsultationSchema),
+        404: appErrorSchema,
+        500: appErrorSchema,
+      },
+      detail: {
+        summary: 'Get Consultations from User',
+        tags: ['Consultations'],
+      },
+    }
+  )
   .use(AuthPlugin('doctor'))
   .post(
     '/',
@@ -38,27 +50,27 @@ export const consultationRouter = new Elysia({
         500: appErrorSchema,
       },
       detail: {
-        summary: 'Register',
-        description: 'Creates a new Consultation and returns its ID.',
+        summary: 'Register Consultation',
         tags: ['Consultations'],
       },
     }
   )
-
-  .get('/:id', async ({ params }) => services.getConsultationById(params.id), {
-    params: t.Object({ id: idSchema }),
-    response: {
-      200: schemas.consultationSchema,
-      404: appErrorSchema,
-      500: appErrorSchema,
-    },
-    detail: {
-      summary: 'Get Consultation by ID',
-      description: 'Retrieves a Consultation by its ID.',
-      tags: ['Consultations'],
-    },
-  })
-
+  .get(
+    '/:id',
+    async ({ params }) => services.getConsultationById(params.id),
+    {
+      params: t.Object({ id: idSchema }),
+      response: {
+        200: schemas.consultationSchema,
+        404: appErrorSchema,
+        500: appErrorSchema,
+      },
+      detail: {
+        summary: 'Get Consultation by ID',
+        tags: ['Consultations'],
+      },
+    }
+  )
   .get(
     '/doctors/:doctorId',
     async ({ params }) => services.getDoctorConsultations(params.doctorId),
@@ -71,7 +83,6 @@ export const consultationRouter = new Elysia({
       },
       detail: {
         summary: 'Get Consultations from Doctor',
-        description: 'Retrieves all Consultations for the given Doctor ID.',
         tags: ['Consultations'],
       },
     }

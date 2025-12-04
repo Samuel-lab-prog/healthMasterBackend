@@ -1,9 +1,9 @@
 import { Elysia, t } from 'elysia';
 import { appErrorSchema, throwForbiddenError } from '../../utils/AppError.ts';
-import * as services from './services';
-import * as schemas from './schemas.ts';
 import { idSchema } from '../../utils/schemas.ts';
 import { AuthPlugin } from '../../plugins/index.ts';
+import * as services from './services';
+import * as schemas from './schemas.ts';
 
 const errorResponses = {
   400: appErrorSchema,

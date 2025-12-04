@@ -1,18 +1,18 @@
 import { Elysia, t } from 'elysia';
 import { appErrorSchema } from '../../utils/AppError.ts';
-import { registerUser } from './services.ts';
 import { idSchema } from '../../utils/schemas.ts';
-import { postUserSchema } from './schemas.ts';
+import * as services from './services.ts';
+import * as schemas from './schemas.ts';
 
-export const userRouter = new Elysia().group('/users', (app) =>
-  app.post(
+export const userRouter = new Elysia({ prefix: '/users' })
+  .post(
     '/register',
     async ({ body, set }) => {
       set.status = 201;
-      return await registerUser(body);
+      return await services.registerUser(body);
     },
     {
-      body: postUserSchema,
+      body: schemas.postUserSchema,
       response: {
         201: t.Object({ id: idSchema }),
         400: appErrorSchema,
@@ -26,5 +26,4 @@ export const userRouter = new Elysia().group('/users', (app) =>
         tags: ['Users'],
       },
     }
-  )
-);
+  );
