@@ -1,47 +1,38 @@
 import { t } from 'elysia';
-import {
-  idSchema,
-  stringDateSchema,
-  notesSchema,
-  createdAtSchema,
-  updatedAtSchema,
-  fullNameSchema,
-  phoneNumberSchema,
-  emailSchema,
-} from '../../utils/schemas.ts';
+import * as s from '../../utils/schemas.ts';
 
 export const consultationSchema = t.Object({
-  id: idSchema,
-  userFullName: fullNameSchema,
-  doctorFullName: fullNameSchema,
-  date: stringDateSchema,
-  notes: notesSchema,
-  createdAt: createdAtSchema,
-  updatedAt: updatedAtSchema,
+  id: s.idSchema,
+  userFullName: s.fullNameSchema,
+  doctorFullName: s.fullNameSchema,
+  date: s.stringDateSchema,
+  notes: s.notesSchema,
+  createdAt: s.createdAtSchema,
+  updatedAt: s.updatedAtSchema,
 });
 
 export const postConsultationSchema = t.Object({
-  userId: idSchema,
-  doctorId: idSchema,
-  date: stringDateSchema,
-  notes: notesSchema,
+  userId: s.idSchema,
+  doctorId: s.idSchema,
+  date: s.stringDateSchema,
+  notes: s.notesSchema,
 });
 
 export const userConsultationSchema = t.Object({
-  id: idSchema,
-  date: stringDateSchema,
-  notes: notesSchema,
-  doctorId: idSchema,
-  doctorName: fullNameSchema,
+  id: s.idSchema,
+  date: s.stringDateSchema,
+  notes: s.notesSchema,
+  doctorId: s.idSchema,
+  doctorName: s.fullNameSchema,
   doctorSpeciality: t.String(),
 });
 
 export const doctorConsultationSchema = t.Object({
-  id: idSchema,
-  date: stringDateSchema,
-  notes: notesSchema,
-  userId: idSchema,
-  userName: fullNameSchema,
-  userPhoneNumber: phoneNumberSchema,
-  userEmail: emailSchema,
+  id: s.idSchema,
+  date: s.stringDateSchema,
+  notes: s.notesSchema,
+  userId: s.idSchema,
+  userName: s.fullNameSchema,
+  userPhoneNumber: s.phoneNumberSchema,
+  userEmail: s.emailSchema,
 });

@@ -1,37 +1,25 @@
 import { t } from 'elysia';
-import {
-  idSchema,
-  createdAtSchema,
-  stringDateSchema,
-  updatedAtSchema,
-  emailSchema,
-  passwordSchema,
-  phoneNumberSchema,
-  cpfSchema,
-  firstNameSchema,
-  lastNameSchema,
-} from '../../utils/schemas.ts';
+import * as s from '../../utils/schemas.ts';
 
 export const postUserSchema = t.Object({
-  firstName: firstNameSchema,
-  lastName: lastNameSchema,
-  email: emailSchema,
-  password: passwordSchema,
-  phoneNumber: phoneNumberSchema,
-  cpf: cpfSchema,
-  birthDate: stringDateSchema,
+  firstName: s.firstNameSchema,
+  lastName: s.lastNameSchema,
+  email: s.emailSchema,
+  password: s.passwordSchema,
+  phoneNumber: s.phoneNumberSchema,
+  cpf: s.cpfSchema,
+  birthDate: s.stringDateSchema,
 });
 
 export const userSchema = t.Object({
-  firstName: firstNameSchema,
-  lastName: lastNameSchema,
-  email: emailSchema,
-  phoneNumber: phoneNumberSchema,
-  cpf: cpfSchema,
-  birthDate: stringDateSchema,
-
-  id: idSchema,
-  createdAt: createdAtSchema,
-  updatedAt: updatedAtSchema,
+  firstName: s.firstNameSchema,
+  lastName: s.lastNameSchema,
+  email: s.emailSchema,
+  phoneNumber: s.phoneNumberSchema,
+  cpf: s.cpfSchema,
+  birthDate: s.stringDateSchema,
+  id: s.idSchema,
+  createdAt: s.createdAtSchema,
+  updatedAt: s.updatedAtSchema,
   role: t.Literal('user'),
 });

@@ -7,10 +7,7 @@ import * as schemas from './schemas.ts';
 
 export const doctorRouter = new Elysia({ prefix: '/doctors' })
   .get(
-    '/',
-    async () => {
-      return await services.getAllDoctors();
-    },
+    '/', async () => await services.getAllDoctors(),
     {
       response: {
         200: t.Array(schemas.doctorSchema),

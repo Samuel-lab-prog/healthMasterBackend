@@ -1,5 +1,4 @@
 import * as models from './models.ts';
-import * as mappers from './types.ts';
 import * as types from './types.ts';
 import { throwNotFoundError } from '../../utils/AppError.ts';
 
@@ -18,27 +17,27 @@ export async function getReferralById(id: number): Promise<types.Referral> {
     throwNotFoundError('Referral not found with the provided ID');
   }
 
-  return mappers.mapReferralRowToReferral(row);
+  return types.mapReferralRowToReferral(row);
 }
 
 export async function getAllReferrals(): Promise<types.Referral[]> {
   const rows = await models.selectAllReferrals();
-  return rows.map(mappers.mapReferralRowToReferral);
+  return rows.map(types.mapReferralRowToReferral);
 }
 
 export async function getReferralsByConsultationId(
   consultationId: number
 ): Promise<types.Referral[]> {
   const rows = await models.selectReferralsByConsultationId(consultationId);
-  return rows.map(mappers.mapReferralRowToReferral);
+  return rows.map(types.mapReferralRowToReferral);
 }
 
 export async function getUserReferrals(userId: number): Promise<types.UserReferral[]> {
   const rows = await models.selectUserReferrals(userId);
-  return rows.map(mappers.mapUserReferralRowToUserReferral);
+  return rows.map(types.mapUserReferralRowToUserReferral);
 }
 
 export async function getDoctorReferrals(doctorId: number): Promise<types.DoctorReferral[]> {
   const rows = await models.selectDoctorReferrals(doctorId);
-  return rows.map(mappers.mapDoctorReferralRowToDoctorReferral);
+  return rows.map(types.mapDoctorReferralRowToDoctorReferral);
 }

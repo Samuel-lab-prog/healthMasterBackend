@@ -1,6 +1,6 @@
 import type { Prisma } from '../../prisma/generated/prisma-client/browser';
 import type { UserCreateInput } from '../../prisma/generated/prisma-client/models';
-import { postUserSchema, userSchema } from './schemas';
+import * as s from './schemas';
 
 export function mapUserRowToUser(fullUser: UserRow): User {
   return {
@@ -17,8 +17,8 @@ export function mapUserRowToUser(fullUser: UserRow): User {
   };
 }
 
-export type User = (typeof userSchema)['static'];
-export type PostUser = (typeof postUserSchema)['static'];
+export type User = (typeof s.userSchema)['static'];
+export type PostUser = (typeof s.postUserSchema)['static'];
 export type UserRow = Prisma.UserGetPayload<object>;
 export type InsertUser = UserCreateInput;
 export type UniqueUserField = 'id' | 'email' | 'cpf' | 'phoneNumber';

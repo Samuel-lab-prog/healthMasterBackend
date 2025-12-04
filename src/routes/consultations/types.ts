@@ -1,16 +1,11 @@
-import {
-  postConsultationSchema,
-  consultationSchema,
-  userConsultationSchema,
-  doctorConsultationSchema,
-} from './schemas';
+import * as s from './schemas';
 import type { Prisma } from '../../prisma/generated/prisma-client/browser';
 import type { ConsultationUncheckedCreateInput } from '../../prisma/generated/prisma-client/models';
 
-export type Consultation = (typeof consultationSchema)['static'];
-export type UserConsultation = (typeof userConsultationSchema)['static'];
-export type DoctorConsultation = (typeof doctorConsultationSchema)['static'];
-export type PostConsultation = (typeof postConsultationSchema)['static'];
+export type Consultation = (typeof s.consultationSchema)['static'];
+export type UserConsultation = (typeof s.userConsultationSchema)['static'];
+export type DoctorConsultation = (typeof s.doctorConsultationSchema)['static'];
+export type PostConsultation = (typeof s.postConsultationSchema)['static'];
 
 export type InsertConsultation = ConsultationUncheckedCreateInput;
 

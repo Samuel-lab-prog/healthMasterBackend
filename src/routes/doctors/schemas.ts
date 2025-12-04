@@ -1,16 +1,5 @@
 import { t } from 'elysia';
-import {
-  idSchema,
-  createdAtSchema,
-  stringDateSchema,
-  updatedAtSchema,
-  emailSchema,
-  passwordSchema,
-  phoneNumberSchema,
-  cpfSchema,
-  firstNameSchema,
-  lastNameSchema,
-} from '../../utils/schemas.ts';
+import * as s from '../../utils/schemas.ts';
 import { makeValidationError } from '../../utils/AppError.ts';
 
 export const roleSchema = t.UnionEnum(['doctor', 'admin'], {
@@ -33,31 +22,31 @@ export const crmSchema = t.String({
 });
 
 export const postDoctorSchema = t.Object({
-  firstName: firstNameSchema,
-  lastName: lastNameSchema,
-  cpf: cpfSchema,
-  birthDate: stringDateSchema,
-  email: emailSchema,
+  firstName: s.firstNameSchema,
+  lastName: s.lastNameSchema,
+  cpf: s.cpfSchema,
+  birthDate: s.stringDateSchema,
+  email: s.emailSchema,
   speciality: specialitySchema,
   crm: crmSchema,
-  password: passwordSchema,
-  phoneNumber: phoneNumberSchema,
+  password: s.passwordSchema,
+  phoneNumber: s.phoneNumberSchema,
   role: roleSchema,
 });
 
 export const doctorSchema = t.Object({
-  id: idSchema,
-  firstName: firstNameSchema,
-  lastName: lastNameSchema,
-  email: emailSchema,
-  birthDate: stringDateSchema,
-  cpf: cpfSchema,
-  phoneNumber: phoneNumberSchema,
+  id: s.idSchema,
+  firstName: s.firstNameSchema,
+  lastName: s.lastNameSchema,
+  email: s.emailSchema,
+  birthDate: s.stringDateSchema,
+  cpf: s.cpfSchema,
+  phoneNumber: s.phoneNumberSchema,
   speciality: specialitySchema,
   role: roleSchema,
   crm: crmSchema,
 
-  createdAt: createdAtSchema,
+  createdAt: s.createdAtSchema,
 
-  updatedAt: t.Union([updatedAtSchema, t.Null()]),
+  updatedAt: s.updatedAtSchema
 });

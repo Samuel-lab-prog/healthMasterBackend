@@ -5,8 +5,8 @@ import { userSchema } from '../users/schemas.ts';
 import { doctorSchema } from '../doctors/schemas.ts';
 import { login } from './services.ts';
 
-export const authRouter = (app: Elysia) =>
-  app.group('/auth', (app) =>
+export const authRouter = new Elysia()
+  .group('/auth', (app) =>
     app.post(
       '/login',
       async ({ body, cookie }) => {

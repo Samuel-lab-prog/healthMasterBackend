@@ -36,7 +36,7 @@ new Elysia({
     port: PORT,
   },
 })
-  .onError(async ({ error, set }) => handleError(set, error))
+  .onError(async ({ error, set, code }) => handleError(set, error, code))
   .use(cors())
   .get('/', () => 'HealthMaster API is running')
   .use(authRouter)

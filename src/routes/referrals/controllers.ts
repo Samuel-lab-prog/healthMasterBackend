@@ -14,29 +14,30 @@ const errorResponses = {
 export const referralRouter = new Elysia({ prefix: '/referrals' })
   .use(AuthPlugin('user'))
   .group('/user', (app) =>
-    app.get(
-      '/:userId',
-      async ({ params, store }) => {
-        const targetId = params.userId;
+    app
+      .get(
+        '/:userId',
+        async ({ params, store }) => {
+          const targetId = params.userId;
 
-        if (store.clientData!.role !== 'admin' && store.clientData!.id !== targetId) {
-          throwForbiddenError('You cannot access this user’s referrals.');
+          if (store.clientData!.role !== 'admin' && store.clientData!.id !== targetId) {
+            throwForbiddenError('You cannot access this user’s referrals.');
+          }
+
+          return await services.getUserReferrals(targetId);
+        },
+        {
+          params: t.Object({ userId: idSchema }),
+          response: {
+            200: t.Array(schemas.userReferralSchema),
+            ...errorResponses,
+          },
+          detail: {
+            summary: 'Get Referrals by User ID',
+            tags: ['Referrals'],
+          },
         }
-
-        return await services.getUserReferrals(targetId);
-      },
-      {
-        params: t.Object({ userId: idSchema }),
-        response: {
-          200: t.Array(schemas.userReferralSchema),
-          ...errorResponses,
-        },
-        detail: {
-          summary: 'Get Referrals by User ID',
-          tags: ['Referrals'],
-        },
-      }
-    )
+      )
   )
   .use(AuthPlugin('doctor'))
   .post(

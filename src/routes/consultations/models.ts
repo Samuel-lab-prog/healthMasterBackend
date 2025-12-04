@@ -1,15 +1,10 @@
 import { prisma } from '../../prisma/client.ts';
 import { withPrismaErrorHandling } from '../../utils/AppError.ts';
-import type {
-  ConsultationRow,
-  UserConsultationRow,
-  DoctorConsultationRow,
-  InsertConsultation,
-} from './types.ts';
+import type * as types from './types.ts';
 
 export async function insertConsultation(
-  data: InsertConsultation
-): Promise<Pick<ConsultationRow, 'id'>> {
+  data: types.InsertConsultation
+): Promise<Pick<types.ConsultationRow, 'id'>> {
   return withPrismaErrorHandling(() =>
     prisma.consultation.create({
       data: data,
@@ -20,7 +15,7 @@ export async function insertConsultation(
 
 export async function selectConsultationById(
   consultationId: number
-): Promise<ConsultationRow | null> {
+): Promise<types.ConsultationRow | null> {
   return withPrismaErrorHandling(() =>
     prisma.consultation.findUnique({
       where: { id: consultationId },
@@ -32,7 +27,7 @@ export async function selectConsultationById(
   );
 }
 
-export async function selectAllConsultations(): Promise<ConsultationRow[]> {
+export async function selectAllConsultations(): Promise<types.ConsultationRow[]> {
   return withPrismaErrorHandling(() =>
     prisma.consultation.findMany({
       include: {
@@ -43,7 +38,7 @@ export async function selectAllConsultations(): Promise<ConsultationRow[]> {
   );
 }
 
-export async function selectUserConsultations(userId: number): Promise<UserConsultationRow[]> {
+export async function selectUserConsultations(userId: number): Promise<types.UserConsultationRow[]> {
   return withPrismaErrorHandling(() =>
     prisma.consultation.findMany({
       where: { userId },
@@ -62,7 +57,7 @@ export async function selectUserConsultations(userId: number): Promise<UserConsu
 
 export async function selectDoctorConsultations(
   doctorId: number
-): Promise<DoctorConsultationRow[]> {
+): Promise<types.DoctorConsultationRow[]> {
   return withPrismaErrorHandling(() =>
     prisma.consultation.findMany({
       where: { doctorId },
