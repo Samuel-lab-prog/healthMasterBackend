@@ -12,6 +12,7 @@ model User {
   firstName   String
   lastName    String
   password    String
+  
   phoneNumber String @unique
   email       String @unique
   cpf         String @unique
@@ -22,6 +23,7 @@ model User {
   deletedAt DateTime?
 
   role UserRole @default(user)
+  sex  Sex @default(other)
 
   consultations Consultation[]
   referrals     Referral[]
@@ -29,6 +31,12 @@ model User {
 
 enum UserRole {
   user
+}
+
+enum Sex {
+  male
+  female
+  other
 }
 
 model Consultation {

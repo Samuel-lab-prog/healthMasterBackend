@@ -2,18 +2,19 @@ import type { Prisma } from '../../prisma/generated/prisma-client/browser';
 import type { UserCreateInput } from '../../prisma/generated/prisma-client/models';
 import * as s from './schemas';
 
-export function mapUserRowToUser(fullUser: UserRow): User {
+export function mapUserRowToUser(Row: UserRow): User {
   return {
-    id: fullUser.id,
-    firstName: fullUser.firstName,
-    lastName: fullUser.lastName,
-    cpf: fullUser.cpf,
-    birthDate: fullUser.birthDate,
-    email: fullUser.email,
-    phoneNumber: fullUser.phoneNumber,
-    createdAt: fullUser.createdAt,
-    updatedAt: fullUser.updatedAt,
+    id: Row.id,
+    firstName: Row.firstName,
+    lastName: Row.lastName,
+    cpf: Row.cpf,
+    birthDate: Row.birthDate,
+    email: Row.email,
+    phoneNumber: Row.phoneNumber,
+    createdAt: Row.createdAt,
+    updatedAt: Row.updatedAt,
     role: 'user',
+    sex: Row.sex,
   };
 }
 

@@ -12,6 +12,7 @@ const DEFAULT_USER: InsertUser = {
   phoneNumber: '99999999',
   cpf: '12345678900',
   birthDate: new Date(),
+  sex: 'other',
 };
 
 const TEST_USER: InsertUser = {
@@ -22,6 +23,7 @@ const TEST_USER: InsertUser = {
   phoneNumber: '88888888',
   cpf: '09876543211',
   birthDate: new Date(),
+  sex: 'other',
 };
 
 let DEFAULT_USER_ID: number;
@@ -44,6 +46,7 @@ describe('User Model Tests', () => {
       phoneNumber: '88888888',
       cpf: '09876543211',
       birthDate: new Date(),
+      sex: 'other',
     });
 
     expect(result).not.toBeNull();

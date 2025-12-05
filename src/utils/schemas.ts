@@ -35,27 +35,11 @@ export const idSchema = t.Number({
   minimum: 1,
   example: 1,
 });
-export const loginSchema = t.Object({
-  email: t.String({
-    format: 'email',
-    example: 'user@example.com',
-    ...makeValidationError('Email must be a valid email address'),
-  }),
-  password: t.String({
-    minLength: 6,
-    maxLength: 30,
-    example: '12345678',
-    ...makeValidationError('Password must be between 6 and 30 characters long'),
-  }),
+
+export const sexSchema = t.UnionEnum(['male', 'female', 'other'], {
+  example: 'other',
+  ...makeValidationError('Sex must be either male, female, or other'),
 });
-
-//---------------------------------------------------------------------------//
-
-export const referralStatusSchema = t.UnionEnum(['pending', 'completed', 'cancelled'], {
-  example: 'pending',
-  ...makeBadRequestError('Status must be one of: pending, completed, cancelled'),
-});
-
 
 export const emailSchema = t.String({
   format: 'email',
@@ -84,6 +68,11 @@ export const cpfSchema = t.String({
   ...makeValidationError('CPF must be between 11 and 14 characters long'),
 });
 
+export const loginSchema = t.Object({
+  email: emailSchema,
+  password: passwordSchema,
+});
+
 export const firstNameSchema = t.String({
   minLength: 3,
   maxLength: 30,
@@ -105,6 +94,13 @@ export const fullNameSchema = t.String({
   ...makeValidationError('Full name must be between 6 and 60 characters long'),
 });
 
+//---------------------------------------------------------------------------//
+
+export const referralStatusSchema = t.UnionEnum(['pending', 'completed', 'cancelled'], {
+  example: 'pending',
+  ...makeBadRequestError('Status must be one of: pending, completed, cancelled'),
+});
+
 export const notesSchema = t.String({
   example: 'Patient shows signs of improvement.',
   ...makeValidationError('Notes must be a valid string or null'),
@@ -118,4 +114,5 @@ export const reasonSchema = t.String({
 export const referredToIdSchema = t.Union([t.Number(), t.Null()], {
   minimum: 1,
   example: 1,
+  ...makeValidationError('referredToId must be a valid number or null'),
 });

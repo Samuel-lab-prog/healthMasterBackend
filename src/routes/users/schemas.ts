@@ -9,6 +9,7 @@ export const postUserSchema = t.Object({
   phoneNumber: s.phoneNumberSchema,
   cpf: s.cpfSchema,
   birthDate: s.DateSchema,
+  sex: s.sexSchema,
 });
 
 export const userSchema = t.Object({
@@ -22,4 +23,5 @@ export const userSchema = t.Object({
   createdAt: s.createdAtSchema,
   updatedAt: s.updatedAtSchema,
   role: t.Literal('user'),
+  sex: s.sexSchema,
 });
