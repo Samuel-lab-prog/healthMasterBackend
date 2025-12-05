@@ -3,7 +3,6 @@ import type { DoctorCreateInput } from '../../prisma/generated/prisma-client/mod
 
 import { doctorSchema, postDoctorSchema } from './schemas';
 
-
 export type Doctor = (typeof doctorSchema)['static'];
 export type PostDoctor = (typeof postDoctorSchema)['static'];
 export type DoctorRow = Prisma.DoctorGetPayload<object>;
@@ -24,6 +23,6 @@ export function mapDoctorRowToDoctor(row: DoctorRow): Doctor {
     crm: row.crm,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
-    sex: row.sex
+    sex: row.sex,
   };
 }

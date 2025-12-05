@@ -150,21 +150,17 @@ export const referralRouter = new Elysia({ prefix: '/referrals' })
       },
     }
   )
-  .patch(
-    '/:id/restore',
-    async ({ params }) => await services.restoreReferral(params.id),
-    {
-      params: t.Object({ id: idSchema }),
-      response: {
-        200: schemas.referralSchema,
-        ...errorResponses,
-      },
-      detail: {
-        summary: 'Restore Referral',
-        tags: ['Referrals'],
-      },
-    }
-  )
+  .patch('/:id/restore', async ({ params }) => await services.restoreReferral(params.id), {
+    params: t.Object({ id: idSchema }),
+    response: {
+      200: schemas.referralSchema,
+      ...errorResponses,
+    },
+    detail: {
+      summary: 'Restore Referral',
+      tags: ['Referrals'],
+    },
+  })
   .patch(
     '/:id/notes',
     async ({ params, body }) => await services.updateReferralNotes(params.id, body.notes),
@@ -196,4 +192,4 @@ export const referralRouter = new Elysia({ prefix: '/referrals' })
         tags: ['Referrals'],
       },
     }
-  )
+  );

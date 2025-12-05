@@ -30,7 +30,6 @@ export const referralSchema = t.Object({
   updatedAt: s.updatedAtSchema,
 });
 
-
 export const userReferralSchema = t.Object({
   id: s.idSchema,
 
@@ -44,7 +43,6 @@ export const userReferralSchema = t.Object({
   createdAt: s.createdAtSchema,
   updatedAt: s.updatedAtSchema,
 });
-
 
 export const doctorReferralSchema = t.Object({
   id: s.idSchema,

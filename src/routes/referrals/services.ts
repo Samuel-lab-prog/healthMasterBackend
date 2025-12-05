@@ -58,7 +58,6 @@ export async function softDeleteReferralsByConsultationId(
   consultationId: number
 ): Promise<{ id: number }[]> {
   return await models.softDeleteReferralsByConsultationId(consultationId);
-  
 }
 
 export async function restoreReferral(id: number): Promise<types.Referral> {

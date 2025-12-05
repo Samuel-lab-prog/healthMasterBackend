@@ -39,7 +39,7 @@ export async function seedConsultations() {
       endTime: new Date('2024-07-02T11:00:00Z'),
       notes: 'Consulta para erupção cutânea',
       status: 'scheduled',
-      type: 'checkup', 
+      type: 'checkup',
       location: 'Clínica B',
     },
   ];

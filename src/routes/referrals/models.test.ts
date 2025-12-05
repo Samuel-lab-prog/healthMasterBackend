@@ -166,9 +166,7 @@ describe('Referral Model Tests', () => {
   });
 
   it('updateReferralStatus → Should throw AppError for invalid referral id', async () => {
-    await expect(
-      ref.updateReferralStatus(999999, 'completed')
-    ).rejects.toThrow(AppError);
+    await expect(ref.updateReferralStatus(999999, 'completed')).rejects.toThrow(AppError);
   });
 
   it('updateReferralStatus → Should allow all valid statuses', async () => {
@@ -220,7 +218,7 @@ describe('Referral Model Tests', () => {
       'cancelled'
     );
 
-    expect(updated.every(r => r.status === 'cancelled')).toBe(true);
+    expect(updated.every((r) => r.status === 'cancelled')).toBe(true);
   });
 
   it('countReferralsByStatus → should return counts grouped by status', async () => {
@@ -231,5 +229,4 @@ describe('Referral Model Tests', () => {
     expect(counts.pending).toBeGreaterThanOrEqual(0);
     expect(counts.cancelled).toBeGreaterThanOrEqual(0);
   });
-
 });

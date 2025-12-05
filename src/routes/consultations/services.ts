@@ -37,9 +37,7 @@ export async function softDeleteConsultation(
   return await models.softDeleteConsultation(consultationId);
 }
 
-export async function restoreConsultation(
-  consultationId: number
-): Promise<types.Consultation> {
+export async function restoreConsultation(consultationId: number): Promise<types.Consultation> {
   const row = await models.restoreConsultation(consultationId);
   return types.mapConsultationRowToConsultation(row);
 }
@@ -60,6 +58,8 @@ export async function updateConsultationNotes(
   return types.mapConsultationRowToConsultation(row);
 }
 
-export async function getConsultationCountsByStatus(): Promise<Record<types.ConsultationStatus, number>> {
+export async function getConsultationCountsByStatus(): Promise<
+  Record<types.ConsultationStatus, number>
+> {
   return await models.countConsultationsByStatus();
 }

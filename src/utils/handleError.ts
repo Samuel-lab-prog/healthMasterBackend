@@ -20,14 +20,18 @@ export function handleError(set: any, error: unknown, code: any) {
 
   // Normaliza o code vindo do Elysia
   const normalizedCode =
-    typeof code === 'string'
-      ? code
-      : typeof code?.type === 'string'
-        ? code.type
-        : 'UNKNOWN';
-        
+    typeof code === 'string' ? code : typeof code?.type === 'string' ? code.type : 'UNKNOWN';
+
   let converted: AppError | null = null;
-  if (['PARSE', 'VALIDATION', 'INVALID_COOKIE_SIGNATURE', 'INVALID_FILE_TYPE', 'INTERNAL_SERVER_ERROR'].includes(normalizedCode)) {
+  if (
+    [
+      'PARSE',
+      'VALIDATION',
+      'INVALID_COOKIE_SIGNATURE',
+      'INVALID_FILE_TYPE',
+      'INTERNAL_SERVER_ERROR',
+    ].includes(normalizedCode)
+  ) {
     converted = convertElysiaError(normalizedCode);
   }
 
@@ -48,8 +52,7 @@ export function handleError(set: any, error: unknown, code: any) {
   }
 
   // fallback para erros inesperados
-  const statusCode =
-    typeof set.status === 'number' && set.status >= 400 ? set.status : 500;
+  const statusCode = typeof set.status === 'number' && set.status >= 400 ? set.status : 500;
 
   set.status = statusCode;
 

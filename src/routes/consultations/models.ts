@@ -54,9 +54,7 @@ export function selectAllConsultations(): Promise<types.ConsultationRow[]> {
   );
 }
 
-export function selectUserConsultations(
-  userId: number
-): Promise<types.UserConsultationRow[]> {
+export function selectUserConsultations(userId: number): Promise<types.UserConsultationRow[]> {
   return withPrismaErrorHandling<types.UserConsultationRow[]>(() =>
     prisma.consultation.findMany({
       where: { userId },
@@ -88,9 +86,7 @@ export function softDeleteConsultation(
   );
 }
 
-export function restoreConsultation(
-  consultationId: number
-): Promise<types.ConsultationRow> {
+export function restoreConsultation(consultationId: number): Promise<types.ConsultationRow> {
   return withPrismaErrorHandling<types.ConsultationRow>(() =>
     prisma.consultation.update({
       where: { id: consultationId },

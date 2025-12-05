@@ -80,26 +80,21 @@ export const consultationRouter = new Elysia({
     }
   )
   .use(AuthPlugin('admin'))
-  .patch(
-    '/:id/restore',
-    async ({ params }) => services.restoreConsultation(params.id),
-    {
-      params: t.Object({ id: idSchema }),
-      response: {
-        200: schemas.consultationSchema,
-        404: appErrorSchema,
-        500: appErrorSchema,
-      },
-      detail: {
-        summary: 'Restore Consultation',
-        tags: ['Consultations'],
-      },
-    }
-  )
+  .patch('/:id/restore', async ({ params }) => services.restoreConsultation(params.id), {
+    params: t.Object({ id: idSchema }),
+    response: {
+      200: schemas.consultationSchema,
+      404: appErrorSchema,
+      500: appErrorSchema,
+    },
+    detail: {
+      summary: 'Restore Consultation',
+      tags: ['Consultations'],
+    },
+  })
   .patch(
     '/:id/status',
-    async ({ params, body }) =>
-      services.updateConsultationStatus(params.id, body.status),
+    async ({ params, body }) => services.updateConsultationStatus(params.id, body.status),
     {
       params: t.Object({ id: idSchema }),
       body: t.Object({ status: schemas.consultationStatusSchema }),
@@ -116,8 +111,7 @@ export const consultationRouter = new Elysia({
   )
   .patch(
     '/:id/notes',
-    async ({ params, body }) =>
-      services.updateConsultationNotes(params.id, body.notes),
+    async ({ params, body }) => services.updateConsultationNotes(params.id, body.notes),
     {
       params: t.Object({ id: idSchema }),
       body: t.Object({ notes: t.String() }),
@@ -132,22 +126,18 @@ export const consultationRouter = new Elysia({
       },
     }
   )
-  .delete(
-    '/:id',
-    async ({ params }) => services.softDeleteConsultation(params.id),
-    {
-      params: t.Object({ id: idSchema }),
-      response: {
-        200: t.Object({ id: idSchema }),
-        404: appErrorSchema,
-        500: appErrorSchema,
-      },
-      detail: {
-        summary: 'Soft Delete Consultation',
-        tags: ['Consultations'],
-      },
-    }
-  )
+  .delete('/:id', async ({ params }) => services.softDeleteConsultation(params.id), {
+    params: t.Object({ id: idSchema }),
+    response: {
+      200: t.Object({ id: idSchema }),
+      404: appErrorSchema,
+      500: appErrorSchema,
+    },
+    detail: {
+      summary: 'Soft Delete Consultation',
+      tags: ['Consultations'],
+    },
+  })
   .get('/counts/status', async () => services.getConsultationCountsByStatus(), {
     response: {
       200: t.Object({

@@ -33,7 +33,7 @@ export type ReferralRow = Prisma.ReferralGetPayload<{
       select: {
         id: true;
       };
-    }
+    };
   };
 }>;
 
@@ -73,7 +73,6 @@ export type DoctorReferralRow = Prisma.ReferralGetPayload<{
   };
 }>;
 
-
 export function mapReferralRowToReferral(row: ReferralRow): Referral {
   return {
     id: row.id,
@@ -95,9 +94,7 @@ export function mapReferralRowToReferral(row: ReferralRow): Referral {
   };
 }
 
-export function mapUserReferralRowToUserReferral(
-  row: UserReferralRow
-): UserReferral {
+export function mapUserReferralRowToUserReferral(row: UserReferralRow): UserReferral {
   return {
     id: row.id,
 
@@ -113,9 +110,7 @@ export function mapUserReferralRowToUserReferral(
   };
 }
 
-export function mapDoctorReferralRowToDoctorReferral(
-  row: DoctorReferralRow
-): DoctorReferral {
+export function mapDoctorReferralRowToDoctorReferral(row: DoctorReferralRow): DoctorReferral {
   return {
     id: row.id,
     consultationId: row.consultationId,
