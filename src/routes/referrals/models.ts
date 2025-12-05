@@ -66,7 +66,7 @@ const doctorReferralIncludes = {
 export function insertReferral(
   data: types.InsertReferral
 ): Promise<Pick<types.ReferralRow, 'id'>> {
-  return withPrismaErrorHandling(async () => {
+  return withPrismaErrorHandling<Pick<types.ReferralRow, 'id'>>(async () => {
     return prisma.referral.create({
       data,
       select: { id: true },
@@ -77,7 +77,7 @@ export function insertReferral(
 export function selectReferralById(
   referralId: number
 ): Promise<types.ReferralRow | null> {
-  return withPrismaErrorHandling(() =>
+  return withPrismaErrorHandling<types.ReferralRow | null>(() =>
     prisma.referral.findUnique({
       where: { id: referralId },
       include: referralIncludes,
@@ -86,7 +86,7 @@ export function selectReferralById(
 }
 
 export function selectAllReferrals(): Promise<types.ReferralRow[]> {
-  return withPrismaErrorHandling(() =>
+  return withPrismaErrorHandling<types.ReferralRow[]>(() =>
     prisma.referral.findMany({
       where: {
         deletedAt: null,
@@ -102,7 +102,7 @@ export function selectAllReferrals(): Promise<types.ReferralRow[]> {
 export function selectReferralsByConsultationId(
   consultationId: number
 ): Promise<types.ReferralRow[]> {
-  return withPrismaErrorHandling(() =>
+  return withPrismaErrorHandling<types.ReferralRow[]>(() =>
     prisma.referral.findMany({
       where: {
         consultationId,
@@ -119,7 +119,7 @@ export function selectReferralsByConsultationId(
 export function selectUserReferrals(
   userId: number
 ): Promise<types.UserReferralRow[]> {
-  return withPrismaErrorHandling(() =>
+  return withPrismaErrorHandling<types.UserReferralRow[]>(() =>
     prisma.referral.findMany({
       where: {
         deletedAt: null,
@@ -136,7 +136,7 @@ export function selectUserReferrals(
 export function selectDoctorReferrals(
   doctorId: number
 ): Promise<types.DoctorReferralRow[]> {
-  return withPrismaErrorHandling(() =>
+  return withPrismaErrorHandling<types.DoctorReferralRow[]>(() =>
     prisma.referral.findMany({
       where: {
         deletedAt: null,
@@ -153,7 +153,7 @@ export function selectDoctorReferrals(
 export function softDeleteReferral(
   referralId: number
 ): Promise<Pick<types.ReferralRow, 'id'>> {
-  return withPrismaErrorHandling(async () => {
+  return withPrismaErrorHandling<Pick<types.ReferralRow, 'id'>>(async () => {
     return prisma.referral.update({
       where: { id: referralId },
       data: { deletedAt: new Date() },
@@ -166,7 +166,7 @@ export function updateReferralStatus(
   referralId: number,
   status: types.ReferralStatus
 ): Promise<types.ReferralRow> {
-  return withPrismaErrorHandling(async () => {
+  return withPrismaErrorHandling<types.ReferralRow>(async () => {
     return prisma.referral.update({
       where: { id: referralId },
       data: { status },
