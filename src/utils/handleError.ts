@@ -23,10 +23,13 @@ export function handleError(set: any, error: unknown, code: any) {
     typeof code === 'string'
       ? code
       : typeof code?.type === 'string'
-      ? code.type
-      : 'UNKNOWN';
-
-  const converted = convertElysiaError(normalizedCode);
+        ? code.type
+        : 'UNKNOWN';
+        
+  let converted: AppError | null = null;
+  if (['PARSE', 'VALIDATION', 'INVALID_COOKIE_SIGNATURE', 'INVALID_FILE_TYPE', 'INTERNAL_SERVER_ERROR'].includes(normalizedCode)) {
+    converted = convertElysiaError(normalizedCode);
+  }
 
   if (converted instanceof AppError) {
     const statusCode = converted.statusCode;
