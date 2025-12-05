@@ -7,28 +7,49 @@ datasource db {
   provider = "postgresql"
 }
 
+model User {
+  id          Int    @id @default(autoincrement())
+  firstName   String
+  lastName    String
+  password    String
+  phoneNumber String @unique
+  email       String @unique
+  cpf         String @unique
+
+  birthDate DateTime
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  role UserRole @default(user)
+
+  consultations Consultation[]
+  referrals     Referral[]
+}
+
+enum UserRole {
+  user
+}
+
 model Consultation {
-  id         Int                 @id @default(autoincrement())
-  userId     Int
-  doctorId   Int
-  date       DateTime
-  notes      String
-  createdAt  DateTime            @default(now())
-  updatedAt  DateTime            @updatedAt
-  deletedAt  DateTime? 
+  id       Int    @id @default(autoincrement())
+  userId   Int
+  doctorId Int
+  notes    String
+  location String
 
-  endTime    DateTime           
-  status     ConsultationStatus  @default(scheduled)  
-  type       ConsultationType   
-  location   String
+  date      DateTime
+  endTime   DateTime
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 
-  doctor     Doctor              @relation(fields: [doctorId], references: [id])
-  user       User                @relation(fields: [userId], references: [id])
-  referrals  Referral[]
+  status   ConsultationStatus @default(scheduled)
+  type     ConsultationType @default(routine)
 
-  @@index([userId])
-  @@index([doctorId])
-  @@index([date])
+  referrals Referral[]
+  doctor    Doctor     @relation(fields: [doctorId], references: [id])
+  user      User       @relation(fields: [userId], references: [id])
 }
 
 enum ConsultationStatus {
@@ -51,59 +72,50 @@ model Doctor {
   lastName      String
   speciality    String
   phoneNumber   String         @unique
-  birthDate     DateTime
   email         String         @unique
   password      String
   crm           String         @unique
   cpf           String         @unique
-  role          Role           @default(doctor)
+
+  role          DoctorRole     @default(doctor)
+
+  birthDate     DateTime
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
-  consultations Consultation[]
 
+  consultations Consultation[]
   referralsMade     Referral[] @relation("ReferralReferredBy")
   referralsReceived Referral[] @relation("ReferralReferredTo")
 }
 
+enum DoctorRole {
+  doctor
+  admin
+}
+
 model Referral {
-  id             Int          @id @default(autoincrement())
+  id             Int            @id @default(autoincrement())
   consultationId Int
   userId         Int
   referredById   Int
   referredToId   Int
   reason         String
-  notes          String      
-  status         String       @default("pending")
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-  deletedAt      DateTime?    
-  consultation   Consultation @relation(fields: [consultationId], references: [id])
-  user           User         @relation(fields: [userId], references: [id])
-  referredBy     Doctor       @relation("ReferralReferredBy", fields: [referredById], references: [id])
-  referredTo     Doctor       @relation("ReferralReferredTo", fields: [referredToId], references: [id])
+  notes          String
+  
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  deletedAt      DateTime?
+
+  status         ReferralStatus @default(pending)
+  
+  consultation   Consultation   @relation(fields: [consultationId], references: [id])
+  user           User           @relation(fields: [userId], references: [id])
+  referredBy     Doctor         @relation("ReferralReferredBy", fields: [referredById], references: [id])
+  referredTo     Doctor         @relation("ReferralReferredTo", fields: [referredToId], references: [id])
 }
 
-
-
-model User {
-  id            Int            @id @default(autoincrement())
-  firstName     String 
-  lastName      String
-  phoneNumber   String         @unique
-  email         String         @unique
-  cpf           String         @unique
-  password      String
-  birthDate     DateTime
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime?
-  deletedAt     DateTime?
-  role          String         @default("user")
-  consultations Consultation[]
-
-  referrals Referral[]
-}
-
-enum Role {
-  doctor
-  admin
+enum ReferralStatus {
+  pending
+  completed
+  cancelled
 }
