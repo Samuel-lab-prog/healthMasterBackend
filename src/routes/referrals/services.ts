@@ -53,3 +53,34 @@ export async function updateReferralStatus(
 export async function deleteReferral(id: number): Promise<Pick<types.Referral, 'id'>> {
   return await models.softDeleteReferral(id);
 }
+
+export async function softDeleteReferralsByConsultationId(
+  consultationId: number
+): Promise<{ id: number }[]> {
+  return await models.softDeleteReferralsByConsultationId(consultationId);
+  
+}
+
+export async function restoreReferral(id: number): Promise<types.Referral> {
+  const row = await models.restoreReferral(id);
+  if (!row) throwNotFoundError('Referral not found to restore');
+  return types.mapReferralRowToReferral(row);
+}
+
+export async function updateReferralNotes(id: number, notes: string): Promise<types.Referral> {
+  const row = await models.updateReferralNotes(id, notes);
+  if (!row) throwNotFoundError('Referral not found to update notes');
+  return types.mapReferralRowToReferral(row);
+}
+
+export async function bulkUpdateReferralStatus(
+  referralIds: number[],
+  status: types.ReferralStatus
+): Promise<types.Referral[]> {
+  const rows = await models.bulkUpdateReferralStatus(referralIds, status);
+  return rows.map(types.mapReferralRowToReferral);
+}
+
+export async function countReferralsByStatus(): Promise<Record<types.ReferralStatus, number>> {
+  return models.countReferralsByStatus();
+}

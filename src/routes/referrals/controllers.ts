@@ -134,4 +134,66 @@ export const referralRouter = new Elysia({ prefix: '/referrals' })
       summary: 'Delete Referral',
       tags: ['Referrals'],
     },
-  });
+  })
+  .delete(
+    '/consultation/:consultationId',
+    async ({ params }) => await services.softDeleteReferralsByConsultationId(params.consultationId),
+    {
+      params: t.Object({ consultationId: idSchema }),
+      response: {
+        200: t.Array(t.Object({ id: idSchema })),
+        ...errorResponses,
+      },
+      detail: {
+        summary: 'Soft Delete Referrals by Consultation ID',
+        tags: ['Referrals'],
+      },
+    }
+  )
+  .patch(
+    '/:id/restore',
+    async ({ params }) => await services.restoreReferral(params.id),
+    {
+      params: t.Object({ id: idSchema }),
+      response: {
+        200: schemas.referralSchema,
+        ...errorResponses,
+      },
+      detail: {
+        summary: 'Restore Referral',
+        tags: ['Referrals'],
+      },
+    }
+  )
+  .patch(
+    '/:id/notes',
+    async ({ params, body }) => await services.updateReferralNotes(params.id, body.notes),
+    {
+      params: t.Object({ id: idSchema }),
+      body: t.Object({ notes: t.String() }),
+      response: {
+        200: schemas.referralSchema,
+        ...errorResponses,
+      },
+      detail: {
+        summary: 'Update Referral Notes',
+        tags: ['Referrals'],
+      },
+    }
+  )
+  .patch(
+    '/:id/status',
+    async ({ params, body }) => await services.updateReferralStatus(params.id, body.status),
+    {
+      params: t.Object({ id: idSchema }),
+      body: t.Object({ status: schemas.postReferralSchema.properties.status }),
+      response: {
+        200: schemas.referralSchema,
+        ...errorResponses,
+      },
+      detail: {
+        summary: 'Change Referral Status',
+        tags: ['Referrals'],
+      },
+    }
+  )

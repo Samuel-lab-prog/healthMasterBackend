@@ -5,6 +5,7 @@ import { insertUser } from '../users/models.ts';
 import { insertDoctor } from '../doctors/models.ts';
 import { AppError } from '../../utils/AppError.ts';
 import { prisma } from '../../prisma/client.ts';
+import * as t from './types.ts';
 
 const DEFAULT_USER = {
   firstName: 'Test',
@@ -173,6 +174,58 @@ describe('Referral Model Tests', () => {
       const updated = await ref.updateReferralStatus(DEFAULT_REFERRAL_ID, status);
       expect(updated.status).toBe(status);
     }
+  });
+  it('softDeleteReferralsByConsultationId → should soft delete referrals', async () => {
+    const deleted = await ref.softDeleteReferralsByConsultationId(DEFAULT_CONSULTATION_ID);
+    expect(deleted.length).toBeGreaterThan(0);
+
+    const referral = await ref.selectReferralById(DEFAULT_REFERRAL_ID);
+    expect(referral?.deletedAt).not.toBeNull();
+  });
+
+  it('restoreReferral → should restore a deleted referral', async () => {
+    await ref.softDeleteReferralsByConsultationId(DEFAULT_CONSULTATION_ID);
+    const restored = await ref.restoreReferral(DEFAULT_REFERRAL_ID);
+    expect(restored.deletedAt).toBeNull();
+  });
+
+  it('updateReferralNotes → should update referral notes', async () => {
+    const newNotes = 'Updated notes';
+    const updated = await ref.updateReferralNotes(DEFAULT_REFERRAL_ID, newNotes);
+    expect(updated.notes).toBe(newNotes);
+  });
+
+  it('updateReferralStatus → should change the status of a referral', async () => {
+    const newStatus: t.ReferralStatus = 'completed';
+    const updated = await ref.updateReferralStatus(DEFAULT_REFERRAL_ID, newStatus);
+    expect(updated.status).toBe(newStatus);
+  });
+
+  it('bulkUpdateReferralStatus → should update multiple referrals status', async () => {
+    const referral2 = await ref.insertReferral({
+      consultationId: DEFAULT_CONSULTATION_ID,
+      userId: DEFAULT_USER_ID,
+      referredById: DEFAULT_DOCTOR_ID,
+      referredToId: DEFAULT_DOCTOR_ID,
+      reason: 'Second referral',
+      notes: 'Second referral notes',
+    });
+
+    const updated = await ref.bulkUpdateReferralStatus(
+      [DEFAULT_REFERRAL_ID, referral2.id],
+      'cancelled'
+    );
+
+    expect(updated.every(r => r.status === 'cancelled')).toBe(true);
+  });
+
+  it('countReferralsByStatus → should return counts grouped by status', async () => {
+    await ref.updateReferralStatus(DEFAULT_REFERRAL_ID, 'completed');
+    const counts = await ref.countReferralsByStatus();
+
+    expect(counts.completed).toBeGreaterThanOrEqual(1);
+    expect(counts.pending).toBeGreaterThanOrEqual(0);
+    expect(counts.cancelled).toBeGreaterThanOrEqual(0);
   });
 
 });

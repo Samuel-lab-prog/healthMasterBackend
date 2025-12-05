@@ -174,3 +174,78 @@ export function updateReferralStatus(
     });
   });
 }
+
+export function softDeleteReferralsByConsultationId(
+  consultationId: number
+): Promise<{id: number}[]> {
+  return withPrismaErrorHandling<{id: number}[]>(async () =>
+    prisma.referral.updateManyAndReturn({
+      where: { consultationId, deletedAt: null },
+      data: { deletedAt: new Date() },
+      select: { id: true }
+    })
+  );
+}
+
+export function restoreReferral(
+  referralId: number
+): Promise<types.ReferralRow> {
+  return withPrismaErrorHandling<types.ReferralRow>(async () =>
+    prisma.referral.update({
+      where: { id: referralId },
+      data: { deletedAt: null },
+      include: referralIncludes,
+    })
+  );
+}
+
+export function updateReferralNotes(
+  referralId: number,
+  notes: string
+): Promise<types.ReferralRow> {
+  return withPrismaErrorHandling<types.ReferralRow>(async () =>
+    prisma.referral.update({
+      where: { id: referralId },
+      data: { notes },
+      include: referralIncludes,
+    })
+  );
+}
+
+export function bulkUpdateReferralStatus(
+  referralIds: number[],
+  status: types.ReferralStatus
+): Promise<types.ReferralRow[]> {
+  return withPrismaErrorHandling<types.ReferralRow[]>(async () =>
+    prisma.$transaction(
+      referralIds.map((id) =>
+        prisma.referral.update({
+          where: { id },
+          data: { status },
+          include: referralIncludes,
+        })
+      )
+    )
+  );
+}
+
+export function countReferralsByStatus(): Promise<Record<types.ReferralStatus, number>> {
+  return withPrismaErrorHandling(async () => {
+    const rows = await prisma.referral.groupBy({
+      by: ['status'],
+      _count: { status: true },
+    });
+
+    const result: Record<types.ReferralStatus, number> = {
+      'completed': 0,
+      'pending': 0,
+      'cancelled': 0,
+    };
+    
+    rows.forEach((r) => {
+      result[r.status as types.ReferralStatus] = r._count.status;
+    });
+
+    return result;
+  });
+}
