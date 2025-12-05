@@ -6,7 +6,8 @@ export type Consultation = (typeof s.consultationSchema)['static'];
 export type UserConsultation = (typeof s.userConsultationSchema)['static'];
 export type DoctorConsultation = (typeof s.doctorConsultationSchema)['static'];
 export type PostConsultation = (typeof s.postConsultationSchema)['static'];
-
+export type ConsultationStatus = Consultation['status'];
+export type ConsultationTypes = Consultation['type'];
 export type InsertConsultation = ConsultationUncheckedCreateInput;
 
 export type UserConsultationRow = Prisma.ConsultationGetPayload<{
@@ -50,6 +51,11 @@ export function mapConsultationRowToConsultation(row: ConsultationRow): Consulta
     notes: row.notes,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
+
+    location: row.location,
+    status: row.status,
+    type: row.type,
+    endTime: row.endTime,
   };
 }
 
@@ -63,6 +69,11 @@ export function mapUserConsultationRowToUserConsultation(
     doctorId: row.doctorId,
     doctorName: `${row.doctor.firstName} ${row.doctor.lastName}`,
     doctorSpeciality: row.doctor.speciality,
+
+    location: row.location,
+    status: row.status,
+    type: row.type,
+    endTime: row.endTime,
   };
 }
 
@@ -77,5 +88,10 @@ export function mapDoctorConsultationRowToDoctorConsultation(
     userName: `${row.user.firstName} ${row.user.lastName}`,
     userPhoneNumber: row.user.phoneNumber,
     userEmail: row.user.email,
+
+    location: row.location,
+    status: row.status,
+    type: row.type,
+    endTime: row.endTime,
   };
 }

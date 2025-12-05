@@ -80,7 +80,7 @@ export function mapReferralRowToReferral(row: ReferralRow): Referral {
     consultationId: row.consultationId,
 
     reason: row.reason,
-    notes: row.notes ?? null,
+    notes: row.notes,
     status: row.status as Referral['status'],
 
     userName: `${row.user.firstName} ${row.user.lastName}`,
@@ -102,7 +102,7 @@ export function mapUserReferralRowToUserReferral(
     id: row.id,
 
     reason: row.reason,
-    notes: row.notes ?? null,
+    notes: row.notes,
     status: row.status as Referral['status'],
 
     referredByName: `${row.referredBy.firstName} ${row.referredBy.lastName}`,

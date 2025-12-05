@@ -8,17 +8,41 @@ datasource db {
 }
 
 model Consultation {
-  id        Int        @id @default(autoincrement())
-  userId    Int
-  doctorId  Int
-  date      DateTime
-  notes     String
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  deletedAt DateTime?  
-  doctor    Doctor     @relation(fields: [doctorId], references: [id])
-  user      User       @relation(fields: [userId], references: [id])
-  referrals Referral[]
+  id         Int                 @id @default(autoincrement())
+  userId     Int
+  doctorId   Int
+  date       DateTime
+  notes      String
+  createdAt  DateTime            @default(now())
+  updatedAt  DateTime            @updatedAt
+  deletedAt  DateTime? 
+
+  endTime    DateTime           
+  status     ConsultationStatus  @default(scheduled)  
+  type       ConsultationType   
+  location   String
+
+  doctor     Doctor              @relation(fields: [doctorId], references: [id])
+  user       User                @relation(fields: [userId], references: [id])
+  referrals  Referral[]
+
+  @@index([userId])
+  @@index([doctorId])
+  @@index([date])
+}
+
+enum ConsultationStatus {
+  scheduled
+  completed
+  cancelled
+  no_show
+}
+
+enum ConsultationType {
+  return_visit
+  exam
+  routine
+  checkup
 }
 
 model Doctor {
@@ -48,7 +72,7 @@ model Referral {
   referredById   Int
   referredToId   Int
   reason         String
-  notes          String?      
+  notes          String      
   status         String       @default("pending")
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt

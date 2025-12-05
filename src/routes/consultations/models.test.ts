@@ -1,8 +1,6 @@
 import { describe, it, beforeEach, expect } from 'bun:test';
 import { prisma } from '../../prisma/client.ts';
-
 import * as m from './models.ts';
-
 import type { InsertConsultation } from './types.ts';
 import type { InsertUser } from '../users/types.ts';
 import type { InsertDoctor } from '../doctors/types.ts';
@@ -15,6 +13,10 @@ const DEFAULT_CONSULTATION: InsertConsultation = {
   doctorId: 1,
   date: '2024-07-01T10:00:00Z',
   notes: 'Initial consultation notes',
+  location: 'Room 101',
+  status: 'scheduled',
+  type: 'routine',
+  endTime: new Date('2024-07-01T11:00:00Z'),
 };
 
 const TEST_CONSULTATION: InsertConsultation = {
@@ -22,6 +24,10 @@ const TEST_CONSULTATION: InsertConsultation = {
   doctorId: 1,
   date: '2024-07-02T10:00:00Z',
   notes: 'Follow-up consultation notes',
+  location: 'Room 102',
+  status: 'scheduled',
+  type: 'exam',
+  endTime: new Date('2024-07-02T11:00:00Z'),
 };
 
 const DEFAULT_USER: InsertUser = {
@@ -130,5 +136,46 @@ describe('consultation Model Tests', () => {
   it('selectDoctorConsultations → empty array for unknown doctorId', async () => {
     const consultations = await m.selectDoctorConsultations(9999);
     expect(consultations).toEqual([]);
+  });
+
+  it('softDeleteConsultation → should soft delete a consultation', async () => {
+    const result = await m.softDeleteConsultation(DEFAULT_CONSULTATION_ID);
+    expect(result).toHaveProperty('id', DEFAULT_CONSULTATION_ID);
+
+    const deleted = await m.selectConsultationById(DEFAULT_CONSULTATION_ID);
+    expect(deleted?.deletedAt).not.toBeNull();
+  });
+
+  it('restoreConsultation → should restore a soft-deleted consultation', async () => {
+    await m.softDeleteConsultation(DEFAULT_CONSULTATION_ID);
+
+    const restored = await m.restoreConsultation(DEFAULT_CONSULTATION_ID);
+    expect(restored.deletedAt).toBeNull();
+  });
+
+  it('updateConsultationStatus → should update the status', async () => {
+    const updated = await m.updateConsultationStatus(DEFAULT_CONSULTATION_ID, 'completed');
+    expect(updated.status).toBe('completed');
+
+    const fetched = await m.selectConsultationById(DEFAULT_CONSULTATION_ID);
+    expect(fetched?.status).toBe('completed');
+  });
+
+  it('updateConsultationNotes → should update consultation notes', async () => {
+    const newNotes = 'Updated consultation notes';
+    const updated = await m.updateConsultationNotes(DEFAULT_CONSULTATION_ID, newNotes);
+    expect(updated.notes).toBe(newNotes);
+
+    const fetched = await m.selectConsultationById(DEFAULT_CONSULTATION_ID);
+    expect(fetched?.notes).toBe(newNotes);
+  });
+
+  it('countConsultationsByStatus → should return correct counts', async () => {
+    const counts = await m.countConsultationsByStatus();
+    expect(counts).toHaveProperty('scheduled');
+    expect(counts).toHaveProperty('completed');
+    expect(counts).toHaveProperty('cancelled');
+    expect(counts).toHaveProperty('no_show');
+    expect(typeof counts.scheduled).toBe('number');
   });
 });

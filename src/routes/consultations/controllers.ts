@@ -16,7 +16,6 @@ export const consultationRouter = new Elysia({
       if (store.clientData!.role !== 'admin' && store.clientData!.id !== targetId) {
         throwForbiddenError('You cannot access this user’s consultations.');
       }
-
       return await services.getUserConsultations(targetId);
     },
     {
@@ -79,4 +78,88 @@ export const consultationRouter = new Elysia({
         tags: ['Consultations'],
       },
     }
-  );
+  )
+  .use(AuthPlugin('admin'))
+  .patch(
+    '/:id/restore',
+    async ({ params }) => services.restoreConsultation(params.id),
+    {
+      params: t.Object({ id: idSchema }),
+      response: {
+        200: schemas.consultationSchema,
+        404: appErrorSchema,
+        500: appErrorSchema,
+      },
+      detail: {
+        summary: 'Restore Consultation',
+        tags: ['Consultations'],
+      },
+    }
+  )
+  .patch(
+    '/:id/status',
+    async ({ params, body }) =>
+      services.updateConsultationStatus(params.id, body.status),
+    {
+      params: t.Object({ id: idSchema }),
+      body: t.Object({ status: schemas.consultationStatusSchema }),
+      response: {
+        200: schemas.consultationSchema,
+        404: appErrorSchema,
+        500: appErrorSchema,
+      },
+      detail: {
+        summary: 'Update Consultation Status',
+        tags: ['Consultations'],
+      },
+    }
+  )
+  .patch(
+    '/:id/notes',
+    async ({ params, body }) =>
+      services.updateConsultationNotes(params.id, body.notes),
+    {
+      params: t.Object({ id: idSchema }),
+      body: t.Object({ notes: t.String() }),
+      response: {
+        200: schemas.consultationSchema,
+        404: appErrorSchema,
+        500: appErrorSchema,
+      },
+      detail: {
+        summary: 'Update Consultation Notes',
+        tags: ['Consultations'],
+      },
+    }
+  )
+  .delete(
+    '/:id',
+    async ({ params }) => services.softDeleteConsultation(params.id),
+    {
+      params: t.Object({ id: idSchema }),
+      response: {
+        200: t.Object({ id: idSchema }),
+        404: appErrorSchema,
+        500: appErrorSchema,
+      },
+      detail: {
+        summary: 'Soft Delete Consultation',
+        tags: ['Consultations'],
+      },
+    }
+  )
+  .get('/counts/status', async () => services.getConsultationCountsByStatus(), {
+    response: {
+      200: t.Object({
+        scheduled: t.Number(),
+        completed: t.Number(),
+        cancelled: t.Number(),
+        no_show: t.Number(),
+      }),
+      500: appErrorSchema,
+    },
+    detail: {
+      summary: 'Get Consultation Counts by Status',
+      tags: ['Consultations'],
+    },
+  });

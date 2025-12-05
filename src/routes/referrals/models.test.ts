@@ -49,6 +49,10 @@ beforeEach(async () => {
     doctorId: DEFAULT_DOCTOR_ID,
     date: '2024-07-01T10:00:00Z',
     notes: 'Initial consultation notes',
+    location: 'Room 101',
+    status: 'scheduled',
+    type: 'routine',
+    endTime: new Date('2024-07-01T11:00:00Z'),
   });
 
   DEFAULT_CONSULTATION_ID = consultation!.id;

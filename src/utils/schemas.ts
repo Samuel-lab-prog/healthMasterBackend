@@ -105,12 +105,12 @@ export const fullNameSchema = t.String({
   ...makeValidationError('Full name must be between 6 and 60 characters long'),
 });
 
-export const notesSchema = t.Union([t.String(), t.Null()], {
+export const notesSchema = t.String({
   example: 'Patient shows signs of improvement.',
   ...makeValidationError('Notes must be a valid string or null'),
 });
 
-export const reasonSchema = t.Union([t.String()], {
+export const reasonSchema = t.String({
   example: 'Referral for specialized care.',
   ...makeValidationError('Reason must be a valid string or null'),
 });
