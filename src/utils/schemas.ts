@@ -19,8 +19,8 @@ export const deletedAtSchema = t.Union([t.Date(), t.Null()], {
   ...makeValidationError('deletedAt must be a valid date string or null'),
 });
 
-export const updatedAtSchema = t.Union([t.Date(), t.Null()], {
-  example: null,
+export const updatedAtSchema = t.Date({
+  example: new Date(),
   ...makeValidationError('updatedAt must be a valid date or null'),
 });
 
