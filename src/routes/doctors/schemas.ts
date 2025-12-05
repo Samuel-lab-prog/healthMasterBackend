@@ -1,25 +1,5 @@
 import { t } from 'elysia';
 import * as s from '../../utils/schemas.ts';
-import { makeValidationError } from '../../utils/AppError.ts';
-
-export const roleSchema = t.UnionEnum(['doctor', 'admin'], {
-  example: 'doctor',
-  ...makeValidationError('Role must be either doctor or admin'),
-});
-
-export const specialitySchema = t.String({
-  minLength: 3,
-  maxLength: 50,
-  example: 'Cardiology',
-  ...makeValidationError('Speciality must be between 3 and 50 characters long'),
-});
-
-export const crmSchema = t.String({
-  minLength: 5,
-  maxLength: 20,
-  example: '12345',
-  ...makeValidationError('CRM must be between 5 and 20 characters long'),
-});
 
 export const postDoctorSchema = t.Object({
   firstName: s.firstNameSchema,
@@ -27,11 +7,13 @@ export const postDoctorSchema = t.Object({
   cpf: s.cpfSchema,
   birthDate: s.DateSchema,
   email: s.emailSchema,
-  speciality: specialitySchema,
-  crm: crmSchema,
+  speciality: s.doctorSpecialitySchema,
+  crm: s.doctorCrmSchema,
   password: s.passwordSchema,
   phoneNumber: s.phoneNumberSchema,
-  role: roleSchema,
+  role: s.doctorRoleSchema,
+  sex: s.sexSchema,
+  createdById: s.idSchema,
 });
 
 export const doctorSchema = t.Object({
@@ -42,11 +24,10 @@ export const doctorSchema = t.Object({
   birthDate: s.DateSchema,
   cpf: s.cpfSchema,
   phoneNumber: s.phoneNumberSchema,
-  speciality: specialitySchema,
-  role: roleSchema,
-  crm: crmSchema,
-
-  createdAt: s.createdAtSchema,
-
-  updatedAt: s.updatedAtSchema,
+  speciality: s.doctorSpecialitySchema,
+  role: s.doctorRoleSchema,
+  crm: s.doctorCrmSchema,
+  sex: s.sexSchema,
+  createdAt: s.DateSchema,
+  updatedAt: s.DateSchema,
 });

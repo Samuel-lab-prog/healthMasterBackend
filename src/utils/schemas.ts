@@ -94,7 +94,28 @@ export const fullNameSchema = t.String({
   ...makeValidationError('Full name must be between 6 and 60 characters long'),
 });
 
-//---------------------------------------------------------------------------//
+//-------------------------------DOCTORS---------------------------------//
+
+export const doctorRoleSchema = t.UnionEnum(['doctor', 'admin'], {
+  example: 'doctor',
+  ...makeValidationError('Role must be either doctor or admin'),
+});
+
+export const doctorSpecialitySchema = t.String({
+  minLength: 3,
+  maxLength: 50,
+  example: 'Cardiology',
+  ...makeValidationError('Speciality must be between 3 and 50 characters long'),
+});
+
+export const doctorCrmSchema = t.String({
+  minLength: 5,
+  maxLength: 20,
+  example: '12345',
+  ...makeValidationError('CRM must be between 5 and 20 characters long'),
+});
+
+//------------------------------REFERRALS--------------------------------//
 
 export const referralStatusSchema = t.UnionEnum(['pending', 'completed', 'cancelled'], {
   example: 'pending',

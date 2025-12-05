@@ -15,6 +15,7 @@ const DEFAULT_DOCTOR: InsertDoctor = {
   phoneNumber: '99999999',
   speciality: 'Cardiology',
   crm: '123456',
+  sex: 'male'
 };
 
 const TEST_DOCTOR: InsertDoctor = {
@@ -28,6 +29,7 @@ const TEST_DOCTOR: InsertDoctor = {
   phoneNumber: '88888888',
   speciality: 'Neurology',
   crm: '654321',
+  sex: 'female'
 };
 
 let DEFAULT_DOCTOR_ID: number;

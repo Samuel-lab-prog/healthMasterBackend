@@ -3,42 +3,27 @@ import type { DoctorCreateInput } from '../../prisma/generated/prisma-client/mod
 
 import { doctorSchema, postDoctorSchema } from './schemas';
 
-export function mapDoctorRowToDoctor(fullDoctor: DoctorRow): Doctor {
-  return {
-    id: fullDoctor.id,
-    firstName: fullDoctor.firstName,
-    lastName: fullDoctor.lastName,
-    email: fullDoctor.email,
-    birthDate: fullDoctor.birthDate,
-    cpf: fullDoctor.cpf,
-    phoneNumber: fullDoctor.phoneNumber,
-    speciality: fullDoctor.speciality,
-    role: fullDoctor.role,
-    crm: fullDoctor.crm,
-    createdAt: fullDoctor.createdAt,
-    updatedAt: fullDoctor.updatedAt,
-  };
-}
-
-export function mapDoctorRowToFullDoctor(fullDoctor: DoctorRow): Doctor {
-  return {
-    id: fullDoctor.id,
-    firstName: fullDoctor.firstName,
-    lastName: fullDoctor.lastName,
-    email: fullDoctor.email,
-    birthDate: fullDoctor.birthDate,
-    cpf: fullDoctor.cpf,
-    phoneNumber: fullDoctor.phoneNumber,
-    speciality: fullDoctor.speciality,
-    role: fullDoctor.role,
-    crm: fullDoctor.crm,
-    createdAt: fullDoctor.createdAt,
-    updatedAt: fullDoctor.updatedAt,
-  };
-}
 
 export type Doctor = (typeof doctorSchema)['static'];
 export type PostDoctor = (typeof postDoctorSchema)['static'];
 export type DoctorRow = Prisma.DoctorGetPayload<object>;
 export type UniqueDoctorField = 'id' | 'email' | 'cpf' | 'phoneNumber' | 'crm';
 export type InsertDoctor = DoctorCreateInput;
+
+export function mapDoctorRowToDoctor(row: DoctorRow): Doctor {
+  return {
+    id: row.id,
+    firstName: row.firstName,
+    lastName: row.lastName,
+    email: row.email,
+    birthDate: row.birthDate,
+    cpf: row.cpf,
+    phoneNumber: row.phoneNumber,
+    speciality: row.speciality,
+    role: row.role,
+    crm: row.crm,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
+    sex: row.sex
+  };
+}
