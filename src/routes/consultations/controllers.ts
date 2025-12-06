@@ -172,5 +172,4 @@ export const consultationRouter = new Elysia({
       summary: 'Get All Deleted Consultations',
       tags: ['Consultations'],
     },
-  })
-  ;
+  });

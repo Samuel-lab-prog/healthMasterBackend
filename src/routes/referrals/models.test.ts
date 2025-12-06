@@ -242,7 +242,7 @@ describe('Referral Model Tests', () => {
   it('selectReferralsByStatus → should return referrals matching status', async () => {
     const referrals = await ref.selectReferralsByStatus('pending');
     expect(Array.isArray(referrals)).toBe(true);
-    referrals.forEach(referral => {
+    referrals.forEach((referral) => {
       expect(referral.status).toBe('pending');
     });
   });
@@ -257,7 +257,7 @@ describe('Referral Model Tests', () => {
     await ref.softDeleteReferral(DEFAULT_REFERRAL_ID);
     const deletedReferrals = await ref.selectDeletedReferrals();
     expect(Array.isArray(deletedReferrals)).toBe(true);
-    deletedReferrals.forEach(referral => {
+    deletedReferrals.forEach((referral) => {
       expect(referral.deletedAt).not.toBeNull();
     });
   });

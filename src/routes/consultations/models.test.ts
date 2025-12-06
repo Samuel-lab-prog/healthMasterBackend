@@ -182,7 +182,7 @@ describe('consultation Model Tests', () => {
   it('selectAllDeletedConsultations → should return deleted consultations', async () => {
     const deletedConsultations = await m.selectAllDeletedConsultations();
     expect(Array.isArray(deletedConsultations)).toBe(true);
-    deletedConsultations.forEach(consultation => {
+    deletedConsultations.forEach((consultation) => {
       expect(consultation.deletedAt).not.toBeNull();
     });
   });
