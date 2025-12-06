@@ -1,6 +1,6 @@
 import Elysia from 'elysia';
 import cors from '@elysiajs/cors';
-import { openapi } from '@elysiajs/openapi';
+import { openapi, fromTypes } from '@elysiajs/openapi';
 import { BunAdapter } from 'elysia/adapter/bun';
 import { handleError } from './utils/handleError';
 import { sanitize } from './utils/xssClean';
@@ -24,9 +24,10 @@ const OPEN_API_SETTINGS = {
       version: '1.0.0',
     },
   },
+  references: fromTypes()
 };
 
-new Elysia({
+export default new Elysia({
   adapter: BunAdapter,
   name: INSTANCE_NAME,
   prefix: PREFIX,
