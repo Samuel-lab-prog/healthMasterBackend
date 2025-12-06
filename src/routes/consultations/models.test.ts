@@ -73,7 +73,7 @@ beforeEach(async () => {
   }))!.id;
 });
 
-describe('consultation Model Tests', () => {
+describe('Consultation Model Tests', () => {
   it('insertConsultation → returns id when inserted', async () => {
     const result = await m.insertConsultation({
       ...TEST_CONSULTATION,
@@ -116,6 +116,18 @@ describe('consultation Model Tests', () => {
     expect(consultation).toBeNull();
   });
 
+  it('selectAllConsultations → returns all consultations', async () => {
+    const consultations = await m.selectAllConsultations();
+    expect(Array.isArray(consultations)).toBe(true);
+    expect(consultations.length).toBeGreaterThan(0);
+  });
+
+  it('selectAllConsultations → returns empty array when no consultations exist', async () => {
+    await prisma.consultation.deleteMany();
+    const consultations = await m.selectAllConsultations();
+    expect(consultations).toEqual([]);
+  });
+
   it('selectUserConsultations → returns consultations for user', async () => {
     const consultations = await m.selectUserConsultations(DEFAULT_USER_ID);
     expect(Array.isArray(consultations)).toBe(true);
@@ -146,11 +158,19 @@ describe('consultation Model Tests', () => {
     expect(deleted?.deletedAt).not.toBeNull();
   });
 
+  it('softDeleteConsultation → should throw AppError for non-existing id', async () => {
+    await expect(m.softDeleteConsultation(9999)).rejects.toThrow(AppError);
+  });
+
   it('restoreConsultation → should restore a soft-deleted consultation', async () => {
     await m.softDeleteConsultation(DEFAULT_CONSULTATION_ID);
 
     const restored = await m.restoreConsultation(DEFAULT_CONSULTATION_ID);
     expect(restored.deletedAt).toBeNull();
+  });
+
+  it('restoreConsultation → should throw AppError for non-existing id', async () => {
+    await expect(m.restoreConsultation(9999)).rejects.toThrow(AppError);
   });
 
   it('updateConsultationStatus → should update the status', async () => {
@@ -159,6 +179,10 @@ describe('consultation Model Tests', () => {
 
     const fetched = await m.selectConsultationById(DEFAULT_CONSULTATION_ID);
     expect(fetched?.status).toBe('completed');
+  });
+
+  it('updateConsultationStatus → should throw AppError for non-existing id', async () => {
+    await expect(m.updateConsultationStatus(9999, 'completed')).rejects.toThrow(AppError);
   });
 
   it('updateConsultationNotes → should update consultation notes', async () => {
@@ -170,6 +194,10 @@ describe('consultation Model Tests', () => {
     expect(fetched?.notes).toBe(newNotes);
   });
 
+  it('updateConsultationNotes → should throw AppError for non-existing id', async () => {
+    await expect(m.updateConsultationNotes(9999, 'New notes')).rejects.toThrow(AppError);
+  });
+
   it('countConsultationsByStatus → should return correct counts', async () => {
     const counts = await m.countConsultationsByStatus();
     expect(counts).toHaveProperty('scheduled');
@@ -177,13 +205,31 @@ describe('consultation Model Tests', () => {
     expect(counts).toHaveProperty('cancelled');
     expect(counts).toHaveProperty('no_show');
     expect(typeof counts.scheduled).toBe('number');
+    expect(counts.scheduled).toBeGreaterThan(0);
+  });
+
+  it('countConsultationsByStatus → should return zero counts when no consultations', async () => {
+    await prisma.consultation.deleteMany();
+    const counts = await m.countConsultationsByStatus();
+    expect(counts.scheduled).toBe(0);
+    expect(counts.completed).toBe(0);
+    expect(counts.cancelled).toBe(0);
+    expect(counts.no_show).toBe(0);
   });
 
   it('selectAllDeletedConsultations → should return deleted consultations', async () => {
+    await m.softDeleteConsultation(DEFAULT_CONSULTATION_ID);
     const deletedConsultations = await m.selectAllDeletedConsultations();
     expect(Array.isArray(deletedConsultations)).toBe(true);
+    expect(deletedConsultations.length).toBeGreaterThan(0);
     deletedConsultations.forEach((consultation) => {
       expect(consultation.deletedAt).not.toBeNull();
     });
+  });
+
+  it('selectAllDeletedConsultations → should return empty array when none deleted', async () => {
+    const deletedConsultations = await m.selectAllDeletedConsultations();
+    expect(Array.isArray(deletedConsultations)).toBe(true);
+    expect(deletedConsultations.length).toBe(0);
   });
 });

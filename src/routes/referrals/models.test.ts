@@ -124,6 +124,12 @@ describe('Referral Model Tests', () => {
     expect(await ref.selectAllReferrals()).toEqual([]);
   });
 
+  it('selectAllReferrals → Should not return deleted referrals', async () => {
+    await ref.softDeleteReferral(DEFAULT_REFERRAL_ID);
+    const list = await ref.selectAllReferrals();
+    expect(list.every((r) => r.id !== DEFAULT_REFERRAL_ID)).toBe(true);
+  });
+
   it('selectDoctorReferrals → Should list referrals for a doctor', async () => {
     const list = await ref.selectDoctorReferrals(DEFAULT_DOCTOR_ID);
     expect(list.length).toBeGreaterThan(0);
@@ -191,10 +197,18 @@ describe('Referral Model Tests', () => {
     expect(restored.deletedAt).toBeNull();
   });
 
+  it('restoreReferral → should throw AppError for non-existing id', async () => {
+    await expect(ref.restoreReferral(9999)).rejects.toThrow(AppError);
+  });
+
   it('updateReferralNotes → should update referral notes', async () => {
     const newNotes = 'Updated notes';
     const updated = await ref.updateReferralNotes(DEFAULT_REFERRAL_ID, newNotes);
     expect(updated.notes).toBe(newNotes);
+  });
+
+  it('updateReferralNotes → should throw AppError for non-existing id', async () => {
+    await expect(ref.updateReferralNotes(9999, 'New notes')).rejects.toThrow(AppError);
   });
 
   it('updateReferralStatus → should change the status of a referral', async () => {
@@ -219,6 +233,10 @@ describe('Referral Model Tests', () => {
     );
 
     expect(updated.every((r) => r.status === 'cancelled')).toBe(true);
+  });
+
+  it('bulkUpdateReferralStatus → should throw AppError for invalid referral IDs', async () => {
+    await expect(ref.bulkUpdateReferralStatus([9999], 'cancelled')).rejects.toThrow(AppError);
   });
 
   it('countReferralsByStatus → should return counts grouped by status', async () => {

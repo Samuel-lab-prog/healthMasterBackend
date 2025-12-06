@@ -1,6 +1,6 @@
 import * as s from './schemas';
-import type { Prisma } from '../../prisma/generated/prisma-client/browser';
-import type { ConsultationUncheckedCreateInput } from '../../prisma/generated/prisma-client/models';
+import type { Prisma } from '../../prisma/generated/browser';
+import type { ConsultationUncheckedCreateInput } from '../../prisma/generated/models';
 
 export type Consultation = (typeof s.consultationSchema)['static'];
 export type UserConsultation = (typeof s.userConsultationSchema)['static'];

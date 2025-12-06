@@ -54,7 +54,7 @@ describe('User Model Tests', () => {
   });
 
   it('insertUser → Should throw AppError for duplicated email', async () => {
-    expect(
+    await expect(
       insertUser({
         ...TEST_USER,
         email: DEFAULT_USER.email,
@@ -63,7 +63,7 @@ describe('User Model Tests', () => {
   });
 
   it('insertUser → Should throw AppError for duplicated CPF', async () => {
-    expect(
+    await expect(
       insertUser({
         ...TEST_USER,
         cpf: DEFAULT_USER.cpf!,
@@ -72,7 +72,7 @@ describe('User Model Tests', () => {
   });
 
   it('insertUser → Should throw AppError for duplicated phone number', async () => {
-    expect(
+    await expect(
       insertUser({
         ...TEST_USER,
         phoneNumber: DEFAULT_USER.phoneNumber!,
@@ -122,5 +122,17 @@ describe('User Model Tests', () => {
   it('selectUserByField → Should return null for non-existing id', async () => {
     const user = await selectUserByField('id', 9999);
     expect(user).toBeNull();
+  });
+
+  it('selectAllUsers → Should return all users', async () => {
+    await insertUser(TEST_USER);
+    const users = await prisma.user.findMany();
+    expect(users.length).toBe(2);
+  });
+
+  it('selectAllUsers → Should return empty array when no users exist', async () => {
+    await prisma.user.deleteMany();
+    const users = await prisma.user.findMany();
+    expect(users).toEqual([]);
   });
 });

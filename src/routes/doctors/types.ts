@@ -1,5 +1,5 @@
-import type { Prisma } from '../../prisma/generated/prisma-client/browser';
-import type { DoctorCreateInput } from '../../prisma/generated/prisma-client/models';
+import type { Prisma } from '../../prisma/generated/browser';
+import type { DoctorCreateInput } from '../../prisma/generated/models';
 
 import { doctorSchema, postDoctorSchema } from './schemas';
 

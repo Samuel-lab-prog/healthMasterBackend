@@ -1,5 +1,5 @@
 import * as schemas from './schemas';
-import type { Prisma } from '../../prisma/generated/prisma-client/browser';
+import type { Prisma } from '../../prisma/generated/browser';
 
 export type Referral = typeof schemas.referralSchema.static;
 export type PostReferral = typeof schemas.postReferralSchema.static;

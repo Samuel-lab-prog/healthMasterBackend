@@ -1,5 +1,5 @@
-import type { Prisma } from '../../prisma/generated/prisma-client/browser';
-import type { UserCreateInput } from '../../prisma/generated/prisma-client/models';
+import type { Prisma } from '../../prisma/generated/browser';
+import type { UserCreateInput } from '../../prisma/generated/models';
 import * as s from './schemas';
 
 export function mapUserRowToUser(Row: UserRow): User {

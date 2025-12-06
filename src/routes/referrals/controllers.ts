@@ -1,7 +1,7 @@
 import { Elysia, t } from 'elysia';
 import { appErrorSchema, throwForbiddenError } from '../../utils/AppError.ts';
 import { idSchema } from '../../utils/schemas.ts';
-import { AuthPlugin } from '../../plugins/index.ts';
+import { AuthPlugin } from '../../plugins/auth.ts';
 import * as services from './services';
 import * as schemas from './schemas.ts';
 
