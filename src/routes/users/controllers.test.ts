@@ -7,8 +7,8 @@ const VALID_USER_DATA: PostUser = {
   lastName: 'Doe',
   email: 'john.doe@example.com',
   password: 'SecurePassword123!',
-  phoneNumber: '1234567890',
-  cpf: '12345678900',
+  phoneNumber: '1234567890', // 10 characters, meets minLength requirement
+  cpf: '12345678900', // 11 characters, meets CPF length validation
   birthDate: new Date('1990-01-01'),
   sex: 'male',
 };
@@ -120,7 +120,7 @@ describe('User Controller Tests', () => {
     it('should return 422 for invalid birthDate format', async () => {
       const invalidData = {
         ...VALID_USER_DATA,
-        birthDate: 'invalid-date',
+        birthDate: 'invalid-date' as any, // String instead of Date to test validation
       };
 
       const response = await userRouter.handle(
