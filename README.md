@@ -26,7 +26,6 @@ This repository contains the entire **backend** for the **HealthMaster** project
   - **Utilities Folder**
   - **Plugins Folder**
 
-
 ### Routes Folder
 
 Contains all the route definitions for the application, organized by entity. Each entity (like users, doctors, consultations, etc.) has its own folder inside the routes folder
@@ -36,11 +35,12 @@ Inside each routes folder, you’ll typically find **six** types of files:
 - **schemas** — define the validation schemas for requests and responses
 - **types** — define TypeScript types and interfaces
 - **models** — interact with the database
-- **services** — contain the business logic 
+- **services** — contain the business logic
 - **controllers** — handle incoming requests and send responses
 - **tests** - contain the tests for each module (right now only models have tests)
 
 The cycle goes like this: controllers call services, services call models, and models interact with the database.
+
 ### Prisma Folder
 
 This folder contains the Prisma schema file and any related configurations for the ORM.
@@ -49,6 +49,7 @@ This folder contains the Prisma schema file and any related configurations for t
 
 This folder is used to store custom plugins that extend the functionality of the Elysia framework.
 For example, you might have authentication plugins, logging plugins, or any other middleware-like functionality that you want to apply across your application.
+
 ### Utilities Folder
 
 This folder is used for containing utilites files in general, such classes or funcions that you can reuse.
@@ -106,4 +107,5 @@ This project follows several standards and patterns to ensure clean, maintainabl
     **Good:** fix: resolve user authentication token validation issue
 
 ### API Documentation
+
 The API is documented using OpenAPI (Swagger) standards. Each route includes detailed information about request parameters, responses, and error handling.
