@@ -46,16 +46,15 @@ jobs:
 
       - name: generate prisma client
         run: bun generate
+
       - name: Reset database
         env:
           TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/health_master_test
-          NODE_ENV: test
         run: bun reset
 
       - name: Seed database
         env:
           TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/health_master_test
-          NODE_ENV: test
         run: bun seed
 
       - name: Run tests
