@@ -83,3 +83,15 @@ export async function bulkUpdateReferralStatus(
 export async function countReferralsByStatus(): Promise<Record<types.ReferralStatus, number>> {
   return models.countReferralsByStatus();
 }
+
+export async function getDeletedReferrals(): Promise<types.Referral[]> {
+  const rows = await models.selectDeletedReferrals();
+  return rows.map(types.mapReferralRowToReferral);
+}
+
+export async function getReferralsByStatus(
+  status: types.ReferralStatus
+): Promise<types.Referral[]> {
+  const rows = await models.selectReferralsByStatus(status);
+  return rows.map(types.mapReferralRowToReferral);
+}

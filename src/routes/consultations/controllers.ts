@@ -88,7 +88,7 @@ export const consultationRouter = new Elysia({
       500: appErrorSchema,
     },
     detail: {
-      summary: 'Restore Consultation',
+      summary: 'Restore Consultation by ID',
       tags: ['Consultations'],
     },
   })
@@ -104,7 +104,7 @@ export const consultationRouter = new Elysia({
         500: appErrorSchema,
       },
       detail: {
-        summary: 'Update Consultation Status',
+        summary: 'Update Consultation Status by ID',
         tags: ['Consultations'],
       },
     }
@@ -121,7 +121,7 @@ export const consultationRouter = new Elysia({
         500: appErrorSchema,
       },
       detail: {
-        summary: 'Update Consultation Notes',
+        summary: 'Update Consultation Notes by ID',
         tags: ['Consultations'],
       },
     }
@@ -134,7 +134,7 @@ export const consultationRouter = new Elysia({
       500: appErrorSchema,
     },
     detail: {
-      summary: 'Soft Delete Consultation',
+      summary: 'Soft Delete Consultation by ID',
       tags: ['Consultations'],
     },
   })
@@ -152,4 +152,25 @@ export const consultationRouter = new Elysia({
       summary: 'Get Consultation Counts by Status',
       tags: ['Consultations'],
     },
-  });
+  })
+  .get('/', async () => services.getAllConsultations(), {
+    response: {
+      200: t.Array(schemas.consultationSchema),
+      500: appErrorSchema,
+    },
+    detail: {
+      summary: 'Get All Consultations',
+      tags: ['Consultations'],
+    },
+  })
+  .get('/deleted', async () => services.getDeletedConsultations(), {
+    response: {
+      200: t.Array(schemas.consultationSchema),
+      500: appErrorSchema,
+    },
+    detail: {
+      summary: 'Get All Deleted Consultations',
+      tags: ['Consultations'],
+    },
+  })
+  ;

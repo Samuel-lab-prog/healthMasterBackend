@@ -229,4 +229,41 @@ describe('Referral Model Tests', () => {
     expect(counts.pending).toBeGreaterThanOrEqual(0);
     expect(counts.cancelled).toBeGreaterThanOrEqual(0);
   });
+
+  it('countReferralsByStatus → should return zero counts when no referrals exist', async () => {
+    await prisma.referral.deleteMany();
+    const counts = await ref.countReferralsByStatus();
+
+    expect(counts.completed).toBe(0);
+    expect(counts.pending).toBe(0);
+    expect(counts.cancelled).toBe(0);
+  });
+
+  it('selectReferralsByStatus → should return referrals matching status', async () => {
+    const referrals = await ref.selectReferralsByStatus('pending');
+    expect(Array.isArray(referrals)).toBe(true);
+    referrals.forEach(referral => {
+      expect(referral.status).toBe('pending');
+    });
+  });
+
+  it('selectReferralsByStatus → should return empty array when no referrals match status', async () => {
+    await prisma.referral.deleteMany({ where: { status: 'cancelled' } });
+    const referrals = await ref.selectReferralsByStatus('cancelled');
+    expect(referrals).toEqual([]);
+  });
+
+  it('selectDeletedReferrals → should return soft-deleted referrals', async () => {
+    await ref.softDeleteReferral(DEFAULT_REFERRAL_ID);
+    const deletedReferrals = await ref.selectDeletedReferrals();
+    expect(Array.isArray(deletedReferrals)).toBe(true);
+    deletedReferrals.forEach(referral => {
+      expect(referral.deletedAt).not.toBeNull();
+    });
+  });
+
+  it('selectDeletedReferrals → should return empty array when no referrals are deleted', async () => {
+    const deletedReferrals = await ref.selectDeletedReferrals();
+    expect(deletedReferrals).toEqual([]);
+  });
 });

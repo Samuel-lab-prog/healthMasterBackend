@@ -143,3 +143,12 @@ export function countConsultationsByStatus(): Promise<Record<types.ConsultationS
     return result;
   });
 }
+
+export async function selectAllDeletedConsultations(): Promise<types.ConsultationRow[]> {
+  return withPrismaErrorHandling<types.ConsultationRow[]>(() =>
+    prisma.consultation.findMany({
+      where: { deletedAt: { not: null } },
+      include: consultationIncludes,
+    })
+  );
+}

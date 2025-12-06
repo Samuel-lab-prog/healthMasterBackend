@@ -192,4 +192,29 @@ export const referralRouter = new Elysia({ prefix: '/referrals' })
         tags: ['Referrals'],
       },
     }
+  )
+  .get(`/deleted`, async () => await services.getDeletedReferrals(), {
+    response: {
+      200: t.Array(schemas.referralSchema),
+      ...errorResponses,
+    },
+    detail: {
+      summary: 'Get Deleted Referrals',
+      tags: ['Referrals'],
+    },
+  })
+  .get(
+    '/status/:status',
+    async ({ params }) => await services.getReferralsByStatus(params.status),
+    {
+      params: t.Object({ status: schemas.postReferralSchema.properties.status }),
+      response: {
+        200: t.Array(schemas.referralSchema),
+        ...errorResponses,
+      },
+      detail: {
+        summary: 'Get Referrals by Status',
+        tags: ['Referrals'],
+      },
+    }
   );

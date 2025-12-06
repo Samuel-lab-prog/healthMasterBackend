@@ -234,3 +234,24 @@ export function countReferralsByStatus(): Promise<Record<types.ReferralStatus, n
     return result;
   });
 }
+
+export async function selectDeletedReferrals(): Promise<types.ReferralRow[]> {
+  return withPrismaErrorHandling<types.ReferralRow[]>(() =>
+    prisma.referral.findMany({
+      where: { deletedAt: { not: null } },
+      include: referralIncludes,
+    })
+  );
+}
+
+export async function selectReferralsByStatus(
+  status: types.ReferralStatus
+): Promise<types.ReferralRow[]> {
+  return withPrismaErrorHandling<types.ReferralRow[]>(() =>
+    prisma.referral.findMany({
+      where: { status, deletedAt: null },
+      include: referralIncludes,
+    })
+  );
+}
+

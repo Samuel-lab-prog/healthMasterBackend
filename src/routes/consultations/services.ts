@@ -63,3 +63,8 @@ export async function getConsultationCountsByStatus(): Promise<
 > {
   return await models.countConsultationsByStatus();
 }
+
+export async function getDeletedConsultations(): Promise<types.Consultation[]> {
+  const rows = await models.selectAllDeletedConsultations();
+  return rows.map(types.mapConsultationRowToConsultation);
+}

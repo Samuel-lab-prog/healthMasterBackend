@@ -178,4 +178,12 @@ describe('consultation Model Tests', () => {
     expect(counts).toHaveProperty('no_show');
     expect(typeof counts.scheduled).toBe('number');
   });
+
+  it('selectAllDeletedConsultations → should return deleted consultations', async () => {
+    const deletedConsultations = await m.selectAllDeletedConsultations();
+    expect(Array.isArray(deletedConsultations)).toBe(true);
+    deletedConsultations.forEach(consultation => {
+      expect(consultation.deletedAt).not.toBeNull();
+    });
+  });
 });
