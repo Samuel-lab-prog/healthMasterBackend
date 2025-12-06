@@ -1,6 +1,6 @@
-# Blog Application (Backend)
+# HealthMaster Application (Backend)
 
-This repository contains the entire **backend** for the **Blog Application** project.
+This repository contains the entire **backend** for the **HealthMaster** project.
 
 ## Technologies Used
 
@@ -12,7 +12,7 @@ This repository contains the entire **backend** for the **Blog Application** pro
 
 - **bcrypt** — for password hashing
 - **jsonwebtoken (JWT)** — for user authentication
-- **pg** — for interacting with the PostgreSQL database
+- **prisma** — ORM for database interactions
 - **elysia** — web framework for Bun
 - **slugify** — for generating clean slugs from post titles
 
@@ -20,31 +20,35 @@ This repository contains the entire **backend** for the **Blog Application** pro
 
 - All environment configuration files are in the **root directory**
 - The main codebase is inside the **`src/`** folder
-- Inside `src/`, you’ll find three main types of folders:
-  - **Entity folders**
-  - **A single database folder**
-  - **A single utilities folder**
+- Inside `src/`, you’ll find four folders:
+  - **Routes Folder**
+  - **Prisma Folder**
+  - **Utilities Folder**
+  - **Plugins Folder**
 
-### Entity Folders
 
-Entity folders contain all the logic necessary to handle a specific entity.  
-For example, the `user` folder contains all logic related to user operations.
+### Routes Folder
 
-Inside each entity folder, you’ll typically find **five** types of files:
+Contains all the route definitions for the application, organized by entity. Each entity (like users, doctors, consultations, etc.) has its own folder inside the routes folder
 
-- **models** — define the data structure and database models
-- **controllers** — handle the incoming requests and responses
-- **routes** — define API endpoints and connect them to controllers
-- **types** — contain TypeScript interfaces and type definitions
-- **services** — contain the business logic and database queries
-- **tests** - contain the tests for each module
+Inside each routes folder, you’ll typically find **six** types of files:
 
-### Database Folder
+- **schemas** — define the validation schemas for requests and responses
+- **types** — define TypeScript types and interfaces
+- **models** — interact with the database
+- **services** — contain the business logic 
+- **controllers** — handle incoming requests and send responses
+- **tests** - contain the tests for each module (right now only models have tests)
 
-This folder contains all the files necessary for configuring the database and representing
-it's tables. As the database continue to increase it's complexity, you may want to create subfolders
-inside of this folder.
+The cycle goes like this: controllers call services, services call models, and models interact with the database.
+### Prisma Folder
 
+This folder contains the Prisma schema file and any related configurations for the ORM.
+
+### Plugins Folder
+
+This folder is used to store custom plugins that extend the functionality of the Elysia framework.
+For example, you might have authentication plugins, logging plugins, or any other middleware-like functionality that you want to apply across your application.
 ### Utilities Folder
 
 This folder is used for containing utilites files in general, such classes or funcions that you can reuse.
@@ -55,8 +59,8 @@ As this folder continues to grow, you might want to detach some files and organi
 ### 1.Clone the repository
 
 ```
-git clone https://github.com/Samuel-lab-prog/blogBack.git
-cd blogBack
+git clone https://github.com/Samuel-lab-prog/healthMasterBackend.git
+cd healthMasterBackend
 ```
 
 ### 2.Install dependencies
@@ -68,8 +72,9 @@ bun install
 ### 3.Configure envoirment variables
 
 ```
-DB_NAME=yourLocalDbName
-DB_PASSWORD=yourLocalDbPassword
+TEST_DATABASE_URL=yourTestDbConnectionString
+SALT_ROUNDS=10
+JWT_SECRET=yourSecretKey
 And so on...
 ```
 
@@ -99,3 +104,6 @@ This project follows several standards and patterns to ensure clean, maintainabl
 3.  Write meaningful commit messages:
     **Bad:** fix stuff
     **Good:** fix: resolve user authentication token validation issue
+
+### API Documentation
+The API is documented using OpenAPI (Swagger) standards. Each route includes detailed information about request parameters, responses, and error handling.
