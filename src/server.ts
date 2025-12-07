@@ -1,7 +1,7 @@
 import Elysia from 'elysia';
 import cors from '@elysiajs/cors';
 import { openapi, fromTypes } from '@elysiajs/openapi';
-import { rateLimit } from 'elysia-rate-limit'
+import { rateLimit } from 'elysia-rate-limit';
 import { BunAdapter } from 'elysia/adapter/bun';
 import { handleError } from './utils/handleError';
 import { sanitize } from './utils/xssClean';
@@ -25,7 +25,7 @@ const OPEN_API_SETTINGS = {
       version: '1.0.0',
     },
   },
-  references: fromTypes()
+  references: fromTypes(),
 };
 export default new Elysia({
   adapter: BunAdapter,
