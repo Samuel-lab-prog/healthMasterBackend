@@ -5,8 +5,8 @@ import { rateLimit } from 'elysia-rate-limit';
 import { BunAdapter } from 'elysia/adapter/bun';
 import { handleError } from './utils/handleError';
 import { sanitize } from './utils/xssClean';
-import * as l from './utils/logger';
 
+import { LoggerPlugin } from './plugins/logger';
 import { authRouter } from './routes/auth/controllers';
 import { userRouter } from './routes/users/controllers';
 import { doctorRouter } from './routes/doctors/controllers';
@@ -39,23 +39,9 @@ export default new Elysia({
     port: PORT,
   },
 })
-  .state('reqInitiatedAt', 0)
-  .state('reqId', '')
   .onError(({ error, set, code, store }) => handleError(set, error, code, store.reqId))
   .use(rateLimit())
-  .onStart(() => {
-    l.log.info(`🚀 Server started at http://${HOST_NAME}:${PORT}${PREFIX}`);
-  })
-  .onRequest((ctx) => {
-    ctx.store.reqId = crypto.randomUUID();
-    if (ctx.request.url.includes('/docs')) return;
-    ctx.store.reqInitiatedAt = performance.now();
-    l.logOnRequest(ctx.request, ctx.store.reqId);
-  })
-  .onAfterResponse((ctx) => {
-    if (ctx.request.url.includes('/docs')) return;
-    l.logOnAfterResponse(ctx, ctx.store.reqId, ctx.store.reqInitiatedAt, ctx.response);
-  })
+  .use(LoggerPlugin())
   .use(cors())
   .use(authRouter)
   .use(userRouter)
