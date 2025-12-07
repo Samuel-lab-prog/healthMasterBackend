@@ -1,70 +1,65 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { AppError } from '../utils/AppError.ts';
+import { logOnError } from './logger.ts';
 
-export function handleError(set: any, error: unknown, code: any) {
+export function handleError(set: any, error: unknown, code: any, reqId: string) {
+
   if (error instanceof AppError) {
-    const statusCode = error.statusCode;
-    set.status = statusCode;
-
-    console.error('---------------------AppError---------------------');
-    console.error(`Status: ${statusCode}`);
-    console.error(`Messages: ${error.errorMessages.join(', ')}`);
-    console.error(`Stack: ${error.stack ?? 'No stack trace available'}`);
-    console.error('--------------------------------------------------');
-
-    return {
-      errorMessages: error.errorMessages,
-      statusCode,
-    };
+    return respondWithAppError(set, error, reqId, error instanceof Error ? error.stack : undefined);
   }
 
-  // Normaliza o code vindo do Elysia
   const normalizedCode =
-    typeof code === 'string' ? code : typeof code?.type === 'string' ? code.type : 'UNKNOWN';
+    typeof code === 'string'
+      ? code
+      : typeof code?.type === 'string'
+        ? code.type
+        : 'UNKNOWN';
 
-  let converted: AppError | null = null;
-  if (
-    [
-      'PARSE',
-      'VALIDATION',
-      'INVALID_COOKIE_SIGNATURE',
-      'INVALID_FILE_TYPE',
-      'INTERNAL_SERVER_ERROR',
-    ].includes(normalizedCode)
-  ) {
-    converted = convertElysiaError(normalizedCode);
-  }
+  const converted = convertElysiaError(normalizedCode)
 
   if (converted instanceof AppError) {
-    const statusCode = converted.statusCode;
-    set.status = statusCode;
-
-    console.error('------------------AppError------------------');
-    console.error(`Status: ${statusCode}`);
-    console.error(`Messages: ${converted.errorMessages.join(', ')}`);
-    console.error(`Stack: ${converted.stack ?? 'No stack trace available'}`);
-    console.error('----------------------------------------------------');
-
-    return {
-      errorMessages: converted.errorMessages,
-      statusCode,
-    };
+    return respondWithAppError(
+      set,
+      converted,
+      reqId,
+      error instanceof Error ? error.stack : undefined
+    );
   }
 
-  // fallback para erros inesperados
-  const statusCode = typeof set.status === 'number' && set.status >= 400 ? set.status : 500;
+  const statusCode =
+    typeof set.status === 'number' && set.status >= 400
+      ? set.status
+      : 500;
 
   set.status = statusCode;
 
-  console.error('------------------Unexpected Error------------------');
-  console.error(`Status: ${statusCode}`);
-  console.error(`Error: ${error instanceof Error ? error.message : String(error)}`);
-  console.error(`Stack: ${error instanceof Error ? error.stack : 'No stack trace available'}`);
-  console.error('----------------------------------------------------');
+  logOnError(
+
+    error instanceof Error ? error.message : String(error),
+    statusCode,
+    error instanceof Error ? error.stack : undefined,
+    reqId
+  );
 
   return {
     errorMessages: ['An unexpected error occurred'],
     statusCode,
+  };
+}
+
+function respondWithAppError(set: any, err: AppError, reqId: string, stack?: string) {
+  set.status = err.statusCode;
+
+  logOnError(
+    err.errorMessages.join(', '),
+    err.statusCode,
+    stack ?? err.stack,
+    reqId
+  );
+
+  return {
+    errorMessages: err.errorMessages,
+    statusCode: err.statusCode,
   };
 }
 
@@ -73,25 +68,15 @@ function convertElysiaError(code: string): AppError {
     case 'NOT_FOUND':
       return new AppError({ statusCode: 404, errorMessages: ['Not Found: resource not found'] });
     case 'PARSE':
-      return new AppError({
-        statusCode: 400,
-        errorMessages: ['Bad request: failed to parse request body'],
-      });
+      return new AppError({ statusCode: 400, errorMessages: ['Bad request: failed to parse request body'] });
     case 'VALIDATION':
-      return new AppError({
-        statusCode: 422,
-        errorMessages: ['Unprocessable entity: validation failed'],
-      });
+      return new AppError({ statusCode: 422, errorMessages: ['Unprocessable entity: validation failed'] });
     case 'INVALID_COOKIE_SIGNATURE':
-      return new AppError({
-        statusCode: 401,
-        errorMessages: ['Unauthorized: invalid cookie signature'],
-      });
+      return new AppError({ statusCode: 401, errorMessages: ['Unauthorized: invalid cookie signature'] });
     case 'INVALID_FILE_TYPE':
       return new AppError({ statusCode: 400, errorMessages: ['Bad request: invalid file type'] });
     case 'INTERNAL_SERVER_ERROR':
     case 'UNKNOWN':
-      return new AppError({ statusCode: 500, errorMessages: ['Internal server error'] });
     default:
       return new AppError({ statusCode: 500, errorMessages: ['Internal server error'] });
   }

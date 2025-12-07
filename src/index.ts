@@ -5,6 +5,7 @@ import { rateLimit } from 'elysia-rate-limit';
 import { BunAdapter } from 'elysia/adapter/bun';
 import { handleError } from './utils/handleError';
 import { sanitize } from './utils/xssClean';
+import * as l from './utils/logger';
 
 import { authRouter } from './routes/auth/controllers';
 import { userRouter } from './routes/users/controllers';
@@ -27,6 +28,7 @@ const OPEN_API_SETTINGS = {
   },
   references: fromTypes(),
 };
+
 export default new Elysia({
   adapter: BunAdapter,
   name: INSTANCE_NAME,
@@ -37,10 +39,24 @@ export default new Elysia({
     port: PORT,
   },
 })
-  .onError(async ({ error, set, code }) => handleError(set, error, code))
+  .state('reqInitiatedAt', 0)
+  .state('reqId', '')
+  .onError(({ error, set, code, store }) => handleError(set, error, code, store.reqId))
   .use(rateLimit())
+  .onStart(() => {
+    l.log.info(`🚀 Server started at http://${HOST_NAME}:${PORT}${PREFIX}`);
+  })
+  .onRequest((ctx) => {
+    ctx.store.reqId = crypto.randomUUID();
+    if (ctx.request.url.includes('/docs')) return;
+    ctx.store.reqInitiatedAt = performance.now();
+    l.logOnRequest(ctx.request, ctx.store.reqId);
+  })
+  .onAfterResponse((ctx) => {
+    if (ctx.request.url.includes('/docs')) return;
+    l.logOnAfterResponse(ctx, ctx.store.reqId, ctx.store.reqInitiatedAt, ctx.response);
+  })
   .use(cors())
-  .get('/', () => 'HealthMaster API is running')
   .use(authRouter)
   .use(userRouter)
   .use(doctorRouter)
@@ -48,5 +64,3 @@ export default new Elysia({
   .use(referralRouter)
   .use(openapi(OPEN_API_SETTINGS))
   .listen({ hostname: HOST_NAME, port: PORT });
-
-console.log(`🚀 Server running at http://${HOST_NAME}:${PORT}${PREFIX}/docs`);
