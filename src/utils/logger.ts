@@ -28,7 +28,7 @@ export const logOnAfterResponse = (
   ctx: Context,
   reqId: string,
   reqStartedAt: number,
-  response: unknown
+  response: unknown,
 ) => {
   const reqEndedAt = performance.now();
 
@@ -39,6 +39,7 @@ export const logOnAfterResponse = (
       headersSent: true,
       durationMs: (reqEndedAt - reqStartedAt).toFixed(0),
       size: getResponseSize(response),
+      statusCode: ctx.set.status
     },
     'Response sent:'
   );

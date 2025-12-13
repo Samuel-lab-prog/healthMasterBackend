@@ -4,7 +4,7 @@ import { makeBadRequestError, makeValidationError } from './AppError';
 // Common Schemas
 //---------------------------------------------------------------------------//
 
-export const DateSchema = t.Date({
+export const dateSchema = t.Date({
   example: '2024-01-01T12:00:00Z',
   ...makeValidationError('Date must be a valid date'),
 });
@@ -94,6 +94,13 @@ export const fullNameSchema = t.String({
   ...makeValidationError('Full name must be between 6 and 60 characters long'),
 });
 
+export const locationSchema = t.String({
+  minLength: 5,
+  maxLength: 100,
+  example: '123 Main St, Springfield',
+  ...makeValidationError('Location must be between 5 and 100 characters long'),
+});
+
 //-------------------------------DOCTORS---------------------------------//
 
 export const doctorRoleSchema = t.UnionEnum(['doctor', 'admin'], {
@@ -136,4 +143,21 @@ export const referredToIdSchema = t.Union([t.Number(), t.Null()], {
   minimum: 1,
   example: 1,
   ...makeValidationError('referredToId must be a valid number or null'),
+});
+
+//----------------------------CONSULTATIONS------------------------------//
+
+export const consultationStatusSchema = t.UnionEnum([
+  'scheduled',
+  'completed',
+  'cancelled',
+  'no_show',
+], {
+  example: 'scheduled',
+  ...makeValidationError('Status must be one of: scheduled, completed, cancelled, no_show'),
+});
+
+export const consultationTypeSchema = t.UnionEnum(['return_visit', 'exam', 'routine', 'checkup'], {
+  example: 'routine',
+  ...makeValidationError('Type must be one of: return_visit, exam, routine, checkup'),
 });

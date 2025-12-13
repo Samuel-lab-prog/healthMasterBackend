@@ -1,6 +1,6 @@
 import { describe, it, beforeEach, expect } from 'bun:test';
 import * as ref from './models';
-import { insertConsultation } from '../consultations/models.ts';
+import { insertConsultation } from '../consultations/repository.ts';
 import { insertUser } from '../users/models.ts';
 import { insertDoctor } from '../doctors/models.ts';
 import { AppError } from '../../utils/AppError.ts';

@@ -13,13 +13,13 @@ const errorResponses = {
 
 export const referralRouter = new Elysia({ prefix: '/referrals' })
   .use(AuthPlugin('user'))
-  .group('/user', (app) =>
+  .group('/users', (app) =>
     app.get(
       '/:userId',
       async ({ params, store }) => {
         const targetId = params.userId;
-
-        if (store.clientData!.role !== 'admin' && store.clientData!.id !== targetId) {
+        const role = store.clientData!.role;
+        if ((role !== 'admin' && role !== 'doctor') && store.clientData!.id !== targetId) {
           throwForbiddenError('You cannot access this user’s referrals.');
         }
 

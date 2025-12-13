@@ -21,7 +21,7 @@ export const AuthPlugin = (requestedLevel: AuthLevels = 'user') =>
 
       store.clientData = entity;
 
-      const role = entity.role;
+      const role = entity.role as AuthLevels;
 
       const hierarchy = {
         user: 1,

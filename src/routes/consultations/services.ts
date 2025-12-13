@@ -1,70 +1,61 @@
-import * as models from './models.ts';
-import * as types from './types.ts';
+import * as r from './repository.ts';
+import * as t from './types.ts';
 import { throwNotFoundError } from '../../utils/AppError.ts';
 
 export async function registerConsultation(
-  body: types.PostConsultation
-): Promise<Pick<types.Consultation, 'id'>> {
-  return await models.insertConsultation(body);
+  body: t.PostConsultation
+): Promise<Pick<t.ConsultationRow, 'id'>> {
+  return await r.insertConsultation(body);
 }
 
-export async function getConsultationById(id: number): Promise<types.Consultation> {
-  const result = await models.selectConsultationById(id);
-  if (!result) throwNotFoundError('Consultation not found');
-  return types.mapConsultationRowToConsultation(result);
+export async function getAllConsultations(): Promise<t.ConsultationRow[]> {
+  return await r.selectAllConsultations()
 }
 
-export async function getAllConsultations(): Promise<types.Consultation[]> {
-  const rows = await models.selectAllConsultations();
-  return rows.map(types.mapConsultationRowToConsultation);
+export async function getAllDeletedConsultations(): Promise<t.ConsultationRow[]> {
+  return await r.selectAllDeletedConsultations();
 }
 
-export async function getUserConsultations(userId: number): Promise<types.UserConsultation[]> {
-  const rows = await models.selectUserConsultations(userId);
-  return rows.map(types.mapUserConsultationRowToUserConsultation);
+export async function getUserConsultations(userId: number): Promise<t.ConsultationRow[]> {
+  return await r.selectConsultationsByUserId(userId);
 }
 
 export async function getDoctorConsultations(
   doctorId: number
-): Promise<types.DoctorConsultation[]> {
-  const rows = await models.selectDoctorConsultations(doctorId);
-  return rows.map(types.mapDoctorConsultationRowToDoctorConsultation);
+): Promise<t.ConsultationRow[]> {
+  return await r.selectConsultationsByDoctorId(doctorId);
 }
 
-export async function softDeleteConsultation(
-  consultationId: number
-): Promise<Pick<types.Consultation, 'id'>> {
-  return await models.softDeleteConsultation(consultationId);
+export async function getConsultationById(id: number): Promise<t.ConsultationRow> {
+  const result = await r.selectConsultationById(id);
+  if (!result) throwNotFoundError('Consultation not found');
+  return result
 }
 
-export async function restoreConsultation(consultationId: number): Promise<types.Consultation> {
-  const row = await models.restoreConsultation(consultationId);
-  return types.mapConsultationRowToConsultation(row);
+export async function getDeletedConsultationById(
+  id: number
+): Promise<t.ConsultationRow> {
+  const result = await r.selectDeletedConsultationById(id);
+  if (!result) throwNotFoundError('Consultation not found');
+  return result
 }
 
-export async function updateConsultationStatus(
-  consultationId: number,
-  status: types.ConsultationStatus
-): Promise<types.Consultation> {
-  const row = await models.updateConsultationStatus(consultationId, status);
-  return types.mapConsultationRowToConsultation(row);
-}
-
-export async function updateConsultationNotes(
+export async function patchConsultationNotesById(
   consultationId: number,
   notes: string
-): Promise<types.Consultation> {
-  const row = await models.updateConsultationNotes(consultationId, notes);
-  return types.mapConsultationRowToConsultation(row);
+): Promise<t.ConsultationRow> {
+  return await r.updateConsultationNotes(consultationId, notes);
 }
 
-export async function getConsultationCountsByStatus(): Promise<
-  Record<types.ConsultationStatus, number>
-> {
-  return await models.countConsultationsByStatus();
+export async function patchConsultationStatusById(
+  consultationId: number,
+  status: t.ConsultationStatus
+): Promise<t.ConsultationRow> {
+  return await r.updateConsultationStatus(consultationId, status);
 }
 
-export async function getDeletedConsultations(): Promise<types.Consultation[]> {
-  const rows = await models.selectAllDeletedConsultations();
-  return rows.map(types.mapConsultationRowToConsultation);
+export async function softRemoveConsultationById(
+  consultationId: number
+): Promise<{ id: number }> {
+  return await r.softDeleteConsultation(consultationId);
 }

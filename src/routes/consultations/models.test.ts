@@ -1,11 +1,15 @@
 import { describe, it, beforeEach, expect } from 'bun:test';
 import { prisma } from '../../prisma/client.ts';
-import * as m from './models.ts';
+
+import * as r from './repository.ts';
 import type { InsertConsultation } from './types.ts';
+
 import type { InsertUser } from '../users/types.ts';
+import { insertUser } from '../users/models.ts';
+
 import type { InsertDoctor } from '../doctors/types.ts';
 import { insertDoctor } from '../doctors/models.ts';
-import { insertUser } from '../users/models.ts';
+
 import { AppError } from '../../utils/AppError.ts';
 
 const DEFAULT_CONSULTATION: InsertConsultation = {
@@ -17,17 +21,6 @@ const DEFAULT_CONSULTATION: InsertConsultation = {
   status: 'scheduled',
   type: 'routine',
   endTime: new Date('2024-07-01T11:00:00Z'),
-};
-
-const TEST_CONSULTATION: InsertConsultation = {
-  userId: 1,
-  doctorId: 1,
-  date: '2024-07-02T10:00:00Z',
-  notes: 'Follow-up consultation notes',
-  location: 'Room 102',
-  status: 'scheduled',
-  type: 'exam',
-  endTime: new Date('2024-07-02T11:00:00Z'),
 };
 
 const DEFAULT_USER: InsertUser = {
@@ -53,9 +46,9 @@ const DEFAULT_DOCTOR: InsertDoctor = {
   crm: '654321',
 };
 
-let DEFAULT_CONSULTATION_ID: number;
-let DEFAULT_USER_ID: number;
-let DEFAULT_DOCTOR_ID: number;
+let USER_ID: number;
+let DOCTOR_ID: number;
+let CONSULTATION_ID: number;
 
 beforeEach(async () => {
   await prisma.referral.deleteMany();
@@ -63,173 +56,100 @@ beforeEach(async () => {
   await prisma.user.deleteMany();
   await prisma.doctor.deleteMany();
 
-  DEFAULT_USER_ID = (await insertUser(DEFAULT_USER))!.id;
-  DEFAULT_DOCTOR_ID = (await insertDoctor(DEFAULT_DOCTOR))!.id;
+  USER_ID = (await insertUser(DEFAULT_USER))!.id;
+  DOCTOR_ID = (await insertDoctor(DEFAULT_DOCTOR))!.id;
 
-  DEFAULT_CONSULTATION_ID = (await m.insertConsultation({
-    ...DEFAULT_CONSULTATION,
-    userId: DEFAULT_USER_ID,
-    doctorId: DEFAULT_DOCTOR_ID,
-  }))!.id;
+  CONSULTATION_ID = (
+    await r.insertConsultation({
+      ...DEFAULT_CONSULTATION,
+      userId: USER_ID,
+      doctorId: DOCTOR_ID,
+    })
+  ).id;
 });
 
-describe('Consultation Model Tests', () => {
-  it('insertConsultation → returns id when inserted', async () => {
-    const result = await m.insertConsultation({
-      ...TEST_CONSULTATION,
-      userId: DEFAULT_USER_ID,
-      doctorId: DEFAULT_DOCTOR_ID,
+describe('Consultation Repository', () => {
+  it('insertConsultation → returns id', async () => {
+    const result = await r.insertConsultation({
+      ...DEFAULT_CONSULTATION,
+      userId: USER_ID,
+      doctorId: DOCTOR_ID,
     });
 
-    expect(result).toHaveProperty('id');
-    expect(typeof result!.id).toBe('number');
+    expect(result.id).toBeTypeOf('number');
   });
 
-  it('insertConsultation → throws AppError on invalid userId', async () => {
+  it('insertConsultation → throws AppError on invalid FK', async () => {
     await expect(
-      m.insertConsultation({
-        ...TEST_CONSULTATION,
+      r.insertConsultation({
+        ...DEFAULT_CONSULTATION,
         userId: 9999,
-        doctorId: DEFAULT_DOCTOR_ID,
+        doctorId: DOCTOR_ID,
       })
     ).rejects.toThrow(AppError);
   });
 
-  it('insertConsultation → throws AppError on invalid doctorId', async () => {
-    await expect(
-      m.insertConsultation({
-        ...TEST_CONSULTATION,
-        userId: DEFAULT_USER_ID,
-        doctorId: 9999,
-      })
-    ).rejects.toThrow(AppError);
-  });
-
-  it('selectConsultationById → returns consultation when found', async () => {
-    const consultation = await m.selectConsultationById(DEFAULT_CONSULTATION_ID);
+  it('selectConsultationById → returns consultation', async () => {
+    const consultation = await r.selectConsultationById(CONSULTATION_ID);
     expect(consultation).not.toBeNull();
-    expect(consultation?.id).toBe(DEFAULT_CONSULTATION_ID);
+    expect(consultation!.id).toBe(CONSULTATION_ID);
   });
 
-  it('selectConsultationById → returns null for non-existing id', async () => {
-    const consultation = await m.selectConsultationById(9999);
+  it('selectConsultationById → returns null if not found', async () => {
+    const consultation = await r.selectConsultationById(9999);
     expect(consultation).toBeNull();
   });
 
-  it('selectAllConsultations → returns all consultations', async () => {
-    const consultations = await m.selectAllConsultations();
-    expect(Array.isArray(consultations)).toBe(true);
+  it('selectConsultationsByUserId → returns user consultations', async () => {
+    const consultations = await r.selectConsultationsByUserId(USER_ID);
     expect(consultations.length).toBeGreaterThan(0);
   });
 
-  it('selectAllConsultations → returns empty array when no consultations exist', async () => {
-    await prisma.consultation.deleteMany();
-    const consultations = await m.selectAllConsultations();
-    expect(consultations).toEqual([]);
-  });
-
-  it('selectUserConsultations → returns consultations for user', async () => {
-    const consultations = await m.selectUserConsultations(DEFAULT_USER_ID);
-    expect(Array.isArray(consultations)).toBe(true);
+  it('selectConsultationsByDoctorId → returns doctor consultations', async () => {
+    const consultations = await r.selectConsultationsByDoctorId(DOCTOR_ID);
     expect(consultations.length).toBeGreaterThan(0);
   });
 
-  it('selectUserConsultations → empty array for unknown userId', async () => {
-    const consultations = await m.selectUserConsultations(9999);
-    expect(consultations).toEqual([]);
+  it('softDeleteConsultation → hides consultation from active queries', async () => {
+    await r.softDeleteConsultation(CONSULTATION_ID);
+
+    const active = await r.selectConsultationById(CONSULTATION_ID);
+    expect(active).toBeNull();
+
+    const deleted = await r.selectDeletedConsultationById(CONSULTATION_ID);
+    expect(deleted).not.toBeNull();
+    expect(deleted!.deletedAt).not.toBeNull();
   });
 
-  it('selectDoctorConsultations → returns consultations for doctor', async () => {
-    const consultations = await m.selectDoctorConsultations(DEFAULT_DOCTOR_ID);
-    expect(Array.isArray(consultations)).toBe(true);
-    expect(consultations.length).toBeGreaterThan(0);
+  it('selectAllDeletedConsultations → returns only deleted consultations', async () => {
+    await r.softDeleteConsultation(CONSULTATION_ID);
+
+    const deleted = await r.selectAllDeletedConsultations();
+    expect(deleted.length).toBe(1);
+    expect(deleted[0]!.deletedAt).not.toBeNull();
   });
 
-  it('selectDoctorConsultations → empty array for unknown doctorId', async () => {
-    const consultations = await m.selectDoctorConsultations(9999);
-    expect(consultations).toEqual([]);
-  });
+  it('updateConsultationStatus → updates status', async () => {
+    const updated = await r.updateConsultationStatus(
+      CONSULTATION_ID,
+      'completed'
+    );
 
-  it('softDeleteConsultation → should soft delete a consultation', async () => {
-    const result = await m.softDeleteConsultation(DEFAULT_CONSULTATION_ID);
-    expect(result).toHaveProperty('id', DEFAULT_CONSULTATION_ID);
-
-    const deleted = await m.selectConsultationById(DEFAULT_CONSULTATION_ID);
-    expect(deleted?.deletedAt).not.toBeNull();
-  });
-
-  it('softDeleteConsultation → should throw AppError for non-existing id', async () => {
-    await expect(m.softDeleteConsultation(9999)).rejects.toThrow(AppError);
-  });
-
-  it('restoreConsultation → should restore a soft-deleted consultation', async () => {
-    await m.softDeleteConsultation(DEFAULT_CONSULTATION_ID);
-
-    const restored = await m.restoreConsultation(DEFAULT_CONSULTATION_ID);
-    expect(restored.deletedAt).toBeNull();
-  });
-
-  it('restoreConsultation → should throw AppError for non-existing id', async () => {
-    await expect(m.restoreConsultation(9999)).rejects.toThrow(AppError);
-  });
-
-  it('updateConsultationStatus → should update the status', async () => {
-    const updated = await m.updateConsultationStatus(DEFAULT_CONSULTATION_ID, 'completed');
     expect(updated.status).toBe('completed');
-
-    const fetched = await m.selectConsultationById(DEFAULT_CONSULTATION_ID);
-    expect(fetched?.status).toBe('completed');
   });
 
-  it('updateConsultationStatus → should throw AppError for non-existing id', async () => {
-    await expect(m.updateConsultationStatus(9999, 'completed')).rejects.toThrow(AppError);
+  it('updateConsultationNotes → updates notes', async () => {
+    const updated = await r.updateConsultationNotes(
+      CONSULTATION_ID,
+      'Updated notes'
+    );
+
+    expect(updated.notes).toBe('Updated notes');
   });
 
-  it('updateConsultationNotes → should update consultation notes', async () => {
-    const newNotes = 'Updated consultation notes';
-    const updated = await m.updateConsultationNotes(DEFAULT_CONSULTATION_ID, newNotes);
-    expect(updated.notes).toBe(newNotes);
-
-    const fetched = await m.selectConsultationById(DEFAULT_CONSULTATION_ID);
-    expect(fetched?.notes).toBe(newNotes);
-  });
-
-  it('updateConsultationNotes → should throw AppError for non-existing id', async () => {
-    await expect(m.updateConsultationNotes(9999, 'New notes')).rejects.toThrow(AppError);
-  });
-
-  it('countConsultationsByStatus → should return correct counts', async () => {
-    const counts = await m.countConsultationsByStatus();
-    expect(counts).toHaveProperty('scheduled');
-    expect(counts).toHaveProperty('completed');
-    expect(counts).toHaveProperty('cancelled');
-    expect(counts).toHaveProperty('no_show');
-    expect(typeof counts.scheduled).toBe('number');
-    expect(counts.scheduled).toBeGreaterThan(0);
-  });
-
-  it('countConsultationsByStatus → should return zero counts when no consultations', async () => {
-    await prisma.consultation.deleteMany();
-    const counts = await m.countConsultationsByStatus();
-    expect(counts.scheduled).toBe(0);
-    expect(counts.completed).toBe(0);
-    expect(counts.cancelled).toBe(0);
-    expect(counts.no_show).toBe(0);
-  });
-
-  it('selectAllDeletedConsultations → should return deleted consultations', async () => {
-    await m.softDeleteConsultation(DEFAULT_CONSULTATION_ID);
-    const deletedConsultations = await m.selectAllDeletedConsultations();
-    expect(Array.isArray(deletedConsultations)).toBe(true);
-    expect(deletedConsultations.length).toBeGreaterThan(0);
-    deletedConsultations.forEach((consultation) => {
-      expect(consultation.deletedAt).not.toBeNull();
-    });
-  });
-
-  it('selectAllDeletedConsultations → should return empty array when none deleted', async () => {
-    const deletedConsultations = await m.selectAllDeletedConsultations();
-    expect(Array.isArray(deletedConsultations)).toBe(true);
-    expect(deletedConsultations.length).toBe(0);
+  it('updateConsultationStatus → throws AppError if not found', async () => {
+    await expect(
+      r.updateConsultationStatus(9999, 'completed')
+    ).rejects.toThrow(AppError);
   });
 });

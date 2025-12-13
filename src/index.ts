@@ -48,7 +48,10 @@ export default new Elysia(ELYSIA_SETTINGS)
 
   .onError(({ error, set, code, store }) => handleError(set, error, code, store.reqId))
 
-  .use(rateLimit())
+  .use(rateLimit({
+    max: 1000,
+  duration: 15 * 60 * 1000, // 15 minutes
+  }))
   .onStart(() => {
     l.log.info(`🚀 Server started at http://${HOST_NAME}:${PORT}${PREFIX}`);
   })
